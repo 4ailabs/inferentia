@@ -1,0 +1,7 @@
+numpy>=1.26,<2.2
+scipy>=1.11,<1.15
+numpyro>=0.15,<0.17
+jax>=0.4.30,<0.5
+pymdp>=0.0.7
+pyyaml>=6.0
+pytest>=8.0
