@@ -1,18 +1,20 @@
 # Inferentia
 
-**Medicina Clínica de Inferencia Activa — Restoring agency through predictive modeling**
-
 Built with Opus 4.7 · Cerebral Valley × Anthropic Hackathon · April 2026
 
 ---
 
-## What this is
+## Core thesis
 
-Inferentia is a research prototype that applies the **Active Inference** framework (Friston, Clark, Barrett) to clinical nutrigenomic medicine. Instead of treating isolated biomarkers, it identifies the **predictive priors** that direct a patient's allostatic regulation, makes them visible to both patient and clinician, and restores the system's agency to update them.
+> *An ill person is an organism executing predictions across its four cognitive levels — cellular bioelectric, organic homeostasis, somatic unconscious, explicit consciousness. Altered biomarkers, chronic symptoms, metabolic rigidity: all are the signature of instructions the organism keeps executing, not memories it consults. Inferentia identifies those active instructions — predictive imprints, deficiencies limiting regulation, toxins forcing the system, available agency, amplifying genetics — and computes which interventions expand the frontier the pattern contracted. The outcome is not normalizing a value: it is enabling the organism to do more.*
 
-The core thesis:
+**Tesis (original, español):**
 
-> Observable metabolic pathology is the multimodal signature of rigid predictive priors directing allostasis. Effective clinical intervention consists not of correcting the signature (biomarker, symptom) but of identifying active priors, rendering them visible to the patient, and restoring agency to update them — measured as reduction in free energy, expansion of the cognitive cone, and recovery of multimodal predictive flexibility.
+> *Una persona enferma es un organismo ejecutando predicciones en sus cuatro niveles cognitivos — bioeléctrico celular, homeostasis orgánica, inconsciente somático y consciencia explícita. Biomarcadores alterados, síntomas crónicos, rigidez metabólica: todo es la signatura de instrucciones que el organismo sigue ejecutando, no recuerdos que consulta. Inferentia identifica esas instrucciones activas — improntas predictivas, carencias que limitan la regulación, toxinas que fuerzan el sistema, agencia disponible, genética amplificadora — y calcula qué intervenciones expanden la frontera que el patrón contrajo. El outcome no es normalizar un valor: es que el organismo pueda más.*
+
+## What Inferentia does
+
+Inferentia is a clinical tool that identifies active predictive instructions across six co-present layers — **active imprints, nutritional substrate, toxic load, available agency, inferred nutrigenomic profile, and observable signature** — and computes interventions that expand the organism's regulatory capacity. The computational engine combines **Active Inference** (Friston) with **multivariate Bayesian classification** over clinical signatures, integrating the **TAME multi-scale cognition framework** (Levin), **phenotypic flexibility** (van Ommen), and the **BV4 clinical framework** (Ojeda Rios, proprietary).
 
 ## Status
 
