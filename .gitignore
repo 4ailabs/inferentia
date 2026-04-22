@@ -54,6 +54,11 @@ coverage/
 /tmp/
 /data/local/
 
+# Pipeline cache (regenerable from EBI FTP; too large for git)
+/data/pipeline/
+*.tsv
+!docs/**/*.tsv
+
 # Private (never commit)
 /private/
 *.pem

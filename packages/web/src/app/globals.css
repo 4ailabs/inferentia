@@ -1,26 +1,284 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Inferentia · Editorial scientific system
+   Paper-style, monograph typography, single accent.
+   ============================================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Paper & ink — warm whites, deep near-black */
+  --paper: #FAFAF7;
+  --paper-raised: #FFFFFF;
+  --paper-soft: #F4F2EC;
+  --ink: #0F0F0E;
+  --ink-soft: #2B2A28;
+  --ink-quiet: #4A4944;
+  --ink-mute: #8B8A85;
+
+  /* Editorial rules */
+  --rule: #D8D4CB;
+  --rule-soft: #E6E2D9;
+  --rule-strong: #0F0F0E;
+
+  /* Single accent — ink-like violet, sober */
+  --accent: #6B3FA0;
+  --accent-soft: #8B63C1;
+  --accent-deep: #4E2A7B;
+  --accent-wash: rgba(107, 63, 160, 0.08);
+
+  /* Functional */
+  --danger: #8A2C1B;
+  --signal: #6B3FA0;
+
+  /* Shadow — absent by default; use only for lifted surfaces */
+  --shadow-paper: 0 1px 0 rgba(15, 15, 14, 0.05);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--paper);
+  --color-foreground: var(--ink);
+
+  --color-paper: var(--paper);
+  --color-paper-raised: var(--paper-raised);
+  --color-paper-soft: var(--paper-soft);
+
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-quiet: var(--ink-quiet);
+  --color-ink-mute: var(--ink-mute);
+
+  --color-rule: var(--rule);
+  --color-rule-soft: var(--rule-soft);
+  --color-rule-strong: var(--rule-strong);
+
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-deep: var(--accent-deep);
+  --color-accent-wash: var(--accent-wash);
+
+  --color-danger: var(--danger);
+
+  --font-editorial: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* shadcn token bridge (button/card/badge read these) */
+:root {
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--paper-raised);
+  --card-foreground: var(--ink);
+  --popover: var(--paper-raised);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--paper);
+  --secondary: var(--paper-soft);
+  --secondary-foreground: var(--ink);
+  --muted: var(--paper-soft);
+  --muted-foreground: var(--ink-quiet);
+  --accent-color: var(--accent);
+  --accent-foreground: var(--paper);
+  --destructive: var(--danger);
+  --border: var(--rule);
+  --input: var(--rule);
+  --ring: var(--accent);
+  --radius: 0.125rem;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@theme inline {
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --radius-xl: 6px;
+}
+
+html, body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv02";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--paper);
+}
+
+/* Editorial display — Fraunces with tabular lining nums off, proportional on */
+.editorial {
+  font-family: var(--font-fraunces), "Times New Roman", serif;
+  font-feature-settings: "dlig", "onum", "ss02";
+  font-variation-settings: "SOFT" 25, "WONK" 0, "opsz" 72;
+  letter-spacing: -0.02em;
+}
+
+.editorial-italic {
+  font-family: var(--font-fraunces), serif;
+  font-style: italic;
+  font-feature-settings: "dlig", "onum", "ss02";
+}
+
+/* Eyebrow — small caps section label */
+.eyebrow {
+  font-family: var(--font-inter);
+  font-size: 10.5px;
+  line-height: 1;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--ink-mute);
+}
+
+.eyebrow-accent {
+  color: var(--accent);
+}
+
+/* Section rule — eyebrow + hairline pattern */
+.section-rule {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.section-rule .hairline {
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+
+/* Editorial tabular numerals */
+.tabular {
+  font-family: var(--font-jetbrains), "JetBrains Mono", monospace;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.lining {
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* Drop-cap — sparingly, first paragraph of thesis */
+.drop-cap::first-letter {
+  font-family: var(--font-fraunces), serif;
+  font-size: 5.2em;
+  line-height: 0.85;
+  float: left;
+  padding: 0.08em 0.08em 0 0;
+  color: var(--accent);
+  font-weight: 500;
+  font-variation-settings: "SOFT" 50, "opsz" 144;
+}
+
+/* Figure caption — paper small-caps style */
+.figure-caption {
+  font-family: var(--font-inter);
+  font-size: 11px;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  color: var(--ink-quiet);
+}
+.figure-caption strong {
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 10px;
+  color: var(--ink);
+  margin-right: 0.4em;
+}
+
+/* Quiet focus rings */
+*:focus-visible {
+  outline: 1.5px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Section numerals — 01 · 02 · 03 editorial kerning */
+.section-num {
+  font-family: var(--font-fraunces), serif;
+  font-feature-settings: "onum", "ss02";
+  letter-spacing: 0.02em;
+  font-weight: 400;
+}
+
+/* Hairline divider */
+.hr-hairline {
+  height: 1px;
+  background: var(--rule);
+  border: 0;
+  margin: 0;
+}
+.hr-hairline-strong {
+  height: 1px;
+  background: var(--rule-strong);
+  border: 0;
+}
+
+/* Running head — masthead-style header link */
+.running-head {
+  font-family: var(--font-inter);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* React Flow — paper canvas */
+.react-flow {
+  background: var(--paper-soft) !important;
+}
+.react-flow__pane {
+  background: var(--paper-soft);
+}
+.react-flow__controls {
+  box-shadow: none !important;
+  border: 1px solid var(--rule) !important;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.react-flow__controls button {
+  background: var(--paper-raised) !important;
+  border-bottom: 1px solid var(--rule) !important;
+  color: var(--ink-soft) !important;
+  width: 28px;
+  height: 28px;
+}
+.react-flow__controls button:hover {
+  background: var(--paper-soft) !important;
+}
+.react-flow__controls button svg {
+  fill: var(--ink-soft);
+}
+.react-flow__minimap {
+  background: var(--paper-raised) !important;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+}
+.react-flow__attribution {
+  display: none !important;
+}
+.react-flow__edge-path {
+  stroke: var(--ink-quiet);
+}
+.react-flow__handle {
+  width: 6px !important;
+  height: 6px !important;
+  background: var(--ink-mute) !important;
+  border: 1px solid var(--paper-raised) !important;
 }

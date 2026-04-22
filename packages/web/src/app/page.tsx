@@ -1,160 +1,296 @@
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import type { Metadata } from "next";
+import { getDict, resolveLocale } from "@/lib/i18n";
+import { LocaleToggle } from "@/components/locale-toggle";
 
-export default function Home() {
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}): Promise<Metadata> {
+  const locale = resolveLocale(await searchParams);
+  const t = getDict(locale);
+  return {
+    title: t.meta.title,
+    description: t.meta.description,
+  };
+}
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const sp = await searchParams;
+  const locale = resolveLocale(sp);
+  const t = getDict(locale);
+  const pathname = "/";
+  const langSuffix = locale === "en" ? "" : `?lang=${locale}`;
+
   return (
-    <main className="relative min-h-dvh bg-slate-950 text-slate-100 overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 opacity-50">
-        <div className="absolute -top-40 -right-40 h-[520px] w-[520px] rounded-full bg-indigo-600/20 blur-3xl" />
-        <div className="absolute top-[28%] -left-28 h-[460px] w-[460px] rounded-full bg-violet-700/20 blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 h-[380px] w-[380px] rounded-full bg-cyan-600/15 blur-3xl" />
-      </div>
-
-      <div className="relative mx-auto max-w-6xl px-6 py-16 sm:py-24">
-        <header className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-indigo-500 via-violet-500 to-cyan-400 shadow-lg shadow-indigo-500/30" />
-            <span className="font-mono text-sm tracking-widest text-slate-400">INFERENTIA</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="border-slate-700 text-slate-400 font-mono text-[10px]">
-              v0.1 · prototype
-            </Badge>
-            <Badge variant="outline" className="border-indigo-500/40 text-indigo-300 font-mono text-[10px]">
-              Opus 4.7
-            </Badge>
-          </div>
-        </header>
-
-        <section className="mt-24 max-w-4xl">
-          <p className="font-mono text-xs tracking-widest text-slate-500 uppercase">
-            Clinical model · Active Inference + Bayesian classification
-          </p>
-          <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-semibold leading-[1.05] tracking-tight text-balance">
-            Una persona enferma es un organismo ejecutando predicciones.
-          </h1>
-          <p className="mt-8 text-lg text-slate-300 leading-relaxed max-w-3xl">
-            Inferentia identifica esas instrucciones activas — improntas predictivas,
-            carencias que limitan la regulación, toxinas que fuerzan el sistema,
-            agencia disponible, genética amplificadora — y calcula qué intervenciones
-            expanden la frontera que el patrón contrajo.
-          </p>
-          <p className="mt-6 text-base text-slate-400 max-w-3xl italic">
-            El outcome no es normalizar un valor: es que el organismo pueda más.
-          </p>
-
-          <div className="mt-10 flex items-center gap-3">
-            <Button size="lg" asChild>
-              <Link href="/network">Ver la red de flexibilidad</Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild className="border-slate-700 text-slate-200 hover:bg-slate-900">
-              <a href="https://github.com/4ailabs/inferentia" target="_blank" rel="noreferrer">
-                GitHub
+    <main className="min-h-screen bg-paper text-ink">
+      {/* Masthead ---------------------------------------------------- */}
+      <header className="border-b border-rule">
+        <div className="mx-auto max-w-[1280px] px-6 md:px-10">
+          <div className="flex items-end justify-between py-5">
+            <div className="flex items-end gap-5">
+              <MarkGlyph />
+              <div className="leading-none">
+                <p className="running-head text-ink">{t.masthead.running_head}</p>
+                <p className="mt-1 text-[11px] text-ink-mute tabular lining">
+                  {t.masthead.edition}
+                </p>
+              </div>
+            </div>
+            <nav className="hidden md:flex items-center gap-6 text-[12px] tracking-wide text-ink-quiet">
+              <Link href={`/network${langSuffix}`} className="hover:text-ink transition-colors">
+                {t.masthead.nav.network}
+              </Link>
+              <a
+                href="https://github.com/4ailabs/inferentia"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-ink transition-colors"
+              >
+                {t.masthead.nav.source}
               </a>
-            </Button>
+              <a href="#method" className="hover:text-ink transition-colors">
+                {t.masthead.nav.method}
+              </a>
+              <span className="tabular text-ink-mute text-[10.5px]">
+                {t.masthead.stack_badge}
+              </span>
+              <LocaleToggle locale={locale} pathname={pathname} />
+            </nav>
           </div>
-        </section>
+        </div>
+        <div className="h-[2px] bg-ink" />
+      </header>
 
-        <section className="mt-28 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {LAYERS.map((layer) => (
-            <Card
-              key={layer.id}
-              className="border-slate-800/80 bg-slate-900/40 backdrop-blur transition-colors hover:border-slate-700"
-            >
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10px] text-slate-500">L{layer.id}</span>
-                  <span className={`h-2 w-2 rounded-full ${layer.dot}`} />
+      {/* Article ----------------------------------------------------- */}
+      <article className="mx-auto max-w-[1280px] px-6 md:px-10 pb-24">
+        {/* Hero */}
+        <section className="grid grid-cols-12 gap-x-10 pt-16 md:pt-24">
+          <aside className="col-span-12 md:col-span-3 lg:col-span-3">
+            <p className="eyebrow eyebrow-accent">{t.hero.eyebrow_abstract}</p>
+            <p className="mt-5 text-[12.5px] leading-relaxed text-ink-quiet max-w-[220px]">
+              {t.hero.abstract_body}
+            </p>
+            <dl className="mt-10 grid grid-cols-2 gap-y-5 gap-x-4 text-[11px]">
+              {t.hero.aside.map((row) => (
+                <div key={row.dt}>
+                  <dt className="eyebrow">{row.dt}</dt>
+                  <dd className="mt-2 editorial text-[15px]">{row.dd}</dd>
                 </div>
-                <CardTitle className="mt-2 text-base font-semibold text-slate-100">
-                  {layer.title}
-                </CardTitle>
-                <CardDescription className="text-sm text-slate-400">
-                  {layer.body}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <p className="font-mono text-[10px] text-slate-500">{layer.meta}</p>
-              </CardContent>
-            </Card>
-          ))}
+              ))}
+            </dl>
+          </aside>
+
+          <div className="col-span-12 md:col-span-9 lg:col-span-9 mt-12 md:mt-0">
+            <p className="eyebrow">{t.hero.thesis_eyebrow}</p>
+            <h1 className="mt-6 editorial text-[44px] md:text-[60px] lg:text-[72px] leading-[0.98] text-ink">
+              {t.hero.thesis_line_1}
+              <br />
+              {t.hero.thesis_line_2}
+              <br />
+              <span className="editorial-italic text-accent">
+                {t.hero.thesis_line_3_italic}
+              </span>
+            </h1>
+
+            <div className="mt-10 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_240px] gap-10">
+              <div className="drop-cap text-[17px] leading-[1.65] text-ink-soft max-w-[62ch]">
+                {t.hero.drop_cap_body}
+              </div>
+              <aside className="border-t border-rule lg:border-t-0 lg:border-l lg:pl-6 pt-6 lg:pt-0">
+                <p className="eyebrow">{t.hero.outcome_eyebrow}</p>
+                <p className="mt-4 editorial italic text-[22px] leading-[1.2] text-ink">
+                  {t.hero.outcome_line}
+                </p>
+                <p className="mt-4 text-[12px] leading-relaxed text-ink-quiet">
+                  {t.hero.outcome_body}
+                </p>
+              </aside>
+            </div>
+
+            <div className="mt-12 flex flex-wrap items-center gap-6">
+              <Link
+                href={`/network${langSuffix}`}
+                className="group inline-flex items-center gap-3 bg-ink text-paper px-5 py-3 text-[13px] tracking-wide hover:bg-accent-deep transition-colors"
+              >
+                {t.hero.cta_primary}
+                <span className="inline-block w-6 h-px bg-paper transition-transform group-hover:translate-x-1" />
+              </Link>
+              <a
+                href="#method"
+                className="inline-flex items-center gap-2 text-[13px] text-ink-quiet border-b border-ink-mute pb-0.5 hover:text-ink hover:border-ink transition-colors"
+              >
+                {t.hero.cta_secondary}
+              </a>
+            </div>
+          </div>
         </section>
 
-        <section className="mt-28 grid gap-6 md:grid-cols-2 border-t border-slate-800/60 pt-10">
-          <div>
-            <p className="font-mono text-[10px] tracking-widest text-slate-500 uppercase">
-              Stack teórico
-            </p>
-            <ul className="mt-3 space-y-2 text-sm text-slate-300">
-              <li>· Active Inference / Free Energy Principle — Friston</li>
-              <li>· TAME multi-scale cognition — Levin</li>
-              <li>· Phenotypic flexibility — van Ommen (TNO/NuGO)</li>
-              <li>· BV4 clinical framework — Ojeda Rios</li>
-            </ul>
+        {/* Figure i — six layers */}
+        <section id="figure-i" className="mt-32">
+          <div className="section-rule">
+            <span className="eyebrow">{t.figure_i.eyebrow}</span>
+            <span className="hairline" />
+            <span className="eyebrow text-ink-quiet">
+              {t.figure_i.eyebrow_caption}
+            </span>
           </div>
-          <div>
-            <p className="font-mono text-[10px] tracking-widest text-slate-500 uppercase">
-              Descargos
+
+          <figure className="mt-10 border-t border-ink">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 border-b border-rule">
+              {t.layers.map((layer, idx) => (
+                <div
+                  key={layer.num}
+                  className={`relative p-7 md:p-9 min-h-[220px] border-rule ${
+                    idx % 3 !== 2 ? "lg:border-r" : ""
+                  } ${idx % 2 === 0 ? "md:border-r lg:border-r" : ""} ${
+                    idx < 3 ? "lg:border-b" : ""
+                  } ${idx < 4 ? "md:border-b" : ""} border-b md:border-b-0`}
+                >
+                  <div className="flex items-start justify-between">
+                    <span className="section-num text-[42px] text-accent leading-none">
+                      {layer.num}
+                    </span>
+                    <span className="eyebrow mt-2">{layer.tag}</span>
+                  </div>
+                  <h3 className="mt-8 editorial text-[22px] leading-tight text-ink">
+                    {layer.title}
+                  </h3>
+                  <p className="mt-3 text-[13px] leading-relaxed text-ink-quiet">
+                    {layer.body}
+                  </p>
+                  <p className="mt-6 tabular text-[10.5px] text-ink-mute">
+                    {layer.meta}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <figcaption className="figure-caption mt-5">
+              <strong>Fig. i</strong>
+              {t.figure_i.caption}
+            </figcaption>
+          </figure>
+        </section>
+
+        {/* Method */}
+        <section id="method" className="mt-32 grid grid-cols-12 gap-x-10">
+          <div className="col-span-12 md:col-span-4">
+            <div className="section-rule">
+              <span className="eyebrow">{t.method.section_number}</span>
+              <span className="hairline" />
+            </div>
+            <h2 className="mt-6 editorial text-[38px] leading-[1.05] text-ink">
+              {t.method.heading}
+            </h2>
+            <p className="mt-5 text-[13px] leading-relaxed text-ink-quiet max-w-[32ch]">
+              {t.method.lead}
             </p>
-            <p className="mt-3 text-sm text-slate-400 leading-relaxed">
-              Prototipo de investigación. No es dispositivo médico. No sustituye consulta médica.
-              Validación clínica formal planificada para Fase 2 post-hackathon.
-            </p>
+          </div>
+
+          <div className="col-span-12 md:col-span-8 mt-10 md:mt-0">
+            <dl className="divide-y divide-rule border-y border-rule">
+              {t.method.items.map((item) => (
+                <div key={item.label} className="grid grid-cols-12 gap-4 py-5">
+                  <dt className="col-span-4 md:col-span-3">
+                    <span className="eyebrow">{item.tag}</span>
+                    <p className="mt-2 editorial text-[17px] text-ink">
+                      {item.label}
+                    </p>
+                  </dt>
+                  <dd className="col-span-8 md:col-span-9 text-[13.5px] leading-relaxed text-ink-soft">
+                    {item.body}
+                    <span className="ml-2 tabular text-[11px] text-ink-mute">
+                      — {item.cite}
+                    </span>
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </section>
 
-        <footer className="mt-24 flex items-center justify-between text-xs text-slate-500">
-          <span className="font-mono">Built with Opus 4.7 · Cerebral Valley × Anthropic 2026</span>
-          <span className="font-mono">MIT licensed</span>
-        </footer>
-      </div>
+        {/* Colophon */}
+        <section className="mt-32">
+          <div className="section-rule">
+            <span className="eyebrow">{t.colophon.section_number}</span>
+            <span className="hairline" />
+            <span className="eyebrow text-ink-quiet">{t.colophon.eyebrow}</span>
+          </div>
+
+          <div className="mt-10 grid grid-cols-12 gap-x-10 gap-y-10 border-t border-rule pt-10">
+            <div className="col-span-12 md:col-span-6 lg:col-span-4">
+              <p className="eyebrow">{t.colophon.status_label}</p>
+              <p className="mt-4 text-[13.5px] leading-relaxed text-ink-soft">
+                {t.colophon.status_body}
+              </p>
+            </div>
+            <div className="col-span-12 md:col-span-6 lg:col-span-4">
+              <p className="eyebrow">{t.colophon.attribution_label}</p>
+              <p className="mt-4 text-[13.5px] leading-relaxed text-ink-soft">
+                {t.colophon.attribution_body}
+              </p>
+            </div>
+            <div className="col-span-12 md:col-span-12 lg:col-span-4">
+              <p className="eyebrow">{t.colophon.license_label}</p>
+              <p className="mt-4 text-[13.5px] leading-relaxed text-ink-soft">
+                {t.colophon.license_body_pre}
+                <a
+                  href="https://github.com/4ailabs/inferentia"
+                  className="underline decoration-rule underline-offset-4 decoration-1 hover:decoration-ink transition-colors"
+                >
+                  {t.colophon.license_body_link}
+                </a>
+                {t.colophon.license_body_post}
+              </p>
+            </div>
+          </div>
+        </section>
+      </article>
+
+      {/* Running foot */}
+      <footer className="border-t border-ink">
+        <div className="mx-auto max-w-[1280px] px-6 md:px-10 py-6 flex items-center justify-between text-[11px] text-ink-mute">
+          <p className="tabular tracking-wider">{t.footer.left}</p>
+          <p className="editorial italic">{t.footer.center_italic}</p>
+          <p className="tabular tracking-wider">{t.footer.right}</p>
+        </div>
+      </footer>
     </main>
   );
 }
 
-const LAYERS = [
-  {
-    id: "01",
-    title: "Improntas predictivas",
-    body: "Programas de supervivencia cristalizados en el inconsciente somático (marco BV4).",
-    dot: "bg-indigo-400",
-    meta: "i1 · i4 · i7 · i8",
-  },
-  {
-    id: "02",
-    title: "Sustrato nutricional",
-    body: "Carencias que limitan la capacidad regulatoria en los cuatro niveles TAME.",
-    dot: "bg-emerald-400",
-    meta: "vitaminas · minerales · cofactores",
-  },
-  {
-    id: "03",
-    title: "Carga tóxica y excesos",
-    body: "Disruptores que fuerzan el sistema: metales, disruptores endocrinos, exceso crónico.",
-    dot: "bg-amber-400",
-    meta: "metales · azúcar · iatrogenia",
-  },
-  {
-    id: "04",
-    title: "Agencia disponible",
-    body: "Capacidad del sistema de revisar sus priors y auto-regular.",
-    dot: "bg-cyan-400",
-    meta: "locus · interocepción · coherencia",
-  },
-  {
-    id: "05",
-    title: "Genética amplificadora",
-    body: "Polimorfismos probables, inferidos desde fenotipo sin test genético.",
-    dot: "bg-violet-400",
-    meta: "FTO · MC4R · FKBP5 · COMT · MTHFR",
-  },
-  {
-    id: "06",
-    title: "Signatura observable",
-    body: "Biomarcadores, HRV, composición corporal, síntomas — la evidencia que el clínico mide.",
-    dot: "bg-rose-400",
-    meta: "HbA1c · HOMA-IR · cortisol · HRV",
-  },
-];
+function MarkGlyph() {
+  return (
+    <svg
+      width="40"
+      height="40"
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+    >
+      <circle cx="20" cy="20" r="19" stroke="#0F0F0E" strokeWidth="1" />
+      <circle cx="20" cy="20" r="6" fill="#6B3FA0" />
+      <path
+        d="M3 20 L14 20 M26 20 L37 20 M20 3 L20 14 M20 26 L20 37"
+        stroke="#0F0F0E"
+        strokeWidth="1"
+      />
+      <circle
+        cx="20"
+        cy="20"
+        r="12"
+        stroke="#0F0F0E"
+        strokeWidth="0.6"
+        strokeDasharray="2 2"
+      />
+    </svg>
+  );
+}

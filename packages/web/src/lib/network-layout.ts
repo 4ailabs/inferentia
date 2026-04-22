@@ -4,10 +4,6 @@
  * Categories are mapped to columns left → right so the causal cascade
  * is readable: imprints (upstream) → neuroendocrine/autonomic →
  * gut/metabolic → hepatic/inflammatory → pathology (downstream).
- *
- * Within a column, nodes are ordered by their position_hint.row when present,
- * falling back to alphabetical by id. Absolute positions are computed so
- * React Flow can render without physics simulation.
  */
 
 export type RawNode = {
@@ -38,7 +34,6 @@ export type NetworkData = {
   edges: RawEdge[];
 };
 
-// Column ordering (left to right) — the causal story of the network.
 const COLUMN_ORDER: Record<string, number> = {
   imprint: 0,
   neuroendocrine: 1,
@@ -50,12 +45,11 @@ const COLUMN_ORDER: Record<string, number> = {
   pathology: 7,
 };
 
-const COLUMN_GAP = 280;
-const ROW_GAP = 110;
+const COLUMN_GAP = 300;
+const ROW_GAP = 108;
 const PADDING_Y = 60;
 
 export function computeLayout(data: NetworkData) {
-  // Group nodes by the column their category maps to.
   const byColumn = new Map<number, RawNode[]>();
   for (const node of data.nodes) {
     const col = node.position_hint?.col ?? COLUMN_ORDER[node.category] ?? 0;
@@ -63,7 +57,6 @@ export function computeLayout(data: NetworkData) {
     byColumn.get(col)!.push(node);
   }
 
-  // Within each column, sort by position_hint.row then id.
   for (const [, list] of byColumn) {
     list.sort((a, b) => {
       const ra = a.position_hint?.row ?? 999;
@@ -85,58 +78,59 @@ export function computeLayout(data: NetworkData) {
   return positioned;
 }
 
-// Tone maps for each category (all tuned for dark background).
+// Editorial paper tokens per category. Only imprints carry the accent;
+// everything else reads as varying greys on cream.
 export const CATEGORY_STYLES: Record<
   string,
-  { accent: string; text: string; border: string; label: string }
+  { borderClass: string; numeral: string; label: string; accent: boolean }
 > = {
   imprint: {
-    accent: "bg-indigo-500/30",
-    text: "text-indigo-200",
-    border: "border-indigo-400/60",
-    label: "Impronta",
+    borderClass: "border-accent",
+    numeral: "i",
+    label: "Imprint",
+    accent: true,
   },
   neuroendocrine: {
-    accent: "bg-rose-500/25",
-    text: "text-rose-200",
-    border: "border-rose-400/50",
-    label: "Neuroendocrino",
+    borderClass: "border-ink",
+    numeral: "ii",
+    label: "Neuroendocrine",
+    accent: false,
   },
   autonomic: {
-    accent: "bg-amber-500/25",
-    text: "text-amber-100",
-    border: "border-amber-400/50",
-    label: "Autonómico",
+    borderClass: "border-ink-soft",
+    numeral: "iii",
+    label: "Autonomic",
+    accent: false,
   },
   gut: {
-    accent: "bg-emerald-500/25",
-    text: "text-emerald-200",
-    border: "border-emerald-400/50",
-    label: "Intestinal",
+    borderClass: "border-ink-quiet",
+    numeral: "iv",
+    label: "Gut",
+    accent: false,
   },
   metabolic: {
-    accent: "bg-cyan-500/25",
-    text: "text-cyan-200",
-    border: "border-cyan-400/50",
-    label: "Metabólico",
+    borderClass: "border-ink-soft",
+    numeral: "v",
+    label: "Metabolic",
+    accent: false,
   },
   hepatic: {
-    accent: "bg-orange-500/25",
-    text: "text-orange-200",
-    border: "border-orange-400/50",
-    label: "Hepático",
+    borderClass: "border-ink-quiet",
+    numeral: "vi",
+    label: "Hepatic",
+    accent: false,
   },
   inflammatory: {
-    accent: "bg-fuchsia-500/25",
-    text: "text-fuchsia-200",
-    border: "border-fuchsia-400/50",
-    label: "Inflamatorio",
+    borderClass: "border-ink-quiet",
+    numeral: "vii",
+    label: "Inflammatory",
+    accent: false,
   },
   pathology: {
-    accent: "bg-slate-600/40",
-    text: "text-slate-200",
-    border: "border-slate-400/40",
-    label: "Patología",
+    borderClass: "border-ink",
+    numeral: "viii",
+    label: "Pathology",
+    accent: false,
   },
 };
 
