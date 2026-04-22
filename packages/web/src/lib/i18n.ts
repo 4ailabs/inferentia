@@ -124,6 +124,12 @@ type Dict = {
     patient_label: string;
     patient_ana: string;
     patient_none: string;
+    narrative_caption: string;
+    tiered_eyebrow: string;
+    atlas_eyebrow: string;
+    atlas_caption: string;
+    view_tiered: string;
+    view_atlas: string;
     legend: {
       title: string;
       promotes: string;
@@ -310,6 +316,14 @@ export const EN: Dict = {
     patient_label: "Active patient",
     patient_ana: "Ana — i8 Reserva",
     patient_none: "Neutral atlas",
+    narrative_caption:
+      "Ana's system predicts scarcity. That prior rigidifies her HPA axis, dysregulates autonomic tone, and disrupts her gut. The cascade surfaces as pre-diabetes and cardiovascular risk. Four molecules break the cascade at four points.",
+    tiered_eyebrow: "Causal cascade — four tiers",
+    atlas_eyebrow: "Full atlas — 33 nodes",
+    atlas_caption:
+      "Fig. ii.b · Full physiopathological atlas. Every active and latent node of the network, laid out by category. Useful for inspection; the tiered view above is the clinical reading.",
+    view_tiered: "Cascade",
+    view_atlas: "Atlas",
     legend: {
       title: "Legend",
       promotes: "Promotes",
@@ -507,6 +521,14 @@ export const ES: Dict = {
     patient_label: "Paciente activo",
     patient_ana: "Ana — i8 Reserva",
     patient_none: "Atlas neutro",
+    narrative_caption:
+      "El sistema de Ana predice escasez. Ese prior rigidiza su eje HPA, desregula el tono autonómico y altera el intestino. La cascada se manifiesta como pre-diabetes y riesgo cardiovascular. Cuatro moléculas interrumpen la cascada en cuatro puntos.",
+    tiered_eyebrow: "Cascada causal — cuatro tiers",
+    atlas_eyebrow: "Atlas completo — 33 nodos",
+    atlas_caption:
+      "Fig. ii.b · Atlas fisiopatológico completo. Todos los nodos activos y latentes de la red, organizados por categoría. Útil para inspección; la vista de cascada superior es la lectura clínica.",
+    view_tiered: "Cascada",
+    view_atlas: "Atlas",
     legend: {
       title: "Leyenda",
       promotes: "Promueve",
@@ -547,11 +569,26 @@ export function getDict(l: Locale): Dict {
 }
 
 /**
- * Build a URL that switches locale while preserving path.
- * Used by the toggle component.
+ * Build a URL that switches locale while preserving path and other query params.
+ * Used by the toggle component so ?patient=ana (etc) survives the locale change.
  */
-export function localeSwitchHref(pathname: string, targetLocale: Locale): string {
-  if (targetLocale === DEFAULT_LOCALE) return pathname;
-  const sep = pathname.includes("?") ? "&" : "?";
-  return `${pathname}${sep}lang=${targetLocale}`;
+export function localeSwitchHref(
+  pathname: string,
+  targetLocale: Locale,
+  currentSearch: Record<string, string | string[] | undefined> = {},
+): string {
+  const params = new URLSearchParams();
+  for (const [k, v] of Object.entries(currentSearch)) {
+    if (k === "lang") continue;
+    if (Array.isArray(v)) {
+      for (const val of v) if (val) params.append(k, val);
+    } else if (v) {
+      params.append(k, v);
+    }
+  }
+  if (targetLocale !== DEFAULT_LOCALE) {
+    params.set("lang", targetLocale);
+  }
+  const qs = params.toString();
+  return qs ? `${pathname}?${qs}` : pathname;
 }

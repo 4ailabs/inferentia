@@ -62,7 +62,7 @@ export default async function Home({
               <span className="tabular text-ink-mute text-[10.5px]">
                 {t.masthead.stack_badge}
               </span>
-              <LocaleToggle locale={locale} pathname={pathname} />
+              <LocaleToggle locale={locale} pathname={pathname} search={sp} />
             </nav>
           </div>
         </div>

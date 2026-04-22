@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import TieredMap from "./tiered-map";
 import CuratedMap from "./curated-map";
 import type { NetworkData } from "@/lib/network-layout";
 import { getDict, resolveLocale } from "@/lib/i18n";
@@ -25,8 +26,6 @@ export async function generateMetadata({
   return { title: t.network.meta_title };
 }
 
-// Modulators prescribed for patient_001 (i8 Reserva)
-// Each one tagged with the node it primarily acts on.
 type Modulator = {
   name: string;
   target: string;
@@ -36,22 +35,10 @@ type Modulator = {
 
 const PRESCRIBED_MODULATORS: Modulator[] = [
   {
-    name: "Omega-3 EPA/DHA",
-    target: "Systemic inflammation",
-    mechanism_en: "Resolvin synthesis · NLRP3 inhibition",
-    mechanism_es: "Síntesis de resolvinas · inhibición NLRP3",
-  },
-  {
     name: "Ashwagandha",
-    target: "HPA rigidity",
+    target: "HPA axis rigidity",
     mechanism_en: "Cortisol rhythm restoration · GABA-ergic tone",
     mechanism_es: "Restaura ritmo cortisol · tono GABA-érgico",
-  },
-  {
-    name: "Myo-inositol",
-    target: "Insulin resistance",
-    mechanism_en: "IP3 second messenger · insulin sensitisation",
-    mechanism_es: "Segundo mensajero IP3 · sensibilización insulínica",
   },
   {
     name: "Mg glycinate",
@@ -60,10 +47,22 @@ const PRESCRIBED_MODULATORS: Modulator[] = [
     mechanism_es: "Modulación NMDA · restauración parasimpática",
   },
   {
+    name: "Myo-inositol",
+    target: "Insulin resistance",
+    mechanism_en: "IP3 second messenger · insulin sensitisation",
+    mechanism_es: "Segundo mensajero IP3 · sensibilización insulínica",
+  },
+  {
     name: "Berberine",
     target: "Hepatic insulin resistance",
     mechanism_en: "AMPK activation · hepatic gluconeogenesis",
     mechanism_es: "Activa AMPK · reduce gluconeogénesis hepática",
+  },
+  {
+    name: "Omega-3 EPA/DHA",
+    target: "Systemic inflammation",
+    mechanism_en: "Resolvin synthesis · NLRP3 inhibition",
+    mechanism_es: "Síntesis de resolvinas · inhibición NLRP3",
   },
 ];
 
@@ -78,24 +77,34 @@ export default async function NetworkPage({
   const data = await loadNetwork();
   const langSuffix = locale === "en" ? "" : `?lang=${locale}`;
 
-  // Determine patient mode from query — default is "ana" (active demo patient)
+  // Patient mode (default ana)
   const rawPatient = sp.patient;
   const patientParam = Array.isArray(rawPatient) ? rawPatient[0] : rawPatient;
   const patient: "ana" | null = patientParam === "none" ? null : "ana";
 
-  // Count patient-relevant active nodes
+  // View mode — tiered (default) or atlas
+  const rawView = sp.view;
+  const viewParam = Array.isArray(rawView) ? rawView[0] : rawView;
+  const view: "tiered" | "atlas" = viewParam === "atlas" ? "atlas" : "tiered";
+
+  // Helpers to keep all params consistent when switching one
+  const hrefWith = (overrides: Record<string, string>) => {
+    const params = new URLSearchParams();
+    if (locale === "es") params.set("lang", "es");
+    if (patient) params.set("patient", patient);
+    params.set("view", view);
+    for (const [k, v] of Object.entries(overrides)) params.set(k, v);
+    // Drop default values for cleanliness
+    if (params.get("view") === "tiered") params.delete("view");
+    if (params.get("patient") === "ana") params.delete("patient");
+    const qs = params.toString();
+    return qs ? `/network?${qs}` : "/network";
+  };
+
   const activeCount =
     patient === "ana"
       ? data.nodes.filter((n) => (n.imprint_association?.i8 ?? 0) >= 0.55).length
       : 0;
-
-  // Build patient-switch hrefs
-  const paramsForPatient = (p: "ana" | "none") => {
-    const params = new URLSearchParams();
-    if (locale === "es") params.set("lang", "es");
-    params.set("patient", p);
-    return `/network?${params.toString()}`;
-  };
 
   return (
     <main className="min-h-screen bg-paper text-ink">
@@ -128,7 +137,7 @@ export default async function NetworkPage({
                   <span className="text-ink font-medium">04</span>
                 </span>
               </div>
-              <LocaleToggle locale={locale} pathname="/network" />
+              <LocaleToggle locale={locale} pathname="/network" search={sp} />
             </div>
           </div>
         </div>
@@ -137,7 +146,7 @@ export default async function NetworkPage({
 
       {/* Article ----------------------------------------------------- */}
       <article className="mx-auto max-w-[1480px] px-6 md:px-10 pb-16">
-        {/* Hero */}
+        {/* Hero — thesis-first narrative caption */}
         <section className="pt-10 grid grid-cols-12 gap-x-10">
           <div className="col-span-12 lg:col-span-8">
             <h1 className="editorial text-[38px] md:text-[46px] leading-[1] text-ink">
@@ -152,8 +161,8 @@ export default async function NetworkPage({
             </p>
           </div>
 
-          {/* Patient selector + legend */}
           <aside className="col-span-12 lg:col-span-4 mt-8 lg:mt-0 space-y-4">
+            {/* Patient selector */}
             <div className="border border-ink">
               <div className="px-5 py-3 border-b border-ink bg-ink text-paper">
                 <p className="eyebrow" style={{ color: "#FAFAF7", opacity: 0.7 }}>
@@ -171,7 +180,7 @@ export default async function NetworkPage({
               </div>
               <div className="grid grid-cols-2 divide-x divide-rule text-[11px]">
                 <Link
-                  href={paramsForPatient("ana")}
+                  href={hrefWith({ patient: "ana" })}
                   className={`px-4 py-2.5 text-center transition-colors ${
                     patient === "ana"
                       ? "bg-paper-soft text-ink font-medium"
@@ -181,7 +190,7 @@ export default async function NetworkPage({
                   Ana
                 </Link>
                 <Link
-                  href={paramsForPatient("none")}
+                  href={hrefWith({ patient: "none" })}
                   className={`px-4 py-2.5 text-center transition-colors ${
                     patient === null
                       ? "bg-paper-soft text-ink font-medium"
@@ -193,57 +202,72 @@ export default async function NetworkPage({
               </div>
             </div>
 
-            <div className="border border-rule p-5">
-              <p className="eyebrow">{t.network.legend.title}</p>
-              <ul className="mt-4 space-y-2.5 text-[12px] text-ink-soft">
-                <li className="flex items-center gap-3">
-                  <span className="h-[2px] w-6 bg-ink" />
-                  {t.network.legend.promotes}
-                </li>
-                <li className="flex items-center gap-3">
-                  <span className="h-[2px] w-6 bg-danger" />
-                  {t.network.legend.inhibits}
-                </li>
-                <li className="flex items-center gap-3">
-                  <span
-                    className="h-[2px] w-6"
-                    style={{
-                      backgroundImage:
-                        "repeating-linear-gradient(90deg, #6B3FA0 0 3px, transparent 3px 6px)",
-                    }}
-                  />
-                  {t.network.legend.modulates}
-                </li>
-                <li className="flex items-center gap-3 pt-2 border-t border-rule mt-3">
-                  <span className="w-2 h-2 bg-accent rounded-full" />
-                  {t.network.legend.imprint}
-                </li>
-              </ul>
+            {/* View toggle — Cascade vs Atlas */}
+            <div className="border border-rule">
+              <div className="grid grid-cols-2 divide-x divide-rule text-[11px]">
+                <Link
+                  href={hrefWith({ view: "tiered" })}
+                  className={`px-4 py-2.5 text-center transition-colors ${
+                    view === "tiered"
+                      ? "bg-ink text-paper font-medium"
+                      : "text-ink-quiet hover:text-ink"
+                  }`}
+                >
+                  {t.network.view_tiered}
+                </Link>
+                <Link
+                  href={hrefWith({ view: "atlas" })}
+                  className={`px-4 py-2.5 text-center transition-colors ${
+                    view === "atlas"
+                      ? "bg-ink text-paper font-medium"
+                      : "text-ink-quiet hover:text-ink"
+                  }`}
+                >
+                  {t.network.view_atlas}
+                </Link>
+              </div>
             </div>
           </aside>
         </section>
 
-        {/* Curated map */}
-        <section className="mt-12 border border-ink bg-paper-soft">
-          <CuratedMap data={data} patient={patient} />
+        {/* Narrative caption — the thesis that the diagram confirms */}
+        <section className="mt-14">
+          <div className="section-rule">
+            <span className="eyebrow eyebrow-accent">
+              {view === "tiered" ? t.network.tiered_eyebrow : t.network.atlas_eyebrow}
+            </span>
+            <span className="hairline" />
+          </div>
+          {view === "tiered" && (
+            <p className="mt-6 editorial text-[22px] md:text-[26px] leading-[1.35] text-ink max-w-[56ch]">
+              {t.network.narrative_caption}
+            </p>
+          )}
+        </section>
+
+        {/* Diagram ----------------------------------------------------- */}
+        <section className="mt-10 border border-ink bg-paper-soft">
+          {view === "tiered" ? (
+            <TieredMap data={data} patient={patient} locale={locale} />
+          ) : (
+            <CuratedMap data={data} patient={patient} />
+          )}
         </section>
 
         {/* Caption */}
         <p className="figure-caption mt-5 max-w-[80ch]">
-          <strong>Fig. ii</strong>
-          {t.network.caption}
+          <strong>{view === "tiered" ? "Fig. ii" : "Fig. ii.b"}</strong>
+          {view === "tiered" ? t.network.caption : t.network.atlas_caption}
         </p>
 
-        {/* Prescribed modulators -------------------------------------- */}
-        {patient === "ana" && (
+        {/* Prescribed modulators panel (cascade view only, ana only) --- */}
+        {patient === "ana" && view === "tiered" && (
           <section className="mt-20">
             <div className="section-rule">
               <span className="eyebrow">§ ii.a</span>
               <span className="hairline" />
               <span className="eyebrow text-ink-quiet">
-                {locale === "en"
-                  ? "Prescribed modulators"
-                  : "Moduladores prescritos"}
+                {locale === "en" ? "Prescribed modulators" : "Moduladores prescritos"}
               </span>
             </div>
 
@@ -257,16 +281,18 @@ export default async function NetworkPage({
                     idx < 3 ? "md:border-b lg:border-b-0" : ""
                   } border-b md:border-b-0`}
                 >
-                  <p className="eyebrow eyebrow-accent">Modulator {idx + 1}</p>
+                  <p className="eyebrow eyebrow-accent">
+                    {locale === "en" ? `Modulator ${idx + 1}` : `Modulador ${idx + 1}`}
+                  </p>
                   <p className="mt-3 editorial text-[22px] leading-tight text-ink">
                     {m.name}
                   </p>
                   <p className="mt-4 text-[11px] text-ink-mute uppercase tracking-wide">
-                    target
+                    {locale === "en" ? "Target" : "Objetivo"}
                   </p>
                   <p className="text-[12px] text-ink-soft">{m.target}</p>
                   <p className="mt-4 text-[11px] text-ink-mute uppercase tracking-wide">
-                    Mechanism
+                    {locale === "en" ? "Mechanism" : "Mecanismo"}
                   </p>
                   <p className="text-[12px] text-ink-soft leading-snug">
                     {locale === "en" ? m.mechanism_en : m.mechanism_es}

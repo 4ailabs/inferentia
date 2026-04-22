@@ -1,34 +1,45 @@
 import Link from "next/link";
 import type { Locale } from "@/lib/i18n";
-import { oppositeLocale, localeShort, localeSwitchHref } from "@/lib/i18n";
+import { localeSwitchHref, oppositeLocale } from "@/lib/i18n";
 
 /**
- * Minimal locale toggle. Renders "EN / ES" with the inactive one linked,
- * keeping the current pathname and setting ?lang= accordingly.
+ * Minimal locale toggle — two pills "EN | ES".
+ * The active one is filled with ink, the inactive is a link that flips locale
+ * while preserving the rest of the query string.
  */
 export function LocaleToggle({
   locale,
   pathname,
+  search = {},
 }: {
   locale: Locale;
   pathname: string;
+  search?: Record<string, string | string[] | undefined>;
 }) {
   const other = oppositeLocale(locale);
+  const otherHref = localeSwitchHref(pathname, other, search);
+
+  const pill = "px-2 py-1 text-[10px] tabular tracking-[0.18em] uppercase transition-colors";
+  const active = "bg-ink text-paper";
+  const inactive = "text-ink-mute hover:text-ink";
+
   return (
-    <div className="flex items-center gap-2 text-[10.5px] tabular tracking-[0.18em] uppercase text-ink-mute">
-      <span className={locale === "en" ? "text-ink font-medium" : ""}>
-        EN
-      </span>
-      <span className="text-ink-mute">·</span>
-      <span className={locale === "es" ? "text-ink font-medium" : ""}>
-        ES
-      </span>
-      <Link
-        href={localeSwitchHref(pathname, other)}
-        className="ml-2 border border-rule px-2 py-1 text-[10px] hover:border-ink hover:text-ink transition-colors"
-      >
-        {localeShort(other)} ↗
-      </Link>
+    <div className="inline-flex items-center border border-rule">
+      {locale === "en" ? (
+        <span className={`${pill} ${active}`}>EN</span>
+      ) : (
+        <Link href={otherHref} className={`${pill} ${inactive}`}>
+          EN
+        </Link>
+      )}
+      <span className="w-px h-3 bg-rule" />
+      {locale === "es" ? (
+        <span className={`${pill} ${active}`}>ES</span>
+      ) : (
+        <Link href={otherHref} className={`${pill} ${inactive}`}>
+          ES
+        </Link>
+      )}
     </div>
   );
 }

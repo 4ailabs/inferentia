@@ -55,7 +55,7 @@ export default async function NetworkExplorePage({
                   <span className="text-ink font-medium">{data.edges.length}</span>
                 </span>
               </div>
-              <LocaleToggle locale={locale} pathname="/network/explore" />
+              <LocaleToggle locale={locale} pathname="/network/explore" search={sp} />
             </div>
           </div>
         </div>
