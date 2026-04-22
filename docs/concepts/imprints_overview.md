@@ -80,6 +80,28 @@ An imprint is a **probabilistic hypothesis**, never a label. A posterior of 0.70
 
 If you are evaluating this project and the taxonomy of 13 imprints is unfamiliar, the **mathematical substance** is independent of the clinical ontology: Inferentia could operate with schemas, attachment patterns, or any other clinical framework providing the same multimodal signature granularity. The Bayesian engine, the Active Inference motor, and the two-level agency architecture are the technical contribution. The imprint taxonomy is the **clinical instance** we use because it is the author's primary clinical framework and because its cross-species evolutionary grounding gives it unusual theoretical coherence.
 
+## The 13 imprints — canonical names (Spanish) with English gloss
+
+Canonical names are preserved in Spanish as authored in the BV4 framework. Each entry lists the Spanish name (authoritative), a brief English gloss (for international readers), the dominant Panksepp circuit, and the core predictive prior.
+
+| ID | Canonical (ES) | Gloss (EN) | Circuit | Active prior (one-line) |
+|---|---|---|---|---|
+| **i1** | Desacople | Decoupling / fragmentation | FEAR / dorsal vagal | Predicts sudden impact; fragments experience pre-emptively |
+| **i2** | Acorazamiento | Armoring | FEAR | Predicts betrayal in closeness; blocks the posterior body |
+| **i3** | Retracción | Retraction | CARE (inward) | Predicts punishment for exposure; occupies less space than due |
+| **i4** | Fijación Externa | External fixation | RAGE | Predicts persistent aggressor; directs sustained attention outward |
+| **i5** | Compresión | Compression | CARE (inward) | Predicts punishment for expression; receives but cannot emit |
+| **i6** | Camuflaje | Camouflage | FEAR | Predicts danger in visibility; operates in not-being-seen mode |
+| **i7** | Hibernación | Hibernation | dorsal-vagal collapse | Predicts that any action costs more than available resource |
+| **i8** | Reserva | Reserve | PANIC-GRIEF | Predicts scarcity; accumulates resources that are never enough |
+| **i9** | Confluencia | Confluence | PANIC-GRIEF | Predicts loss of bond if differentiated; merges self with other |
+| **i10** | Vinculación | Bonding-via-symptom | PANIC-GRIEF | Predicts exclusion if well; maintains symptom as belonging signal |
+| **i11** | Superposición | Superposition | transgenerational / epigenetic | Runs a vital program inherited, not one's own |
+| **i12** | Desarraigo | Uprooting | PANIC-GRIEF | Predicts no safe territory exists; cannot land anywhere |
+| **i13** | Encapsulamiento | Encapsulation | PANIC-GRIEF | Predicts that loving from inside is dangerous; seals the emotional center |
+
+The English glosses are approximations for accessibility; they do not replace the canonical Spanish terms. When communicating with clinicians or judges in English, the preferred form is *"imprint i8 Reserva (scarcity-anticipation program)"* — canonical name first, gloss parenthetical.
+
 ## Key references
 
 - Friston, K. (2010). The free-energy principle: a unified brain theory? *Nat Rev Neurosci.*

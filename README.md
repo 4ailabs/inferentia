@@ -54,7 +54,7 @@ Pilar references (not exhaustive):
 - Porges (2011) — Polyvagal Theory.
 - Levin (2019) — TAME framework / cognitive cone.
 
-The clinical instance used in this prototype references the author's independent clinical framework (BV4 Clinical Treatise, Dr. Miguel Ojeda Rios). **That framework is proprietary to the author and is not included in this repository.** This hackathon project is a distinct new implementation that references BV4 only as one of several possible clinical ontologies mappable to the Active Inference substrate.
+The clinical instance used in this prototype references the author's independent clinical framework (BV4 Clinical Treatise, Dr. Miguel Ojeda Rios) — a taxonomy of 13 survival imprints with canonical Spanish names. **That framework is proprietary to the author and is not included in this repository.** This hackathon project is a distinct new implementation that references BV4 only as one of several possible clinical ontologies mappable to the Active Inference substrate. For a one-page conceptual overview including Spanish-English term equivalences, see [docs/concepts/imprints_overview.md](docs/concepts/imprints_overview.md).
 
 ## Originality and scope declaration (hackathon compliance)
 
