@@ -46,8 +46,8 @@ Suma = 1.0. Referencias: Porges (2011), BV4 Cap07 §7.3.
 | Parámetro | Valor esperado | Incertidumbre | Unidad | Rationale |
 |---|---|---|---|---|
 | Morning cortisol | 20.5 | ±4.5 | μg/dL | Elevado crónicamente en fase activa; eje HPA en activación sostenida (McEwen 2017). Subpoblación crónica puede mostrar hipocortisolismo (Yehuda 2005) [INFER] |
-| CAR slope (0-30 min) | 7.0 | ±2.5 | Δμg/dL | CAR exagerada al despertar por hipervigilancia anticipatoria |
-| Diurnal rigidity (flattening index) | 0.65 | ±0.15 | 0-1 | Ritmicidad aplanada; pérdida de variabilidad circadiana (McEwen 2017) |
+| CAR slope (0-30 min) | 8.0 | ±2.5 | Δμg/dL | CAR exagerada al despertar por hipervigilancia anticipatoria; fenotipo reactivo-agudo |
+| Diurnal rigidity (flattening index) | 0.55 | ±0.15 | 0-1 | Ritmicidad parcialmente preservada — subtipo reactivo (no exhausto). El subgrupo hipocortisolémico-crónico Yehuda (2005) muestra flattening > 0.70 pero con cortisol AM bajo — fenotipo distinto, no mezclado |
 | Reactivity amplitude (stressor response) | 3.5 | ±1.2 | fold | Hiper-reactividad ante estímulo novedoso; coherente con recalibración de umbral (Heim & Nemeroff 2001) |
 
 Referencias: Yehuda et al. (2005), Heim & Nemeroff (2001), McEwen (2017).
@@ -56,8 +56,8 @@ Referencias: Yehuda et al. (2005), Heim & Nemeroff (2001), McEwen (2017).
 
 | Parámetro | Valor esperado | Incertidumbre | Unidad | Rationale |
 |---|---|---|---|---|
-| HbA1c | 5.9 | ±0.5 | % | Resistencia a insulina secundaria a cortisol sostenido (Bjorntorp 2000) |
-| HOMA-IR | 2.9 | ±0.9 | index | Insulinorresistencia leve-moderada |
+| HbA1c | 5.8 | ±0.4 | % | Resistencia a insulina leve secundaria a cortisol sostenido (Bjorntorp 2000); perfil más adrenérgico que cortisol-visceral |
+| HOMA-IR | 2.5 | ±0.8 | index | Insulinorresistencia leve; i1 es predominantemente adrenérgico-PTSD, no síndrome metabólico visceral franco |
 | Fasting glucose | 102 | ±12 | mg/dL | Glucemia de ayuno en rango pre-diabético |
 | Triglycerides | 165 | ±45 | mg/dL | Dislipidemia por cortisol + tono simpático sostenido |
 | HDL cholesterol | 42 | ±10 | mg/dL | HDL bajo típico del eje HPA crónicamente activado |
@@ -89,7 +89,7 @@ Referencias: Thayer et al. (2012), Shaffer & Ginsberg (2017), BV4 Documentos_Tra
 
 | Parámetro | Valor esperado | Incertidumbre | Unidad | Rationale |
 |---|---|---|---|---|
-| Visceral fat | 14 | ±4 | % total | Acumulación visceral mediada por cortisol (Epel 2000; Cap07 §7.3) |
+| Visceral fat | 11 | ±3 | % total | Acumulación visceral moderada; la adiposidad visceral prominente (>14%) es firma de i8 (predicción de escasez), no de i1 (disociación clásica) |
 | Lean mass | 30 | ±5 | % total | Pérdida de masa magra por catabolismo crónico [INFER] |
 | Body water | 55 | ±4 | % total | Normal a ligeramente reducida [INFER] |
 
@@ -100,7 +100,7 @@ Referencias: Epel et al. (2000), Bjorntorp (2000).
 | Parámetro | Valor esperado | Incertidumbre | Notas | Rationale |
 |---|---|---|---|---|
 | Dominant enterotype | Bacteroides | — | Típico en estrés crónico | Asociado a dieta occidental + tono simpático sostenido [INFER] |
-| F/B ratio | 2.5 | ±0.8 | elevada | Disbiosis por estrés autonómico y eje HPA (Cryan & Dinan 2012) [CONFIRMAR] |
+| F/B ratio | 0.9 | ±0.3 | baja | F/B baja consistente con enterotipo Bacteroides-dominante. El patrón F/B alto sería Firmicutes-dominant (típico de i8 con predicción de escasez y acumulación energética) |
 | SCFA production (butyrate) | low | — | Reducción de butirato | Consistente con SII frecuente en i1 (Cap07 §7.3) |
 
 Referencias: Foster & Neufeld (2013) [CONFIRMAR], Cryan & Dinan (2012) [CONFIRMAR].
@@ -110,7 +110,7 @@ Referencias: Foster & Neufeld (2013) [CONFIRMAR], Cryan & Dinan (2012) [CONFIRMA
 | SNP rsID | Gene | Expected prior elevation | Rationale |
 |---|---|---|---|
 | rs1360780 | FKBP5 | +0.40 | Regulación HPA alterada; alelo de riesgo interactúa con trauma temprano para producir disociación crónica (Binder 2008, Klengel 2013) |
-| rs4680 | COMT (Val158Met) | +0.35 | Catabolismo lento de catecolaminas amplifica y prolonga la respuesta simpática al impacto |
+| rs4680 | COMT (Val158Met) | +0.35 | Alelo **Met/Met** (catabolismo lento de catecolaminas) amplifica y prolonga la respuesta simpática al impacto. Val/Val está asociado a agresividad reactiva (perfil i4), no a disociación |
 | rs6265 | BDNF Val66Met | +0.30 | Plasticidad hipocampal reducida; compromete integración narrativa post-evento (van der Kolk 2014) |
 | rs7209436 | CRHR1 | +0.30 | Receptor CRH; reactividad HPA aumentada y extinción de miedo comprometida |
 | rs25531 | SLC6A4 (5-HTTLPR) | +0.25 | Recaptación serotonina; reactividad amigdalar elevada ante estímulos inesperados |

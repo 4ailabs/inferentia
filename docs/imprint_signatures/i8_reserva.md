@@ -50,8 +50,8 @@ Rasgo característico: **CAR exagerada con rigidez diurna alta** — el sistema 
 | Parámetro | Valor esperado | Incertidumbre | Unidad | Rationale |
 |---|---|---|---|---|
 | Morning cortisol | 20.5 | ±4.0 | μg/dL | Elevado crónicamente; eje HPA en activación anticipatoria |
-| CAR slope (0-30 min) | 7.5 | ±2.0 | Δμg/dL | Exagerada; preparación metabólica desproporcionada al despertar |
-| Diurnal rigidity (flattening index) | 0.65 | ±0.15 | 0-1 | Pérdida de plasticidad circadiana por hipertonía del eje |
+| CAR slope (0-30 min) | 7.5 | ±2.0 | Δμg/dL | Exagerada; preparación metabólica desproporcionada al despertar (predicción de escasez diurna) |
+| Diurnal rigidity (flattening index) | 0.70 | ±0.12 | 0-1 | Rigidez alta por pérdida de plasticidad circadiana **con amplitud conservada** — distinto de i7 (flattening por hipofunción) y de i1 (flattening moderado reactivo). El eje está "rígidamente encendido" (Miller 2007) |
 | Reactivity amplitude | 2.8 | ±0.9 | fold | Hiper-reactividad ante señal de escasez o retirada vincular |
 
 Referencias: Dallman et al. (2005), Rosmond (1998), Bjorntorp (2001), McEwen (2017), Epel et al. (2000).
@@ -62,11 +62,11 @@ Firma nuclear de la impronta. El cortisol sostenido + simpáticotonía producen 
 
 | Parámetro | Valor esperado | Incertidumbre | Unidad | Rationale |
 |---|---|---|---|---|
-| HbA1c | 6.0 | ±0.3 | % | Pre-diabético por resistencia periférica inducida por cortisol |
-| HOMA-IR | 3.0 | ±0.6 | index | Insulinorresistencia característica de adiposidad visceral cortisol-mediada |
-| Fasting glucose | 104 | ±8 | mg/dL | Glucosa de ayuno alterada; gluconeogénesis hepática sostenida |
-| Triglycerides | 175 | ±35 | mg/dL | Dislipidemia aterogénica típica de síndrome metabólico por estrés |
-| HDL cholesterol | 42 | ±6 | mg/dL | HDL reducido por cortisol crónico + lipoproteína lipasa suprimida |
+| HbA1c | 6.0 | ±0.45 | % | Pre-diabético por resistencia periférica inducida por cortisol. σ poblacional (no analítica) |
+| HOMA-IR | 3.0 | ±0.9 | index | Insulinorresistencia característica de adiposidad visceral cortisol-mediada |
+| Fasting glucose | 104 | ±12 | mg/dL | Glucosa de ayuno alterada; gluconeogénesis hepática sostenida |
+| Triglycerides | 175 | ±40 | mg/dL | Dislipidemia aterogénica típica de síndrome metabólico por estrés |
+| HDL cholesterol | 42 | ±8 | mg/dL | HDL reducido por cortisol crónico + lipoproteína lipasa suprimida |
 
 Referencias: Bjorntorp & Rosmond (2000), Dallman et al. (2005), Sapolsky (2004), Epel et al. (2000).
 
@@ -77,7 +77,7 @@ Referencias: Bjorntorp & Rosmond (2000), Dallman et al. (2005), Sapolsky (2004),
 | CRP (hs) | 2.7 | ±1.0 | mg/L | Inflamación de bajo grado por adiposidad visceral + carga alostática |
 | IL-6 | 2.8 | ±1.0 | pg/mL | Elevada; adipokina visceral + señalización HPA sostenida |
 | TNF-α | 2.2 | ±0.8 | pg/mL | Elevado moderadamente; resistencia a insulina inmuno-mediada |
-| Treg/Th17 ratio | 0.75 | ±0.15 | ratio | Desbalance pro-inflamatorio moderado |
+| Treg/Th17 ratio | 0.68 | ±0.15 | ratio | Desbalance pro-inflamatorio claro, coherente con inflamación visceral genuina mediada por adipokinas |
 
 Referencias: McEwen (2017), Miller et al. (2009), Dallman et al. (2005).
 
