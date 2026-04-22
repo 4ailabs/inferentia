@@ -1,0 +1,757 @@
+{
+  "meta": {
+    "name": "Inferentia Flexibility Network",
+    "version": "0.1.0-mvp",
+    "last_updated": "2026-04-21",
+    "author": "Dr. Miguel Ojeda Rios (BV4 imprint layer) + Inferentia synthesis team",
+    "inspiration": "Ben van Ommen — Systems Flexibility Framework (TNO/NuGO, ILSI NA EB 2017; van Ommen et al., Genes Nutr 2017)",
+    "original_contribution": "BV4 imprint nodes (i1, i4, i7, i8) as upstream predictive priors driving the physiopathological cascade",
+    "categories": [
+      "imprint",
+      "autonomic",
+      "neuroendocrine",
+      "metabolic",
+      "inflammatory",
+      "gut",
+      "hepatic",
+      "pathology"
+    ],
+    "node_count": 33,
+    "edge_count": 58
+  },
+  "nodes": [
+    {
+      "id": "imprint_i1_desacople",
+      "label": "Impronta i1 — Desacople",
+      "label_en": "Imprint i1 — Decoupling (FEAR)",
+      "category": "imprint",
+      "description": "Predicción activa de impacto súbito; el sistema fragmenta la experiencia pre-emptivamente. Perfil simpático agudo con disociación, reactividad HPA elevada y base genética FKBP5/COMT-Met.",
+      "evidence_markers": ["disociación auto-reportada", "SDNN colapsada aguda", "CAR aplanada reactiva"],
+      "activation_by": {
+        "direct_evidence": ["trauma peri-evento", "disociación > umbral clínico"],
+        "from_nodes": []
+      },
+      "nutrient_modulators": [
+        {"name": "Omega-3 EPA/DHA", "mechanism": "modulación inflamatoria y plasticidad hipocampal", "direction": "-"},
+        {"name": "Magnesio glicinato", "mechanism": "modulación NMDA / tono parasimpático", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs1360780 FKBP5", "rs4680 COMT Met/Met", "rs6265 BDNF"],
+      "imprint_association": {"i1": 1.0, "i4": 0.0, "i7": 0.2, "i8": 0.1},
+      "citations": ["Binder 2008", "Klengel 2013", "Ojeda Rios 2026 BV4 Cap07"],
+      "position_hint": {"col": 1, "row": 1}
+    },
+    {
+      "id": "imprint_i4_fijacion_externa",
+      "label": "Impronta i4 — Fijación Externa",
+      "label_en": "Imprint i4 — External Fixation (RAGE)",
+      "category": "imprint",
+      "description": "Predicción de agresor persistente; atención simpática dirigida y sostenida hacia el exterior. Perfil COMT-Val/Val con reactividad amigdalar y carga cardiovascular hipertensiva.",
+      "evidence_markers": ["hostilidad crónica", "TA elevada lábil", "LF/HF muy alto"],
+      "activation_by": {
+        "direct_evidence": ["hostilidad/ira sostenida", "rumiación dirigida"],
+        "from_nodes": []
+      },
+      "nutrient_modulators": [
+        {"name": "Taurina", "mechanism": "modulación GABAérgica y tono simpático", "direction": "-"},
+        {"name": "L-teanina", "mechanism": "reducción de arousal prefrontal", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs4680 COMT Val/Val", "rs25531 5-HTTLPR short", "rs1360780 FKBP5"],
+      "imprint_association": {"i1": 0.1, "i4": 1.0, "i7": 0.0, "i8": 0.1},
+      "citations": ["Caspi 2002", "Barnett 2008", "Panksepp 1998", "Ojeda Rios 2026 BV4 Cap07"],
+      "position_hint": {"col": 1, "row": 2}
+    },
+    {
+      "id": "imprint_i7_hibernacion",
+      "label": "Impronta i7 — Hibernación",
+      "label_en": "Imprint i7 — Hibernation (dorsal-vagal collapse)",
+      "category": "imprint",
+      "description": "Colapso vagal dorsal con hipocortisolismo y conservación energética. Base mitocondrial comprometida (PPARGC1A) y conversión tiroidea reducida (DIO2).",
+      "evidence_markers": ["fatiga profunda", "cortisol bajo", "T3 baja"],
+      "activation_by": {
+        "direct_evidence": ["fatiga crónica inexplicada", "hipocortisolismo"],
+        "from_nodes": []
+      },
+      "nutrient_modulators": [
+        {"name": "CoQ10", "mechanism": "cadena respiratoria mitocondrial", "direction": "-"},
+        {"name": "L-carnitina", "mechanism": "β-oxidación mitocondrial", "direction": "-"},
+        {"name": "Selenio", "mechanism": "cofactor desyodasa (DIO2)", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs225014 DIO2", "rs8192678 PPARGC1A", "rs1360780 FKBP5"],
+      "imprint_association": {"i1": 0.2, "i4": 0.0, "i7": 1.0, "i8": 0.1},
+      "citations": ["Klengel 2013", "Ling 2004", "Porges 2011", "Ojeda Rios 2026 BV4 Cap07"],
+      "position_hint": {"col": 1, "row": 3}
+    },
+    {
+      "id": "imprint_i8_reserva",
+      "label": "Impronta i8 — Reserva",
+      "label_en": "Imprint i8 — Reserve (PANIC-GRIEF / scarcity)",
+      "category": "imprint",
+      "description": "Predicción de escasez permanente tras señal de separación vincular. Eje HPA rígidamente encendido, adiposidad visceral cortisol-mediada y resistencia a insulina. Firma nuclear del paciente demo 001.",
+      "evidence_markers": ["hiperfagia nocturna", "cintura > 88cm (F)", "cortisol matutino > 18 μg/dL", "CAR exagerada"],
+      "activation_by": {
+        "direct_evidence": ["pérdida vincular temprana", "narrativa de escasez", "HOMA-IR > 2.5", "HbA1c 5.8-6.3"],
+        "from_nodes": []
+      },
+      "nutrient_modulators": [
+        {"name": "Ashwagandha", "mechanism": "modulación HPA rígida", "direction": "-"},
+        {"name": "Myo-inositol", "mechanism": "señalización insulínica", "direction": "-"},
+        {"name": "Omega-3 EPA/DHA", "mechanism": "antiinflamatorio y sensibilidad leptínica", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs9939609 FTO", "rs1137101 LEPR", "rs1801282 PPARG", "rs53576 OXTR", "rs1360780 FKBP5"],
+      "imprint_association": {"i1": 0.1, "i4": 0.1, "i7": 0.1, "i8": 1.0},
+      "citations": ["Dallman 2005", "Bjorntorp 2001", "Rosmond 1998", "Epel 2000", "Panksepp 1998", "Ojeda Rios 2026 BV4 Cap07 §7.10"],
+      "position_hint": {"col": 1, "row": 4}
+    },
+    {
+      "id": "sympathetic_tone",
+      "label": "Tono simpático",
+      "label_en": "Sympathetic tone",
+      "category": "autonomic",
+      "description": "Movilización simpática sostenida con lipólisis alterada y vasoconstricción. Mediador autónomo clave entre imprint FEAR/RAGE/PANIC-GRIEF y cascada metabólica.",
+      "evidence_markers": ["LF/HF > 2.5", "FC basal elevada", "catecolaminas urinarias"],
+      "activation_by": {
+        "direct_evidence": ["LF/HF > 2.5"],
+        "from_nodes": ["imprint_i1_desacople", "imprint_i4_fijacion_externa", "imprint_i8_reserva"]
+      },
+      "nutrient_modulators": [
+        {"name": "Magnesio", "mechanism": "reduce excitabilidad adrenérgica", "direction": "-"},
+        {"name": "L-teanina", "mechanism": "modulación adrenérgica central", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs1042713 ADRB2", "rs4994 ADRB3"],
+      "imprint_association": {"i1": 0.6, "i4": 0.8, "i7": 0.1, "i8": 0.6},
+      "citations": ["Thayer 2012", "Porges 2011"],
+      "position_hint": {"col": 2, "row": 1}
+    },
+    {
+      "id": "vagal_ventral",
+      "label": "Vagal ventral",
+      "label_en": "Ventral vagal tone",
+      "category": "autonomic",
+      "description": "Rama parasimpática mielinizada asociada a seguridad social y co-regulación. Su pérdida predice pobre flexibilidad autonómica y fallo en cierre de ciclos defensivos.",
+      "evidence_markers": ["RMSSD bajo", "HF power reducido"],
+      "activation_by": {
+        "direct_evidence": ["RMSSD < 25 ms"],
+        "from_nodes": ["imprint_i1_desacople", "imprint_i8_reserva"]
+      },
+      "nutrient_modulators": [
+        {"name": "Omega-3 DHA", "mechanism": "soporte de mielina vagal", "direction": "+"}
+      ],
+      "snp_enrichment": ["rs53576 OXTR"],
+      "imprint_association": {"i1": 0.3, "i4": 0.2, "i7": 0.1, "i8": 0.4},
+      "citations": ["Porges 2011", "Shaffer 2017"],
+      "position_hint": {"col": 2, "row": 2}
+    },
+    {
+      "id": "vagal_dorsal_collapse",
+      "label": "Colapso vagal dorsal",
+      "label_en": "Dorsal vagal collapse",
+      "category": "autonomic",
+      "description": "Rama vagal no mielinizada; su dominancia extrema produce inmovilización, bradicardia y conservación energética. Firma distintiva de i7 Hibernación.",
+      "evidence_markers": ["bradicardia inapropiada", "SDNN muy bajo con HF alto"],
+      "activation_by": {
+        "direct_evidence": ["fatiga severa con FC baja"],
+        "from_nodes": ["imprint_i7_hibernacion"]
+      },
+      "nutrient_modulators": [
+        {"name": "CoQ10", "mechanism": "soporte energético mitocondrial", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs8192678 PPARGC1A"],
+      "imprint_association": {"i1": 0.2, "i4": 0.0, "i7": 0.9, "i8": 0.1},
+      "citations": ["Porges 2011"],
+      "position_hint": {"col": 2, "row": 3}
+    },
+    {
+      "id": "hrv_reduction",
+      "label": "Reducción de HRV",
+      "label_en": "HRV reduction",
+      "category": "autonomic",
+      "description": "Pérdida de variabilidad cardiaca — marcador integrador de rigidez autonómica y carga alostática. Predictor robusto de morbimortalidad cardiometabólica.",
+      "evidence_markers": ["SDNN < 30 ms", "RMSSD < 20 ms"],
+      "activation_by": {
+        "direct_evidence": ["SDNN < 30 ms"],
+        "from_nodes": ["sympathetic_tone", "vagal_ventral"]
+      },
+      "nutrient_modulators": [
+        {"name": "Omega-3 EPA/DHA", "mechanism": "mejora HRV en meta-análisis RCT", "direction": "+"}
+      ],
+      "snp_enrichment": [],
+      "imprint_association": {"i1": 0.5, "i4": 0.6, "i7": 0.5, "i8": 0.6},
+      "citations": ["Thayer 2012", "Shaffer 2017"],
+      "position_hint": {"col": 2, "row": 4}
+    },
+    {
+      "id": "hpa_axis_rigidity",
+      "label": "Rigidez del eje HPA",
+      "label_en": "HPA axis rigidity",
+      "category": "neuroendocrine",
+      "description": "Eje hipotálamo-hipófisis-adrenal configurado en activación anticipatoria sostenida. En i8 cursa con cortisol elevado y CAR exagerada; en i7 con hipocortisolismo aplanado.",
+      "evidence_markers": ["cortisol matutino > 18 μg/dL", "CAR slope > 6", "índice de aplanamiento diurno"],
+      "activation_by": {
+        "direct_evidence": ["cortisol matutino > 18 μg/dL"],
+        "from_nodes": ["imprint_i1_desacople", "imprint_i4_fijacion_externa", "imprint_i7_hibernacion", "imprint_i8_reserva"]
+      },
+      "nutrient_modulators": [
+        {"name": "Ashwagandha", "mechanism": "modulación HPA (RCT en estrés crónico)", "direction": "-"},
+        {"name": "Fosfatidilserina", "mechanism": "atenuación de respuesta cortisol", "direction": "-"},
+        {"name": "Rhodiola rosea", "mechanism": "adaptógeno HPA", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs1360780 FKBP5", "rs41423247 NR3C1", "rs7209436 CRHR1"],
+      "imprint_association": {"i1": 0.6, "i4": 0.7, "i7": 0.7, "i8": 0.9},
+      "citations": ["McEwen 2017", "Miller 2007", "Binder 2008"],
+      "position_hint": {"col": 3, "row": 1}
+    },
+    {
+      "id": "cortisol_chronic",
+      "label": "Cortisol crónico elevado",
+      "label_en": "Chronic cortisol elevation",
+      "category": "neuroendocrine",
+      "description": "Hipercortisolismo funcional sostenido con redistribución visceral de grasa, catabolismo proteico y supresión inmune Th1. Firma bioquímica nuclear de i8.",
+      "evidence_markers": ["cortisol matutino > 18 μg/dL", "cortisol en cabello elevado"],
+      "activation_by": {
+        "direct_evidence": ["cortisol matutino > 18"],
+        "from_nodes": ["hpa_axis_rigidity"]
+      },
+      "nutrient_modulators": [
+        {"name": "Magnesio glicinato", "mechanism": "modulación eje HPA nocturno", "direction": "-"},
+        {"name": "Ashwagandha", "mechanism": "reducción cortisol sérico (RCT)", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs1360780 FKBP5"],
+      "imprint_association": {"i1": 0.4, "i4": 0.5, "i7": 0.0, "i8": 0.9},
+      "citations": ["Dallman 2005", "Bjorntorp 2001", "Epel 2000"],
+      "position_hint": {"col": 3, "row": 2}
+    },
+    {
+      "id": "car_exaggerated",
+      "label": "CAR exagerada",
+      "label_en": "Exaggerated Cortisol Awakening Response",
+      "category": "neuroendocrine",
+      "description": "Pendiente cortisol 0-30 min post-despertar desproporcionada; refleja preparación metabólica anticipatoria ante predicción de escasez o amenaza diurna.",
+      "evidence_markers": ["CAR slope > 6 Δμg/dL"],
+      "activation_by": {
+        "direct_evidence": ["CAR slope > 6"],
+        "from_nodes": ["hpa_axis_rigidity", "imprint_i8_reserva"]
+      },
+      "nutrient_modulators": [
+        {"name": "Fosfatidilserina", "mechanism": "atenuación CAR", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs1360780 FKBP5"],
+      "imprint_association": {"i1": 0.2, "i4": 0.3, "i7": 0.0, "i8": 0.9},
+      "citations": ["Clow 2010", "Dallman 2005"],
+      "position_hint": {"col": 3, "row": 3}
+    },
+    {
+      "id": "adrenergic_drive",
+      "label": "Impulso adrenérgico",
+      "label_en": "Adrenergic drive",
+      "category": "neuroendocrine",
+      "description": "Adrenalina/noradrenalina elevadas con lipólisis alterada y termogénesis reducida. Eje efector del tono simpático sobre tejido adiposo.",
+      "evidence_markers": ["catecolaminas urinarias", "FC reactiva"],
+      "activation_by": {
+        "direct_evidence": [],
+        "from_nodes": ["sympathetic_tone", "imprint_i4_fijacion_externa"]
+      },
+      "nutrient_modulators": [
+        {"name": "Taurina", "mechanism": "modulación adrenérgica", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs1042713 ADRB2", "rs4994 ADRB3"],
+      "imprint_association": {"i1": 0.4, "i4": 0.8, "i7": 0.0, "i8": 0.4},
+      "citations": ["Panksepp 1998"],
+      "position_hint": {"col": 3, "row": 4}
+    },
+    {
+      "id": "visceral_adiposity",
+      "label": "Adiposidad visceral",
+      "label_en": "Visceral adiposity",
+      "category": "metabolic",
+      "description": "Acumulación de grasa intraabdominal cortisol- y simpáticamente mediada. Desproporcionada respecto al IMC. Fuente de adipokinas pro-inflamatorias.",
+      "evidence_markers": ["cintura > 88 cm (F) / 102 cm (M)", "grasa visceral DEXA/BIA > 13%"],
+      "activation_by": {
+        "direct_evidence": ["cintura > 88 cm (F)"],
+        "from_nodes": ["cortisol_chronic", "adrenergic_drive", "imprint_i8_reserva"]
+      },
+      "nutrient_modulators": [
+        {"name": "Berberina", "mechanism": "activación AMPK; reducción adiposidad visceral", "direction": "-"},
+        {"name": "Omega-3 EPA/DHA", "mechanism": "antiinflamatorio adipocitario", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs9939609 FTO", "rs17782313 MC4R", "rs1801282 PPARG", "rs4994 ADRB3"],
+      "imprint_association": {"i1": 0.1, "i4": 0.2, "i7": 0.2, "i8": 0.9},
+      "citations": ["Bjorntorp 2001", "Rosmond 1998", "Epel 2000"],
+      "position_hint": {"col": 4, "row": 1}
+    },
+    {
+      "id": "ectopic_lipid",
+      "label": "Lípido ectópico",
+      "label_en": "Ectopic lipid deposition",
+      "category": "metabolic",
+      "description": "Depósito lipídico en hígado, músculo y páncreas; mediador proximal de resistencia insulínica tisular y disfunción metabólica órgano-específica.",
+      "evidence_markers": ["esteatosis en eco/FibroScan", "ALT elevada", "índice de grasa hepática"],
+      "activation_by": {
+        "direct_evidence": ["esteatosis ecográfica"],
+        "from_nodes": ["visceral_adiposity"]
+      },
+      "nutrient_modulators": [
+        {"name": "Colina", "mechanism": "síntesis VLDL y exportación lipídica hepática", "direction": "-"},
+        {"name": "Omega-3 EPA/DHA", "mechanism": "reducción triglicéridos hepáticos", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs738409 PNPLA3"],
+      "imprint_association": {"i1": 0.1, "i4": 0.1, "i7": 0.2, "i8": 0.6},
+      "citations": ["Samuel 2010", "Kotronen 2007"],
+      "position_hint": {"col": 4, "row": 2}
+    },
+    {
+      "id": "adipose_insulin_resistance",
+      "label": "Resistencia insulínica adiposa",
+      "label_en": "Adipose insulin resistance",
+      "category": "metabolic",
+      "description": "Lipólisis basal no suprimida por insulina; libera ácidos grasos libres que sostienen gluconeogénesis hepática e insulinorresistencia sistémica.",
+      "evidence_markers": ["FFA en ayuno elevados", "adipo-IR index"],
+      "activation_by": {
+        "direct_evidence": [],
+        "from_nodes": ["visceral_adiposity", "adipose_inflammation"]
+      },
+      "nutrient_modulators": [
+        {"name": "Omega-3 EPA/DHA", "mechanism": "sensibilización insulínica adipocitaria", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs1801282 PPARG"],
+      "imprint_association": {"i1": 0.1, "i4": 0.1, "i7": 0.2, "i8": 0.8},
+      "citations": ["Gastaldelli 2017"],
+      "position_hint": {"col": 4, "row": 3}
+    },
+    {
+      "id": "hepatic_insulin_resistance",
+      "label": "Resistencia insulínica hepática",
+      "label_en": "Hepatic insulin resistance",
+      "category": "metabolic",
+      "description": "Insulina falla en suprimir gluconeogénesis; glucosa de ayuno elevada. Acoplada a esteatosis y lipogénesis de novo.",
+      "evidence_markers": ["glucosa ayuno > 100 mg/dL", "HOMA-IR elevado"],
+      "activation_by": {
+        "direct_evidence": ["glucosa ayuno > 100"],
+        "from_nodes": ["ectopic_lipid", "cortisol_chronic"]
+      },
+      "nutrient_modulators": [
+        {"name": "Berberina", "mechanism": "reducción gluconeogénesis hepática vía AMPK", "direction": "-"},
+        {"name": "Inositol", "mechanism": "segundo mensajero de insulina", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs7903146 TCF7L2"],
+      "imprint_association": {"i1": 0.1, "i4": 0.1, "i7": 0.2, "i8": 0.7},
+      "citations": ["Samuel 2010"],
+      "position_hint": {"col": 4, "row": 4}
+    },
+    {
+      "id": "systemic_insulin_resistance",
+      "label": "Resistencia insulínica sistémica",
+      "label_en": "Systemic insulin resistance",
+      "category": "metabolic",
+      "description": "HOMA-IR elevado integrando disfunción adiposa, hepática y muscular. Nodo integrador del síndrome metabólico.",
+      "evidence_markers": ["HOMA-IR > 2.5", "insulina ayuno elevada"],
+      "activation_by": {
+        "direct_evidence": ["HOMA-IR > 2.5"],
+        "from_nodes": ["adipose_insulin_resistance", "hepatic_insulin_resistance", "systemic_inflammation"]
+      },
+      "nutrient_modulators": [
+        {"name": "Berberina", "mechanism": "AMPK / sensibilización insulínica", "direction": "-"},
+        {"name": "Myo-inositol", "mechanism": "señalización insulínica post-receptor", "direction": "-"},
+        {"name": "Cromo picolinato", "mechanism": "cofactor cromodulina", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs1801282 PPARG", "rs7903146 TCF7L2"],
+      "imprint_association": {"i1": 0.1, "i4": 0.2, "i7": 0.3, "i8": 0.9},
+      "citations": ["Gastaldelli 2017", "Samuel 2010"],
+      "position_hint": {"col": 5, "row": 2}
+    },
+    {
+      "id": "hba1c_elevated",
+      "label": "HbA1c elevada",
+      "label_en": "Elevated HbA1c",
+      "category": "metabolic",
+      "description": "Integrador glucémico de 2-3 meses. Rango pre-diabético (5.7-6.4%) marca transición de flexibilidad a disfunción metabólica establecida.",
+      "evidence_markers": ["HbA1c 5.7-6.4% (prediabetes)", "HbA1c ≥ 6.5% (diabetes)"],
+      "activation_by": {
+        "direct_evidence": ["HbA1c > 5.7"],
+        "from_nodes": ["systemic_insulin_resistance", "hepatic_insulin_resistance"]
+      },
+      "nutrient_modulators": [
+        {"name": "Berberina", "mechanism": "reducción HbA1c comparable a metformina en RCT", "direction": "-"},
+        {"name": "Canela (Cinnamomum)", "mechanism": "sensibilización insulínica post-prandial", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs7903146 TCF7L2"],
+      "imprint_association": {"i1": 0.1, "i4": 0.1, "i7": 0.3, "i8": 0.8},
+      "citations": ["Gastaldelli 2017"],
+      "position_hint": {"col": 5, "row": 3}
+    },
+    {
+      "id": "atherogenic_dyslipidemia",
+      "label": "Dislipidemia aterogénica",
+      "label_en": "Atherogenic dyslipidemia",
+      "category": "metabolic",
+      "description": "Tríada: triglicéridos elevados, HDL bajo, LDL pequeñas y densas. Firma lipídica cortisol/insulino-mediada.",
+      "evidence_markers": ["TG > 150 mg/dL", "HDL < 40 (M) / 50 (F)", "apoB elevada"],
+      "activation_by": {
+        "direct_evidence": ["TG > 150 + HDL bajo"],
+        "from_nodes": ["hepatic_insulin_resistance", "cortisol_chronic"]
+      },
+      "nutrient_modulators": [
+        {"name": "Omega-3 EPA/DHA", "mechanism": "reducción triglicéridos", "direction": "-"},
+        {"name": "Niacina", "mechanism": "elevación HDL", "direction": "+"}
+      ],
+      "snp_enrichment": ["rs1801282 PPARG"],
+      "imprint_association": {"i1": 0.1, "i4": 0.2, "i7": 0.2, "i8": 0.8},
+      "citations": ["Grundy 2005"],
+      "position_hint": {"col": 5, "row": 4}
+    },
+    {
+      "id": "adipose_inflammation",
+      "label": "Inflamación adiposa",
+      "label_en": "Adipose tissue inflammation",
+      "category": "inflammatory",
+      "description": "Infiltración macrofágica M1 y secreción local de TNF-α/IL-6 por tejido adiposo visceral expandido. Fuente primaria de inflamación crónica de bajo grado.",
+      "evidence_markers": ["adiponectina baja", "leptina elevada"],
+      "activation_by": {
+        "direct_evidence": [],
+        "from_nodes": ["visceral_adiposity"]
+      },
+      "nutrient_modulators": [
+        {"name": "Curcumina", "mechanism": "inhibición NF-κB en adipocitos", "direction": "-"},
+        {"name": "Quercetina", "mechanism": "modulación inflamatoria adipocitaria", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs1800629 TNF"],
+      "imprint_association": {"i1": 0.1, "i4": 0.2, "i7": 0.2, "i8": 0.8},
+      "citations": ["Hotamisligil 2006"],
+      "position_hint": {"col": 5, "row": 1}
+    },
+    {
+      "id": "systemic_inflammation",
+      "label": "Inflamación sistémica de bajo grado",
+      "label_en": "Low-grade systemic inflammation",
+      "category": "inflammatory",
+      "description": "Elevación persistente de hs-CRP, IL-6, TNF-α. Mediador proximal de resistencia insulínica, disfunción endotelial y neuroinflamación.",
+      "evidence_markers": ["hs-CRP 1-3 mg/L", "IL-6 > 2 pg/mL"],
+      "activation_by": {
+        "direct_evidence": ["hs-CRP > 2"],
+        "from_nodes": ["adipose_inflammation", "gut_permeability", "cortisol_chronic"]
+      },
+      "nutrient_modulators": [
+        {"name": "Omega-3 EPA/DHA", "mechanism": "resolución inflamatoria vía SPMs", "direction": "-"},
+        {"name": "Curcumina", "mechanism": "inhibición NF-κB", "direction": "-"},
+        {"name": "Vitamina D", "mechanism": "modulación Treg/Th17", "direction": "-"},
+        {"name": "Resveratrol", "mechanism": "SIRT1 / anti-inflamatorio", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs1800629 TNF", "rs1800795 IL6"],
+      "imprint_association": {"i1": 0.3, "i4": 0.4, "i7": 0.3, "i8": 0.8},
+      "citations": ["Hotamisligil 2006", "Calder 2017"],
+      "position_hint": {"col": 6, "row": 1}
+    },
+    {
+      "id": "treg_th17_imbalance",
+      "label": "Desbalance Treg/Th17",
+      "label_en": "Treg/Th17 imbalance",
+      "category": "inflammatory",
+      "description": "Proporción reducida de linfocitos T reguladores respecto a Th17 pro-inflamatorios. Firma inmuno-metabólica de obesidad visceral y disbiosis.",
+      "evidence_markers": ["ratio Treg/Th17 < 1", "IL-17 elevada"],
+      "activation_by": {
+        "direct_evidence": [],
+        "from_nodes": ["adipose_inflammation", "gut_dysbiosis"]
+      },
+      "nutrient_modulators": [
+        {"name": "Vitamina D", "mechanism": "inducción de Tregs", "direction": "+"},
+        {"name": "Butirato (postbiótico)", "mechanism": "promoción de Tregs colónicos", "direction": "+"}
+      ],
+      "snp_enrichment": [],
+      "imprint_association": {"i1": 0.2, "i4": 0.3, "i7": 0.3, "i8": 0.6},
+      "citations": ["Arpaia 2013"],
+      "position_hint": {"col": 6, "row": 2}
+    },
+    {
+      "id": "gut_dysbiosis",
+      "label": "Disbiosis intestinal",
+      "label_en": "Gut dysbiosis",
+      "category": "gut",
+      "description": "Alteración de composición microbiota con F/B elevado, pérdida de diversidad y reducción de productores de butirato. Modulada por estrés, dieta y cortisol.",
+      "evidence_markers": ["F/B > 2.5", "diversidad alfa reducida"],
+      "activation_by": {
+        "direct_evidence": [],
+        "from_nodes": ["cortisol_chronic", "imprint_i8_reserva"]
+      },
+      "nutrient_modulators": [
+        {"name": "Prebióticos (inulina, GOS)", "mechanism": "sustrato para bacterias benéficas", "direction": "-"},
+        {"name": "Probióticos multi-cepa", "mechanism": "restauración de diversidad", "direction": "-"},
+        {"name": "Polifenoles (té verde, arándano)", "mechanism": "modulación composicional", "direction": "-"}
+      ],
+      "snp_enrichment": [],
+      "imprint_association": {"i1": 0.2, "i4": 0.2, "i7": 0.3, "i8": 0.6},
+      "citations": ["Cryan 2012", "Foster 2013"],
+      "position_hint": {"col": 4, "row": 5}
+    },
+    {
+      "id": "gut_permeability",
+      "label": "Permeabilidad intestinal",
+      "label_en": "Intestinal permeability",
+      "category": "gut",
+      "description": "Compromiso de uniones estrechas epiteliales; translocación LPS y activación inmune sistémica. Acoplamiento gut-brain-metabolic.",
+      "evidence_markers": ["zonulina sérica elevada", "LPS-binding protein"],
+      "activation_by": {
+        "direct_evidence": [],
+        "from_nodes": ["gut_dysbiosis", "cortisol_chronic"]
+      },
+      "nutrient_modulators": [
+        {"name": "L-glutamina", "mechanism": "sustrato enterocitario", "direction": "-"},
+        {"name": "Zinc carnosina", "mechanism": "reparación epitelial", "direction": "-"}
+      ],
+      "snp_enrichment": [],
+      "imprint_association": {"i1": 0.2, "i4": 0.2, "i7": 0.2, "i8": 0.5},
+      "citations": ["Fasano 2012"],
+      "position_hint": {"col": 5, "row": 5}
+    },
+    {
+      "id": "scfa_production",
+      "label": "Producción de SCFA",
+      "label_en": "SCFA production (butyrate)",
+      "category": "gut",
+      "description": "Ácidos grasos de cadena corta (butirato, propionato, acetato) producidos por fermentación microbiana. Reguladores de barrera, Tregs y sensibilidad insulínica.",
+      "evidence_markers": ["butirato fecal", "productores predichos por metagenómica"],
+      "activation_by": {
+        "direct_evidence": [],
+        "from_nodes": ["gut_dysbiosis"]
+      },
+      "nutrient_modulators": [
+        {"name": "Fibra fermentable", "mechanism": "sustrato para butiratogénesis", "direction": "+"},
+        {"name": "Almidón resistente", "mechanism": "fermentación colónica", "direction": "+"}
+      ],
+      "snp_enrichment": [],
+      "imprint_association": {"i1": 0.1, "i4": 0.1, "i7": 0.2, "i8": 0.4},
+      "citations": ["Koh 2016"],
+      "position_hint": {"col": 6, "row": 5}
+    },
+    {
+      "id": "mitochondrial_dysfunction",
+      "label": "Disfunción mitocondrial",
+      "label_en": "Mitochondrial dysfunction",
+      "category": "hepatic",
+      "description": "Biogénesis reducida, β-oxidación comprometida y fuga electrónica aumentada. Nodo energético central, particularmente dominante en i7.",
+      "evidence_markers": ["lactato basal elevado", "ratio lactato/piruvato", "acilcarnitinas"],
+      "activation_by": {
+        "direct_evidence": [],
+        "from_nodes": ["imprint_i7_hibernacion", "ectopic_lipid", "oxidative_stress"]
+      },
+      "nutrient_modulators": [
+        {"name": "CoQ10", "mechanism": "cadena respiratoria", "direction": "+"},
+        {"name": "L-carnitina", "mechanism": "transporte de ácidos grasos", "direction": "+"},
+        {"name": "NAD+ precursores (NR, NMN)", "mechanism": "sustrato redox mitocondrial", "direction": "+"},
+        {"name": "PQQ", "mechanism": "biogénesis mitocondrial", "direction": "+"}
+      ],
+      "snp_enrichment": ["rs8192678 PPARGC1A"],
+      "imprint_association": {"i1": 0.3, "i4": 0.2, "i7": 0.9, "i8": 0.4},
+      "citations": ["Ling 2004"],
+      "position_hint": {"col": 3, "row": 5}
+    },
+    {
+      "id": "oxidative_stress",
+      "label": "Estrés oxidativo",
+      "label_en": "Oxidative stress",
+      "category": "hepatic",
+      "description": "Desbalance ROS/antioxidantes; oxidación de lípidos, proteínas y ADN. Amplifica inflamación y disfunción endotelial.",
+      "evidence_markers": ["MDA", "8-OHdG", "glutatión reducido bajo"],
+      "activation_by": {
+        "direct_evidence": [],
+        "from_nodes": ["mitochondrial_dysfunction", "systemic_inflammation"]
+      },
+      "nutrient_modulators": [
+        {"name": "NAC (N-acetilcisteína)", "mechanism": "precursor glutatión", "direction": "-"},
+        {"name": "Vitamina C", "mechanism": "antioxidante hidrosoluble", "direction": "-"},
+        {"name": "Vitamina E", "mechanism": "antioxidante lipídico", "direction": "-"},
+        {"name": "Selenio", "mechanism": "cofactor glutatión peroxidasa", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs1050450 GPX1"],
+      "imprint_association": {"i1": 0.3, "i4": 0.3, "i7": 0.6, "i8": 0.5},
+      "citations": ["Sies 2020"],
+      "position_hint": {"col": 4, "row": 6}
+    },
+    {
+      "id": "ldl_oxidation",
+      "label": "LDL oxidada",
+      "label_en": "Oxidized LDL",
+      "category": "hepatic",
+      "description": "LDL modificada por oxidación; ligando de receptores scavenger y disparador de células espumosas en íntima arterial.",
+      "evidence_markers": ["ox-LDL sérica", "anti-ox-LDL"],
+      "activation_by": {
+        "direct_evidence": [],
+        "from_nodes": ["oxidative_stress", "atherogenic_dyslipidemia"]
+      },
+      "nutrient_modulators": [
+        {"name": "Polifenoles (oliva, cacao)", "mechanism": "protección antioxidante LDL", "direction": "-"},
+        {"name": "Vitamina E (γ-tocoferol)", "mechanism": "protección membrana LDL", "direction": "-"}
+      ],
+      "snp_enrichment": [],
+      "imprint_association": {"i1": 0.1, "i4": 0.3, "i7": 0.2, "i8": 0.6},
+      "citations": ["Steinberg 2009"],
+      "position_hint": {"col": 5, "row": 6}
+    },
+    {
+      "id": "masld",
+      "label": "MASLD (esteatosis metabólica)",
+      "label_en": "MASLD (metabolic-associated steatotic liver disease)",
+      "category": "hepatic",
+      "description": "Esteatosis hepática asociada a disfunción metabólica. Transición MASL → MASH determina progresión fibrosante. Renombrado 2023 (Rinella).",
+      "evidence_markers": ["FibroScan CAP > 275", "ALT/AST elevadas", "FIB-4"],
+      "activation_by": {
+        "direct_evidence": ["esteatosis + criterios metabólicos"],
+        "from_nodes": ["ectopic_lipid", "hepatic_insulin_resistance", "adipose_inflammation"]
+      },
+      "nutrient_modulators": [
+        {"name": "Vitamina E", "mechanism": "reducción MASH en RCT PIVENS", "direction": "-"},
+        {"name": "Omega-3 EPA/DHA", "mechanism": "reducción triglicéridos hepáticos", "direction": "-"},
+        {"name": "Colina", "mechanism": "exportación lipídica VLDL", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs738409 PNPLA3"],
+      "imprint_association": {"i1": 0.1, "i4": 0.1, "i7": 0.3, "i8": 0.6},
+      "citations": ["Rinella 2023", "Sanyal 2010"],
+      "position_hint": {"col": 6, "row": 4}
+    },
+    {
+      "id": "pathology_t2dm",
+      "label": "Diabetes tipo 2",
+      "label_en": "Type 2 diabetes mellitus",
+      "category": "pathology",
+      "description": "Hiperglicemia crónica con HbA1c ≥ 6.5% por fallo de célula β sobre base de insulinorresistencia. Output terminal de la cascada metabólica.",
+      "evidence_markers": ["HbA1c ≥ 6.5%", "glucosa ayuno ≥ 126 mg/dL"],
+      "activation_by": {
+        "direct_evidence": ["HbA1c ≥ 6.5%"],
+        "from_nodes": ["hba1c_elevated", "systemic_insulin_resistance"]
+      },
+      "nutrient_modulators": [
+        {"name": "Berberina", "mechanism": "efecto comparable a metformina en RCT", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs7903146 TCF7L2", "rs9939609 FTO"],
+      "imprint_association": {"i1": 0.1, "i4": 0.1, "i7": 0.3, "i8": 0.7},
+      "citations": ["DeFronzo 2009"],
+      "position_hint": {"col": 6, "row": 6}
+    },
+    {
+      "id": "pathology_atherosclerosis",
+      "label": "Aterosclerosis / CV",
+      "label_en": "Atherosclerosis / cardiovascular disease",
+      "category": "pathology",
+      "description": "Placa aterosclerótica en íntima arterial con células espumosas y core necrótico. Riesgo de SCA, ictus y muerte cardiovascular.",
+      "evidence_markers": ["IMT carotídeo", "calcio coronario", "ASCVD score"],
+      "activation_by": {
+        "direct_evidence": ["calcio coronario > 100"],
+        "from_nodes": ["ldl_oxidation", "atherogenic_dyslipidemia", "systemic_inflammation"]
+      },
+      "nutrient_modulators": [
+        {"name": "Omega-3 EPA (icosapento)", "mechanism": "reducción eventos CV (REDUCE-IT)", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs10757278 9p21"],
+      "imprint_association": {"i1": 0.1, "i4": 0.4, "i7": 0.2, "i8": 0.6},
+      "citations": ["Libby 2021", "Bhatt 2019"],
+      "position_hint": {"col": 6, "row": 7}
+    },
+    {
+      "id": "pathology_neuropathy",
+      "label": "Neuropatía diabética",
+      "label_en": "Diabetic neuropathy",
+      "category": "pathology",
+      "description": "Daño microvascular y metabólico a fibras nerviosas. Típicamente distal simétrica. Consecuencia crónica de hiperglicemia sostenida.",
+      "evidence_markers": ["monofilamento alterado", "velocidades de conducción"],
+      "activation_by": {
+        "direct_evidence": [],
+        "from_nodes": ["pathology_t2dm", "oxidative_stress"]
+      },
+      "nutrient_modulators": [
+        {"name": "Ácido α-lipoico", "mechanism": "antioxidante neuronal (ALADIN)", "direction": "-"},
+        {"name": "Benfotiamina", "mechanism": "reducción AGEs", "direction": "-"}
+      ],
+      "snp_enrichment": [],
+      "imprint_association": {"i1": 0.0, "i4": 0.1, "i7": 0.2, "i8": 0.3},
+      "citations": ["Ziegler 2011"],
+      "position_hint": {"col": 6, "row": 8}
+    },
+    {
+      "id": "pathology_masld_advanced",
+      "label": "MASH avanzada / fibrosis",
+      "label_en": "Advanced MASH / fibrosis",
+      "category": "pathology",
+      "description": "Esteatohepatitis con inflamación lobular, balonización y fibrosis progresiva (F2-F4). Antesala de cirrosis y CHC.",
+      "evidence_markers": ["FibroScan ≥ 8 kPa", "biopsia NAS ≥ 5"],
+      "activation_by": {
+        "direct_evidence": ["FibroScan ≥ 8"],
+        "from_nodes": ["masld", "oxidative_stress"]
+      },
+      "nutrient_modulators": [
+        {"name": "Vitamina E", "mechanism": "reducción NAS en PIVENS", "direction": "-"}
+      ],
+      "snp_enrichment": ["rs738409 PNPLA3"],
+      "imprint_association": {"i1": 0.0, "i4": 0.1, "i7": 0.3, "i8": 0.3},
+      "citations": ["Sanyal 2010", "Rinella 2023"],
+      "position_hint": {"col": 6, "row": 3}
+    }
+  ],
+  "edges": [
+    {"from": "imprint_i1_desacople", "to": "sympathetic_tone", "type": "promotes", "strength": 0.7, "rationale": "FEAR circuit dispara simpaticotonía aguda (Panksepp)", "citation": "Panksepp 1998"},
+    {"from": "imprint_i1_desacople", "to": "hpa_axis_rigidity", "type": "promotes", "strength": 0.6, "rationale": "Reactividad HPA elevada; FKBP5 moduladora", "citation": "Binder 2008"},
+    {"from": "imprint_i1_desacople", "to": "vagal_ventral", "type": "inhibits", "strength": 0.5, "rationale": "Fragmentación compromete co-regulación vagal ventral", "citation": "Porges 2011"},
+    {"from": "imprint_i4_fijacion_externa", "to": "sympathetic_tone", "type": "promotes", "strength": 0.9, "rationale": "RAGE dirige tono simpático sostenido al estímulo-agresor", "citation": "Panksepp 1998"},
+    {"from": "imprint_i4_fijacion_externa", "to": "adrenergic_drive", "type": "promotes", "strength": 0.8, "rationale": "Catecolaminas elevadas con COMT-Val/Val de lento freno prefrontal", "citation": "Caspi 2002"},
+    {"from": "imprint_i4_fijacion_externa", "to": "hpa_axis_rigidity", "type": "promotes", "strength": 0.7, "rationale": "CRHR1/FKBP5 amplifican reactividad HPA en i4", "citation": "Binder 2008"},
+    {"from": "imprint_i4_fijacion_externa", "to": "pathology_atherosclerosis", "type": "promotes", "strength": 0.5, "rationale": "Hostilidad e ira predicen eventos CV (meta-análisis Chida 2009)", "citation": "Chida 2009"},
+    {"from": "imprint_i7_hibernacion", "to": "vagal_dorsal_collapse", "type": "promotes", "strength": 0.9, "rationale": "Colapso dorsal-vagal como firma definitoria de i7", "citation": "Porges 2011"},
+    {"from": "imprint_i7_hibernacion", "to": "mitochondrial_dysfunction", "type": "promotes", "strength": 0.8, "rationale": "PPARGC1A-Ser reduce biogénesis mitocondrial", "citation": "Ling 2004"},
+    {"from": "imprint_i7_hibernacion", "to": "hpa_axis_rigidity", "type": "modulates", "strength": 0.6, "rationale": "Hipocortisolismo con receptor GR alterado (NR3C1)", "citation": "Klengel 2013"},
+    {"from": "imprint_i7_hibernacion", "to": "oxidative_stress", "type": "promotes", "strength": 0.5, "rationale": "Fuga electrónica por disfunción mitocondrial", "citation": "Sies 2020"},
+    {"from": "imprint_i8_reserva", "to": "hpa_axis_rigidity", "type": "promotes", "strength": 0.9, "rationale": "Eje HPA rígidamente encendido con CAR exagerada", "citation": "Dallman 2005"},
+    {"from": "imprint_i8_reserva", "to": "car_exaggerated", "type": "promotes", "strength": 0.9, "rationale": "Predicción anticipatoria de escasez al despertar", "citation": "Clow 2010"},
+    {"from": "imprint_i8_reserva", "to": "visceral_adiposity", "type": "promotes", "strength": 0.8, "rationale": "Redistribución cortisol-mediada hacia compartimento visceral", "citation": "Bjorntorp 2001"},
+    {"from": "imprint_i8_reserva", "to": "gut_dysbiosis", "type": "promotes", "strength": 0.5, "rationale": "Estrés crónico y cortisol alteran composición microbiota", "citation": "Cryan 2012"},
+    {"from": "imprint_i8_reserva", "to": "sympathetic_tone", "type": "promotes", "strength": 0.6, "rationale": "Hipervigilancia de recursos sostiene simpaticotonía", "citation": "Rosmond 1998"},
+    {"from": "imprint_i8_reserva", "to": "vagal_ventral", "type": "inhibits", "strength": 0.5, "rationale": "Apego ansioso compromete tono ventral vagal", "citation": "Porges 2011"},
+
+    {"from": "sympathetic_tone", "to": "adrenergic_drive", "type": "promotes", "strength": 0.8, "rationale": "Efluente simpático eleva adrenalina/noradrenalina circulantes", "citation": "Thayer 2012"},
+    {"from": "sympathetic_tone", "to": "hrv_reduction", "type": "promotes", "strength": 0.8, "rationale": "Predominio simpático reduce variabilidad RR", "citation": "Shaffer 2017"},
+    {"from": "vagal_ventral", "to": "hrv_reduction", "type": "inhibits", "strength": 0.7, "rationale": "RMSSD depende directamente de tono vagal ventral", "citation": "Shaffer 2017"},
+    {"from": "vagal_dorsal_collapse", "to": "mitochondrial_dysfunction", "type": "promotes", "strength": 0.5, "rationale": "Programa de conservación energética reduce demanda oxidativa", "citation": "Porges 2011"},
+
+    {"from": "hpa_axis_rigidity", "to": "cortisol_chronic", "type": "promotes", "strength": 0.9, "rationale": "Rigidez HPA mantiene cortisol sostenido", "citation": "McEwen 2017"},
+    {"from": "hpa_axis_rigidity", "to": "car_exaggerated", "type": "promotes", "strength": 0.7, "rationale": "CAR es expresión matutina de la rigidez HPA", "citation": "Clow 2010"},
+    {"from": "cortisol_chronic", "to": "visceral_adiposity", "type": "promotes", "strength": 0.9, "rationale": "Cortisol redistribuye grasa al compartimento visceral", "citation": "Bjorntorp 2001"},
+    {"from": "cortisol_chronic", "to": "hepatic_insulin_resistance", "type": "promotes", "strength": 0.7, "rationale": "Gluconeogénesis hepática sostenida por cortisol", "citation": "Dallman 2005"},
+    {"from": "cortisol_chronic", "to": "atherogenic_dyslipidemia", "type": "promotes", "strength": 0.6, "rationale": "Supresión de lipoproteína lipasa y elevación VLDL", "citation": "Bjorntorp 2000"},
+    {"from": "cortisol_chronic", "to": "gut_permeability", "type": "promotes", "strength": 0.5, "rationale": "Cortisol altera uniones estrechas epiteliales", "citation": "Fasano 2012"},
+    {"from": "cortisol_chronic", "to": "gut_dysbiosis", "type": "promotes", "strength": 0.5, "rationale": "Modulación estrés-microbiota vía cortisol", "citation": "Cryan 2012"},
+    {"from": "cortisol_chronic", "to": "systemic_inflammation", "type": "modulates", "strength": 0.5, "rationale": "Cortisol crónico induce resistencia glucocorticoide y inflamación paradójica", "citation": "Miller 2002"},
+    {"from": "adrenergic_drive", "to": "visceral_adiposity", "type": "promotes", "strength": 0.5, "rationale": "Lipólisis desacoplada y termogénesis reducida (ADRB3)", "citation": "Rosmond 1998"},
+
+    {"from": "visceral_adiposity", "to": "ectopic_lipid", "type": "promotes", "strength": 0.8, "rationale": "FFA portales saturan capacidad hepática", "citation": "Samuel 2010"},
+    {"from": "visceral_adiposity", "to": "adipose_inflammation", "type": "promotes", "strength": 0.9, "rationale": "Hipertrofia adipocitaria recluta macrófagos M1", "citation": "Hotamisligil 2006"},
+    {"from": "visceral_adiposity", "to": "adipose_insulin_resistance", "type": "promotes", "strength": 0.8, "rationale": "Expansión adipocitaria disfuncional", "citation": "Gastaldelli 2017"},
+    {"from": "adipose_inflammation", "to": "systemic_inflammation", "type": "promotes", "strength": 0.8, "rationale": "TNF/IL-6 adipocitarios alcanzan circulación", "citation": "Hotamisligil 2006"},
+    {"from": "adipose_inflammation", "to": "adipose_insulin_resistance", "type": "promotes", "strength": 0.7, "rationale": "TNF-α fosforila IRS-1 en serina", "citation": "Hotamisligil 2006"},
+    {"from": "adipose_inflammation", "to": "treg_th17_imbalance", "type": "promotes", "strength": 0.5, "rationale": "Adipokinas inducen Th17 y reducen Tregs", "citation": "Winer 2009"},
+
+    {"from": "ectopic_lipid", "to": "hepatic_insulin_resistance", "type": "promotes", "strength": 0.9, "rationale": "DAG hepático activa PKCε e inhibe señalización IR", "citation": "Samuel 2010"},
+    {"from": "ectopic_lipid", "to": "masld", "type": "promotes", "strength": 0.9, "rationale": "Esteatosis es el sustrato definitorio de MASLD", "citation": "Rinella 2023"},
+    {"from": "adipose_insulin_resistance", "to": "systemic_insulin_resistance", "type": "promotes", "strength": 0.8, "rationale": "FFA aumentados sostienen IR sistémica", "citation": "Gastaldelli 2017"},
+    {"from": "hepatic_insulin_resistance", "to": "systemic_insulin_resistance", "type": "promotes", "strength": 0.8, "rationale": "Componente hepático del HOMA-IR", "citation": "Samuel 2010"},
+    {"from": "hepatic_insulin_resistance", "to": "atherogenic_dyslipidemia", "type": "promotes", "strength": 0.7, "rationale": "Lipogénesis de novo hepática eleva VLDL/TG", "citation": "Samuel 2010"},
+    {"from": "hepatic_insulin_resistance", "to": "hba1c_elevated", "type": "promotes", "strength": 0.7, "rationale": "Gluconeogénesis no suprimida eleva glucosa basal", "citation": "DeFronzo 2009"},
+    {"from": "systemic_insulin_resistance", "to": "hba1c_elevated", "type": "promotes", "strength": 0.9, "rationale": "IR es precursor directo de disglicemia integrada", "citation": "DeFronzo 2009"},
+    {"from": "systemic_inflammation", "to": "systemic_insulin_resistance", "type": "promotes", "strength": 0.6, "rationale": "TNF/IL-6 inducen IR por SOCS3 y JNK", "citation": "Hotamisligil 2006"},
+
+    {"from": "gut_dysbiosis", "to": "gut_permeability", "type": "promotes", "strength": 0.7, "rationale": "Pérdida de productores de butirato debilita barrera", "citation": "Fasano 2012"},
+    {"from": "gut_dysbiosis", "to": "scfa_production", "type": "inhibits", "strength": 0.7, "rationale": "Menor abundancia de Faecalibacterium/Roseburia", "citation": "Koh 2016"},
+    {"from": "gut_dysbiosis", "to": "treg_th17_imbalance", "type": "promotes", "strength": 0.5, "rationale": "Pérdida de señales microbianas tolerogénicas", "citation": "Arpaia 2013"},
+    {"from": "gut_permeability", "to": "systemic_inflammation", "type": "promotes", "strength": 0.7, "rationale": "Endotoxemia LPS activa TLR4 sistémico", "citation": "Cani 2007"},
+    {"from": "scfa_production", "to": "treg_th17_imbalance", "type": "inhibits", "strength": 0.6, "rationale": "Butirato induce Tregs colónicos", "citation": "Arpaia 2013"},
+    {"from": "scfa_production", "to": "gut_permeability", "type": "inhibits", "strength": 0.6, "rationale": "Butirato energiza colonocitos y refuerza uniones estrechas", "citation": "Koh 2016"},
+
+    {"from": "mitochondrial_dysfunction", "to": "oxidative_stress", "type": "promotes", "strength": 0.8, "rationale": "Fuga electrónica genera ROS mitocondrial", "citation": "Sies 2020"},
+    {"from": "mitochondrial_dysfunction", "to": "ectopic_lipid", "type": "promotes", "strength": 0.6, "rationale": "β-oxidación comprometida acumula DAG/ceramidas", "citation": "Samuel 2010"},
+    {"from": "oxidative_stress", "to": "ldl_oxidation", "type": "promotes", "strength": 0.8, "rationale": "ROS oxidan fosfolípidos y apoB de LDL", "citation": "Steinberg 2009"},
+    {"from": "oxidative_stress", "to": "systemic_inflammation", "type": "promotes", "strength": 0.6, "rationale": "Activación de inflammasoma NLRP3 por ROS", "citation": "Sies 2020"},
+
+    {"from": "masld", "to": "pathology_masld_advanced", "type": "promotes", "strength": 0.7, "rationale": "MASL → MASH por segundo hit inflamatorio/oxidativo", "citation": "Sanyal 2010"},
+    {"from": "hba1c_elevated", "to": "pathology_t2dm", "type": "promotes", "strength": 0.9, "rationale": "HbA1c ≥ 6.5% define diabetes (ADA)", "citation": "DeFronzo 2009"},
+    {"from": "ldl_oxidation", "to": "pathology_atherosclerosis", "type": "promotes", "strength": 0.9, "rationale": "ox-LDL es sustrato primario de células espumosas", "citation": "Steinberg 2009"},
+    {"from": "atherogenic_dyslipidemia", "to": "pathology_atherosclerosis", "type": "promotes", "strength": 0.8, "rationale": "ApoB-LDL y TG elevados predicen eventos", "citation": "Libby 2021"},
+    {"from": "systemic_inflammation", "to": "pathology_atherosclerosis", "type": "promotes", "strength": 0.6, "rationale": "hs-CRP e IL-6 predicen eventos independientemente de lípidos", "citation": "Ridker 2000"},
+    {"from": "pathology_t2dm", "to": "pathology_neuropathy", "type": "promotes", "strength": 0.8, "rationale": "Hiperglicemia sostenida daña vasa nervorum", "citation": "Ziegler 2011"},
+    {"from": "oxidative_stress", "to": "pathology_neuropathy", "type": "promotes", "strength": 0.5, "rationale": "Estrés oxidativo mediador de daño nervioso periférico", "citation": "Ziegler 2011"}
+  ]
+}
