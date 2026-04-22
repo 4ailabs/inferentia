@@ -18,12 +18,20 @@ from __future__ import annotations
 
 import argparse
 import csv
+import io
 import json
 import sys
+import zipfile
 from pathlib import Path
 from urllib.request import urlopen
 
-GWAS_ASSOCIATIONS_URL = "https://www.ebi.ac.uk/gwas/api/search/downloads/alternative"
+# EBI FTP — stable, versioned, no rate limiting. The API endpoint
+# `/gwas/api/search/downloads/alternative` was deprecated in 2024.
+# The full associations ontology-annotated TSV ships zipped (~62 MB).
+GWAS_ASSOCIATIONS_URL = (
+    "https://ftp.ebi.ac.uk/pub/databases/gwas/releases/latest/"
+    "gwas-catalog-associations_ontology-annotated-full.zip"
+)
 
 # Trait keywords that qualify a SNP as "nutrigenomic-relevant".
 # Covers metabolism, nutrition response, stress response, behavior, autonomic.
@@ -85,11 +93,27 @@ def matches_nutrigenomic_trait(trait: str) -> bool:
 
 
 def download_gwas_associations(out_path: Path) -> None:
-    """Download the GWAS Catalog full associations TSV."""
+    """
+    Download the GWAS Catalog full associations ZIP from EBI FTP and extract
+    the single TSV inside, writing the plain TSV to out_path.
+    """
     print(f"Downloading GWAS Catalog from {GWAS_ASSOCIATIONS_URL} ...", file=sys.stderr)
     with urlopen(GWAS_ASSOCIATIONS_URL) as response:
-        out_path.write_bytes(response.read())
-    print(f"Saved to {out_path}", file=sys.stderr)
+        zip_bytes = response.read()
+
+    with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
+        tsv_names = [n for n in zf.namelist() if n.endswith(".tsv")]
+        if not tsv_names:
+            raise RuntimeError(f"No TSV found inside GWAS zip: {zf.namelist()}")
+        if len(tsv_names) > 1:
+            print(
+                f"Warning: multiple TSVs in zip, using first: {tsv_names[0]}",
+                file=sys.stderr,
+            )
+        with zf.open(tsv_names[0]) as src:
+            out_path.write_bytes(src.read())
+
+    print(f"Extracted {tsv_names[0]} → {out_path}", file=sys.stderr)
 
 
 def parse_gwas_tsv(path: Path) -> list[dict]:

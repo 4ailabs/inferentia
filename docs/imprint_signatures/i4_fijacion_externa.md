@@ -119,7 +119,7 @@ Enriquecimiento esperado en SNPs del eje monoaminérgico y del regulador del eje
 | SNP rsID | Gene | Expected prior elevation | Rationale |
 |---|---|---|---|
 | — (uVNTR 3R) | MAOA-uVNTR | +0.45 | Alelo de baja actividad: metabolismo reducido de monoaminas, asociado a agresividad reactiva y hostilidad crónica (Brunner 1993; Caspi 2002) |
-| rs4680 | COMT (Val158Met) | +0.40 | Val/Val: catabolismo rápido prefrontal con arousal simpático amplificado; Met/Met: catabolismo lento catecolaminas que sostiene el line attractor [CONFIRMAR dirección dominante en i4] |
+| rs4680 | COMT (Val158Met) | +0.40 | Alelo **Val/Val**: catabolismo rápido prefrontal → menor control top-down sobre amígdala, mayor reactividad simpática dirigida al estímulo-agresor (Caspi 2002; Barnett 2008). Met/Met está asociado a ansiedad y disociación (perfil i1), no a hostilidad crónica de i4 |
 | rs1800955 | DRD4 7R | +0.30 | Alelo 7R: persistencia motivacional y búsqueda de confrontación consistentes con foco sostenido en el agresor |
 | rs4570625 | TPH2 | +0.30 | Síntesis serotoninérgica: variantes reducen capacidad de apagar el circuito RAGE |
 | rs25531 | SLC6A4 (5-HTTLPR short) | +0.35 | Alelo corto: recaptación reducida, mayor reactividad amigdalar y persistencia del arousal negativo |
@@ -215,14 +215,14 @@ Paciente adulto que llega al consultorio con una cuenta pendiente activa: un nom
 3. **Perfil metabólico cardiovascular-dominante.** HbA1c menos elevada que i1/i8, pero HTA, LDL, TG elevados, HDL bajo. Añadí parámetros cardiovasculares (PAS, LDL) en nota clínica porque son centrales pero no están en el esquema fijo de 10 dimensiones; revisar si deben incorporarse al schema del parser.
 4. **TNF-α desproporcionado.** Hipótesis de firma inflamatoria RAGE-específica (TNF-α > CRP/IL-6 relativo). Basada en literatura de hostilidad crónica y correlato del Tratado que menciona IL-6, TNF-α, PCR juntos sin jerarquía explícita.
 5. **LF/HF muy elevado.** Firma cuantitativa diferencial frente a i1: en i4 la HRV no colapsa globalmente sino que se sesga hacia simpático con reactividad.
-6. **SNPs.** Prioricé el eje monoaminérgico (MAOA-uVNTR, COMT, DRD4, TPH2, SLC6A4, HTR1A/2A) más AR, CRHR1, FKBP5. Para COMT marqué [CONFIRMAR] la dirección del alelo dominante (Val vs Met) — el argumento clínico del line attractor favorece Met, pero la literatura de agresividad reactiva favorece Val.
+6. **SNPs.** Prioricé el eje monoaminérgico (MAOA-uVNTR, COMT, DRD4, TPH2, SLC6A4, HTR1A/2A) más AR, CRHR1, FKBP5. COMT direction **resuelta a Val/Val** (2026-04-22) tras revisión: Caspi (2002) y Barnett (2008) sustentan que Val/Val produce catabolismo rápido prefrontal → reactividad amígdala → hostilidad dirigida. Met se asocia a ansiedad/disociación (perfil i1).
 7. **Microbiota.** Firmicutes-dominant y butirato bajo marcados [CONFIRMAR] porque el Tratado no ancla explícitamente un enterotipo para i4; la hipótesis deriva del perfil autonómico y hepatobiliar.
 8. **Sueño.** Latencia muy prolongada (55 min) como firma diferencial específica — derivada directa de la rumiación activa descrita por el autor.
 9. **Interocepción.** Percepción corporal **más preservada** que en i1 (el paciente i4 siente la tensión y el malestar hepatobiliar), pero auto-regulación muy baja — el sistema no puede apagar el circuito top-down.
 
 ### Qué necesita revisión clínica del Dr. Ojeda
 - Confirmar si CAR amplificada con flattening parcial es la firma HPA correcta para i4 (vs CAR aplanada tipo i1).
-- Validar la dirección dominante del alelo COMT Val158Met en i4.
+- ~~Validar la dirección dominante del alelo COMT Val158Met en i4~~ **Resuelto 2026-04-22: Val/Val.**
 - Validar rsID específico del AR enriquecido clínicamente.
 - Confirmar si corresponde añadir PAS, LDL y GGT/ALT al schema del parser — hoy el esquema fijo de 10 dimensiones no los contempla explícitamente.
 - Revisar rangos σ: están calibrados por analogía con i1_desacople.md; ajustar si la variabilidad poblacional de i4 es distinta.

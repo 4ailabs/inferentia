@@ -116,7 +116,7 @@ Top SNPs nutrigenéticos con prior elevado en i7. Ejes biológicos: función mit
 | rs225014 | DIO2 (Thr92Ala) | +0.40 | Conversión T4→T3 reducida; hipotiroidismo funcional tisular característico de i7 |
 | rs1801133 | MTHFR C677T | +0.30 | Metilación reducida; menor producción de SAMe impacta energía y neurotransmisores |
 | rs1801131 | MTHFR A1298C | +0.25 | Compuesto heterocigoto amplifica déficit de metilación |
-| rs4147929 | NDUFS3 / complejo I mitocondrial | +0.35 | Disfunción cadena respiratoria; ATP reducido sostiene el programa de conservación [INFER rsID — CONFIRMAR] |
+| rs8192678 | PPARGC1A Gly482Ser | +0.35 | Coactivador maestro de biogénesis mitocondrial; variante Ser/Ser reduce ATP y oxidación de ácidos grasos, sostiene el programa de conservación energética (Ling 2004) |
 | rs1360780 | FKBP5 | +0.35 | Regulación HPA alterada; variantes asociadas a hipocortisolismo post-trauma crónico (Klengel 2013) |
 | rs6265 | BDNF Val66Met | +0.30 | Plasticidad hipocampal reducida; sustrato de rigidez predictiva del N3 hibernado |
 | rs41423247 | NR3C1 (BclI) | +0.30 | Receptor glucocorticoide; variantes de baja sensibilidad agravan desregulación HPA |
