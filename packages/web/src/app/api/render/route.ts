@@ -90,7 +90,7 @@ Produce the dual render JSON now.${languageInstruction}`;
     const response = await client.messages.create({
       model: MODELS.ORCHESTRATOR,
       max_tokens: 3000,
-      temperature: 0.5,
+      // Opus 4.7 deprecated explicit temperature — rely on defaults.
       system: [
         {
           type: "text",
