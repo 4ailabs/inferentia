@@ -65,7 +65,10 @@ clinician view:
 - Use imprint code + name the first time (e.g., "i8 Reserva").
 - Specify mechanism where relevant.
 - Include differential considerations (what else could look like this).
-- Flag anything that a responsible clinician would double-check (labs to rule out organic causes, interactions, etc.).`;
+- Flag anything that a responsible clinician would double-check (labs to rule out organic causes, interactions, etc.).
+
+OUTPUT CONTRACT — EXTREMELY IMPORTANT
+Your entire response must be the JSON object and nothing else. Do NOT prepend any preamble such as "Here is the JSON:" or "Sure,". Do NOT wrap in markdown code fences. The very first character of your response must be "{" and the very last character must be "}".`;
 
 export async function POST(req: Request) {
   const body = (await req.json()) as {
@@ -92,6 +95,9 @@ Produce the dual render JSON now.${languageInstruction}`;
       model: MODELS.ORCHESTRATOR,
       max_tokens: 6000,
       // Opus 4.7 deprecated explicit temperature — rely on defaults.
+      // Opus 4.7 also rejects assistant-role prefill, so we lean on the
+      // system prompt's strict "return ONLY JSON, no preamble, no markdown"
+      // contract plus the robust extractJsonObject() walker below.
       system: [
         {
           type: "text",
@@ -99,19 +105,14 @@ Produce the dual render JSON now.${languageInstruction}`;
           cache_control: { type: "ephemeral" },
         },
       ],
-      messages: [
-        { role: "user", content: userPrompt },
-        // Prefill: force the model to continue a JSON object, no preamble possible.
-        { role: "assistant", content: "{" },
-      ],
+      messages: [{ role: "user", content: userPrompt }],
     });
 
-    // Rebuild the text, prepending the prefill brace we injected.
-    const body = response.content
+    const responseText = response.content
       .filter((b) => b.type === "text")
       .map((b) => (b as { type: "text"; text: string }).text)
       .join("");
-    const raw = "{" + body;
+    const raw = responseText;
 
     const cleaned = extractJsonObject(raw);
     if (!cleaned) {

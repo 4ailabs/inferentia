@@ -75,7 +75,8 @@ Recommend 3-5 high-yield nutrigenomic SNPs based on dominant imprint:
 - i7 → PPARGC1A rs8192678, DIO2 rs225014, FKBP5
 - i8 → FTO rs9939609, MC4R rs17782313, LEPR rs1137101, OXTR rs53576
 
-Return ONLY the JSON object. No preamble.`;
+OUTPUT CONTRACT — EXTREMELY IMPORTANT
+Your entire response must be the JSON object and nothing else. Do NOT prepend any preamble such as "Here is the JSON:" or "Sure,". Do NOT wrap in markdown code fences. The very first character of your response must be "{" and the very last character must be "}".`;
 
 export async function POST(req: Request) {
   const body = (await req.json()) as {
@@ -109,18 +110,17 @@ Return the JSON clinical posterior now.`;
           cache_control: { type: "ephemeral" },
         },
       ],
-      messages: [
-        { role: "user", content: userPrompt },
-        // Prefill forces a JSON continuation with no preamble.
-        { role: "assistant", content: "{" },
-      ],
+      // Sonnet 4.6 accepts assistant prefill but we keep this route in lock-step
+      // with /api/render (Opus 4.7 rejects it). The robust extractJsonObject()
+      // walker handles any preamble or fencing.
+      messages: [{ role: "user", content: userPrompt }],
     });
 
-    const body = response.content
+    const responseText = response.content
       .filter((b) => b.type === "text")
       .map((b) => (b as { type: "text"; text: string }).text)
       .join("");
-    const raw = "{" + body;
+    const raw = responseText;
 
     const cleaned = extractJsonObject(raw);
     if (!cleaned) {
