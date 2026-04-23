@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.71",
+    "@anthropic-ai/sdk": "^0.90.0",
     "@xyflow/react": "^12.10.2",
     "ai": "^6.0.168",
     "class-variance-authority": "^0.7.1",

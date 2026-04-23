@@ -45,6 +45,12 @@ export default async function Home({
               </div>
             </div>
             <nav className="hidden md:flex items-center gap-6 text-[12px] tracking-wide text-ink-quiet">
+              <Link
+                href={`/session${langSuffix}`}
+                className="text-accent hover:text-accent-deep transition-colors font-medium"
+              >
+                {locale === "es" ? "Sesión" : "Session"}
+              </Link>
               <Link href={`/network${langSuffix}`} className="hover:text-ink transition-colors">
                 {t.masthead.nav.network}
               </Link>
@@ -117,11 +123,19 @@ export default async function Home({
 
             <div className="mt-12 flex flex-wrap items-center gap-6">
               <Link
+                href={`/session${langSuffix}`}
+                className="group inline-flex items-center gap-3 bg-accent text-paper px-5 py-3 text-[13px] tracking-wide hover:bg-accent-deep transition-colors"
+              >
+                {locale === "es"
+                  ? "Iniciar sesión en vivo →"
+                  : "Start a live session →"}
+                <span className="inline-block w-6 h-px bg-paper transition-transform group-hover:translate-x-1" />
+              </Link>
+              <Link
                 href={`/network${langSuffix}`}
-                className="group inline-flex items-center gap-3 bg-ink text-paper px-5 py-3 text-[13px] tracking-wide hover:bg-accent-deep transition-colors"
+                className="inline-flex items-center gap-2 text-[13px] text-ink underline decoration-rule underline-offset-4 decoration-1 hover:decoration-ink transition-colors"
               >
                 {t.hero.cta_primary}
-                <span className="inline-block w-6 h-px bg-paper transition-transform group-hover:translate-x-1" />
               </Link>
               <a
                 href="#method"

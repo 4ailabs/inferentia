@@ -381,17 +381,18 @@ export default function TieredMap({
                 <path
                   d={smoothPath(fromS, toS)}
                   fill="none"
-                  stroke={INK}
+                  stroke={INK_QUIET}
                   strokeWidth={strokeW}
-                  opacity={bothActive ? 0.88 : 0.3}
+                  opacity={bothActive ? 0.55 : 0.2}
                 />
-                {/* Verb label with paper background so it punches through the edge */}
+                {/* Verb label — soft paper-soft tile tangent to the curve. */}
                 <rect
                   x={mid.x - labelWidth / 2}
-                  y={mid.y - 10}
+                  y={mid.y - 9}
                   width={labelWidth}
-                  height={20}
-                  fill={PAPER}
+                  height={18}
+                  fill="#F1EEE6"
+                  rx={2}
                 />
                 <text
                   x={mid.x}
@@ -399,7 +400,7 @@ export default function TieredMap({
                   textAnchor="middle"
                   fontFamily="Fraunces, serif"
                   fontStyle="italic"
-                  fontSize={12}
+                  fontSize={11}
                   fill={INK_QUIET}
                 >
                   {verbLabel}
@@ -413,9 +414,11 @@ export default function TieredMap({
         <g>
           {SUPERNODES.map((s) => {
             const r = snRect(s);
-            const fill = s.isPivot ? ACCENT : s.isActive ? INK : PAPER;
-            const stroke = s.isPivot ? ACCENT : s.isActive ? INK : RULE;
-            const labelFill = s.isPivot || s.isActive ? PAPER : INK_SOFT;
+            // Editorial tone — no black slabs. Active = subtle ink tint with
+            // accent top-rule. Pivot = single accent-bordered card. At-risk = paper.
+            const fill = s.isPivot ? "#F2ECF7" : s.isActive ? "#F1EEE6" : PAPER;
+            const stroke = s.isPivot ? ACCENT : s.isActive ? INK_SOFT : RULE;
+            const labelFill = INK_SOFT;
             const tier = tierById(s.tier);
             const eyebrowText = tier
               ? (locale === "en" ? tier.label_en : tier.label).toUpperCase()
@@ -423,18 +426,6 @@ export default function TieredMap({
 
             return (
               <g key={s.id}>
-                {/* Soft drop shadow for active & pivot */}
-                {(s.isActive || s.isPivot) && (
-                  <rect
-                    x={r.x}
-                    y={r.y + 3}
-                    width={r.w}
-                    height={r.h}
-                    fill={INK}
-                    opacity={0.07}
-                    rx={3}
-                  />
-                )}
                 <rect
                   x={r.x}
                   y={r.y}
@@ -442,17 +433,27 @@ export default function TieredMap({
                   height={r.h}
                   fill={fill}
                   stroke={stroke}
-                  strokeWidth={s.isPivot ? 2 : 1}
-                  rx={3}
+                  strokeWidth={s.isPivot ? 1.5 : 1}
+                  rx={2}
                 />
+                {/* Thin accent top rule marking "active" status */}
+                {(s.isActive || s.isPivot) && (
+                  <rect
+                    x={r.x}
+                    y={r.y}
+                    width={r.w}
+                    height={2}
+                    fill={ACCENT}
+                    opacity={s.isPivot ? 1 : 0.55}
+                  />
+                )}
                 {/* Eyebrow */}
                 <text
                   x={r.x + 14}
-                  y={r.y + 20}
+                  y={r.y + 22}
                   fontFamily="Inter, sans-serif"
                   fontSize={9}
-                  fill={s.isPivot || s.isActive ? PAPER : INK_MUTE}
-                  opacity={0.72}
+                  fill={INK_MUTE}
                   letterSpacing="0.18em"
                   fontWeight={500}
                 >
@@ -461,7 +462,7 @@ export default function TieredMap({
                 {/* Main label */}
                 <text
                   x={r.x + 14}
-                  y={s.isPivot ? r.y + 50 : r.y + 48}
+                  y={s.isPivot ? r.y + 52 : r.y + 50}
                   fontFamily="Fraunces, serif"
                   fontSize={s.isPivot ? 20 : 15}
                   fontWeight={500}
@@ -474,12 +475,11 @@ export default function TieredMap({
                 {s.memberCount && s.memberCount > 1 && (
                   <text
                     x={r.x + r.w - 14}
-                    y={r.y + 20}
+                    y={r.y + 22}
                     textAnchor="end"
                     fontFamily="JetBrains Mono, monospace"
                     fontSize={9}
-                    fill={s.isPivot || s.isActive ? PAPER : INK_MUTE}
-                    opacity={0.7}
+                    fill={INK_MUTE}
                   >
                     {s.memberCount}
                   </text>
@@ -489,54 +489,66 @@ export default function TieredMap({
           })}
         </g>
 
-        {/* Interventions — perpendicular wedges from right margin -------- */}
+        {/* Interventions — right-margin index with leader lines ---------- */}
+        {/* Labels live on a vertical grid; leader lines connect each label */}
+        {/* to the right edge of its target supernode. No horizontal stagger. */}
         <g>
           {INTERVENTIONS.map((iv, idx) => {
             const tgt = supernodeById(iv.targetSupernode);
             if (!tgt) return null;
             const r = snRect(tgt);
-            const wedgeY = r.y + r.h / 2;
-            const wedgeEndX = r.x + r.w + 10; // wedge mark position on the right edge of target
-            // Stagger so labels don't overlap if two wedges point to close y
-            const labelStartX = CASCADE_RIGHT + 28 + (idx % 2) * 8;
+            const targetY = r.y + r.h / 2;
+            const wedgeX = r.x + r.w + 10;
+
+            // Fixed vertical grid for labels starting below the agency header
+            const labelY = 110 + idx * 68;
+            const labelX = CASCADE_RIGHT + 40;
+
             return (
               <g key={iv.id}>
-                {/* Leader line */}
-                <line
-                  x1={wedgeEndX}
-                  y1={wedgeY}
-                  x2={labelStartX}
-                  y2={wedgeY}
+                {/* Leader: bezier from supernode right edge to label baseline */}
+                <path
+                  d={`M ${wedgeX} ${targetY} C ${wedgeX + 60} ${targetY}, ${labelX - 20} ${labelY - 8}, ${labelX - 6} ${labelY - 8}`}
+                  fill="none"
                   stroke={ACCENT}
-                  strokeWidth={1}
-                  opacity={0.55}
-                  strokeDasharray="3 3"
+                  strokeWidth={0.8}
+                  opacity={0.45}
                 />
                 {/* Wedge mark on edge of supernode */}
                 <rect
-                  x={wedgeEndX - 3}
-                  y={wedgeY - 6}
+                  x={wedgeX - 3}
+                  y={targetY - 6}
                   width={8}
                   height={12}
                   fill={ACCENT}
                   rx={1}
                 />
-                {/* Intervention label */}
+                {/* Label stack */}
                 <text
-                  x={labelStartX + 8}
-                  y={wedgeY - 2}
+                  x={labelX}
+                  y={labelY - 10}
+                  fontFamily="Inter, sans-serif"
+                  fontSize={9}
+                  fill={INK_MUTE}
+                  letterSpacing="0.18em"
+                  fontWeight={500}
+                >
+                  {(locale === "en" ? `MODULATOR ${idx + 1}` : `MODULADOR ${idx + 1}`).toUpperCase()}
+                </text>
+                <text
+                  x={labelX}
+                  y={labelY + 10}
                   fontFamily="Fraunces, serif"
                   fontStyle="italic"
-                  fontSize={13}
+                  fontSize={15}
                   fill={ACCENT}
                   fontWeight={500}
                 >
-                  + {iv.label}
+                  {iv.label}
                 </text>
-                {/* Mechanism */}
                 <text
-                  x={labelStartX + 8}
-                  y={wedgeY + 14}
+                  x={labelX}
+                  y={labelY + 28}
                   fontFamily="Inter, sans-serif"
                   fontSize={10}
                   fill={INK_QUIET}
