@@ -297,12 +297,17 @@ function bezierMid(fromS: Supernode, toS: Supernode): { x: number; y: number } {
 
 // ──────────────────────────────────────────────────────────── component ──
 export default function TieredMap({
+  patient = "ana",
   locale = "en",
 }: {
   data: NetworkData;
   patient?: "ana" | null;
   locale?: "en" | "es";
 }) {
+  // When patient=null (atlas mode), every supernode is rendered as a neutral
+  // outline — no active fills, no pivot accent, no interventions wedges.
+  // Ana is the only patient backing the active-state layout in MVP.
+  const isAtlas = patient === null;
   return (
     <div className="w-full bg-paper-soft">
       <svg
@@ -342,28 +347,30 @@ export default function TieredMap({
         </g>
 
         {/* Right-margin agency column header --------------------------- */}
-        <g>
-          <text
-            x={CASCADE_RIGHT + 20}
-            y={52}
-            fontFamily="Inter, sans-serif"
-            fontSize={10}
-            fill={ACCENT}
-            letterSpacing="0.22em"
-            fontWeight={600}
-          >
-            {(locale === "en" ? "AGENCY · INTERVENTION" : "AGENCIA · INTERVENCIÓN").toUpperCase()}
-          </text>
-          <line
-            x1={CASCADE_RIGHT + 20}
-            x2={W - 40}
-            y1={62}
-            y2={62}
-            stroke={ACCENT}
-            strokeWidth={1}
-            opacity={0.4}
-          />
-        </g>
+        {!isAtlas && (
+          <g>
+            <text
+              x={CASCADE_RIGHT + 20}
+              y={52}
+              fontFamily="Inter, sans-serif"
+              fontSize={10}
+              fill={ACCENT}
+              letterSpacing="0.22em"
+              fontWeight={600}
+            >
+              {(locale === "en" ? "AGENCY · INTERVENTION" : "AGENCIA · INTERVENCIÓN").toUpperCase()}
+            </text>
+            <line
+              x1={CASCADE_RIGHT + 20}
+              x2={W - 40}
+              y1={62}
+              y2={62}
+              stroke={ACCENT}
+              strokeWidth={1}
+              opacity={0.4}
+            />
+          </g>
+        )}
 
         {/* Flows -------------------------------------------------------- */}
         <g>
@@ -414,10 +421,21 @@ export default function TieredMap({
         <g>
           {SUPERNODES.map((s) => {
             const r = snRect(s);
-            // Editorial tone — no black slabs. Active = subtle ink tint with
-            // accent top-rule. Pivot = single accent-bordered card. At-risk = paper.
-            const fill = s.isPivot ? "#F2ECF7" : s.isActive ? "#F1EEE6" : PAPER;
-            const stroke = s.isPivot ? ACCENT : s.isActive ? INK_SOFT : RULE;
+            // In atlas mode every node renders as a neutral outline — we
+            // don't know which supernodes are active because no patient is
+            // selected. In patient mode the active/pivot visuals apply.
+            const effectiveActive = !isAtlas && s.isActive;
+            const effectivePivot = !isAtlas && s.isPivot;
+            const fill = effectivePivot
+              ? "#F2ECF7"
+              : effectiveActive
+                ? "#F1EEE6"
+                : PAPER;
+            const stroke = effectivePivot
+              ? ACCENT
+              : effectiveActive
+                ? INK_SOFT
+                : RULE;
             const labelFill = INK_SOFT;
             const tier = tierById(s.tier);
             const eyebrowText = tier
@@ -433,18 +451,18 @@ export default function TieredMap({
                   height={r.h}
                   fill={fill}
                   stroke={stroke}
-                  strokeWidth={s.isPivot ? 1.5 : 1}
+                  strokeWidth={effectivePivot ? 1.5 : 1}
                   rx={2}
                 />
                 {/* Thin accent top rule marking "active" status */}
-                {(s.isActive || s.isPivot) && (
+                {(effectiveActive || effectivePivot) && (
                   <rect
                     x={r.x}
                     y={r.y}
                     width={r.w}
                     height={2}
                     fill={ACCENT}
-                    opacity={s.isPivot ? 1 : 0.55}
+                    opacity={effectivePivot ? 1 : 0.55}
                   />
                 )}
                 {/* Eyebrow */}
@@ -492,7 +510,8 @@ export default function TieredMap({
         {/* Interventions — right-margin index with leader lines ---------- */}
         {/* Labels live on a vertical grid; leader lines connect each label */}
         {/* to the right edge of its target supernode. No horizontal stagger. */}
-        <g>
+        {/* Hidden in atlas mode — interventions are patient-specific. */}
+        <g style={{ display: isAtlas ? "none" : undefined }}>
           {INTERVENTIONS.map((iv, idx) => {
             const tgt = supernodeById(iv.targetSupernode);
             if (!tgt) return null;
@@ -575,7 +594,15 @@ export default function TieredMap({
           </text>
           <line x1={0} x2={260} y1={8} y2={8} stroke={RULE} strokeWidth={1} />
           <g transform="translate(0, 22)">
-            <rect width={14} height={10} fill={INK} rx={1} />
+            {/* Active: warm paper tint, ink-soft stroke (matches supernode rendering) */}
+            <rect
+              width={14}
+              height={10}
+              fill="#F1EEE6"
+              stroke={INK_SOFT}
+              strokeWidth={1}
+              rx={1}
+            />
             <text x={20} y={9} fontFamily="Inter" fontSize={10} fill={INK_SOFT}>
               {locale === "en" ? "Active" : "Activo"}
             </text>
@@ -583,7 +610,15 @@ export default function TieredMap({
             <text x={96} y={9} fontFamily="Inter" fontSize={10} fill={INK_SOFT}>
               {locale === "en" ? "At risk" : "En riesgo"}
             </text>
-            <rect x={154} width={14} height={10} fill={ACCENT} rx={1} />
+            <rect
+              x={154}
+              width={14}
+              height={10}
+              fill="#F2ECF7"
+              stroke={ACCENT}
+              strokeWidth={1.2}
+              rx={1}
+            />
             <text x={174} y={9} fontFamily="Inter" fontSize={10} fill={INK_SOFT}>
               {locale === "en" ? "Agency" : "Agencia"}
             </text>

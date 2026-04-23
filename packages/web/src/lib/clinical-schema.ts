@@ -49,8 +49,20 @@ export const ClinicalPosteriorSchema = z.object({
   patient_id: z.string(),
   summary_en: z.string(),
   summary_es: z.string(),
-  active_priors: z.array(PriorSchema).min(1).max(6),
-  imprint_posterior: z.array(ImprintPosteriorSchema).length(4),
+  active_priors: z.array(PriorSchema).min(2).max(6),
+  imprint_posterior: z
+    .array(ImprintPosteriorSchema)
+    .length(4)
+    .refine(
+      (arr) => {
+        const sum = arr.reduce((s, x) => s + x.posterior, 0);
+        return Math.abs(sum - 1.0) <= 0.06;
+      },
+      {
+        message:
+          "imprint_posterior values must sum to 1.0 ± 0.06",
+      },
+    ),
   dominant_imprint: z.enum(["i1", "i4", "i7", "i8"]),
   confidence: z.number().min(0).max(1),
   recommended_labs: z.array(RecommendedTestSchema).max(6),
@@ -58,6 +70,8 @@ export const ClinicalPosteriorSchema = z.object({
   modulators: z.array(ModulatorSchema).max(5),
   free_energy_delta_estimate: z
     .number()
+    .min(0)
+    .max(1)
     .describe("Estimated reduction in free energy, 0..1"),
 });
 

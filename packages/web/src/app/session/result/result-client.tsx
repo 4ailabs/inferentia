@@ -10,21 +10,63 @@ type Payload = {
   locale: "en" | "es";
 };
 
+type LoadState = "loading" | "loaded" | "empty";
+
+function isValidPayload(x: unknown): x is Payload {
+  if (!x || typeof x !== "object") return false;
+  const o = x as Record<string, unknown>;
+  return (
+    !!o.posterior &&
+    !!o.render &&
+    typeof o.render === "object" &&
+    !!(o.render as Record<string, unknown>).patient &&
+    !!(o.render as Record<string, unknown>).clinician &&
+    (o.locale === "en" || o.locale === "es")
+  );
+}
+
 export default function ResultClient({
   initialLocale,
 }: {
   initialLocale: "en" | "es";
 }) {
   const [payload, setPayload] = useState<Payload | null>(null);
+  const [loadState, setLoadState] = useState<LoadState>("loading");
 
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem("inferentia:last_session");
-      if (raw) setPayload(JSON.parse(raw) as Payload);
+      if (!raw) {
+        setLoadState("empty");
+        return;
+      }
+      const parsed: unknown = JSON.parse(raw);
+      if (isValidPayload(parsed)) {
+        setPayload(parsed);
+        setLoadState("loaded");
+      } else {
+        // Stale / malformed payload (e.g., from a previous deploy with a different schema)
+        setLoadState("empty");
+      }
     } catch {
-      setPayload(null);
+      setLoadState("empty");
     }
   }, []);
+
+  if (loadState === "loading") {
+    return (
+      <div className="mt-10 max-w-[60ch]">
+        <p className="eyebrow">
+          {initialLocale === "es" ? "Cargando sesión" : "Loading session"}
+        </p>
+        <p className="mt-3 text-[13px] italic text-ink-mute">
+          {initialLocale === "es"
+            ? "Preparando la vista…"
+            : "Preparing the view…"}
+        </p>
+      </div>
+    );
+  }
 
   if (!payload) {
     return (
@@ -49,7 +91,12 @@ export default function ResultClient({
     );
   }
 
-  const { render, posterior, locale } = payload;
+  // URL locale overrides the one persisted at render-time so the LocaleToggle
+  // on this page stays meaningful (otherwise the page would ignore the toggle).
+  // The render itself was composed in payload.locale — it won't re-translate,
+  // but every UI label around it responds to initialLocale.
+  const { render, posterior } = payload;
+  const locale = initialLocale;
 
   return (
     <>

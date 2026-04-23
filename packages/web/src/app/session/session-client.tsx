@@ -131,6 +131,7 @@ export default function SessionClient({
 
   const runRender = useCallback(async () => {
     if (!posterior) return;
+    setErrorMsg(null);
     setStage("rendering");
     try {
       const res = await fetch("/api/render", {
@@ -255,11 +256,39 @@ export default function SessionClient({
       {/* RIGHT — live analysis panel --------------------------------- */}
       <aside className="col-span-12 lg:col-span-5 space-y-5">
         <div className="border border-rule bg-paper-raised px-5 py-4">
-          <p className="eyebrow eyebrow-accent">{L.priorsTitle}</p>
+          <div className="flex items-center justify-between">
+            <p className="eyebrow eyebrow-accent">{L.priorsTitle}</p>
+            {stage === "analyzing" && (
+              <span className="inline-flex items-center gap-2 text-[10px] tabular tracking-[0.18em] uppercase text-accent">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                Sonnet 4.6
+              </span>
+            )}
+            {stage === "rendering" && (
+              <span className="inline-flex items-center gap-2 text-[10px] tabular tracking-[0.18em] uppercase text-accent">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                Opus 4.7
+              </span>
+            )}
+          </div>
           {!posterior ? (
-            <p className="mt-4 text-[12.5px] text-ink-mute italic">
-              {L.waitingLabel}
-            </p>
+            stage === "analyzing" ? (
+              <div className="mt-4 space-y-3">
+                {[0, 1, 2].map((i) => (
+                  <div
+                    key={i}
+                    className="border-t border-rule pt-3 first:border-t-0 first:pt-0"
+                  >
+                    <div className="h-[14px] w-[60%] bg-paper-soft rounded-sm animate-pulse" />
+                    <div className="mt-2 h-[10px] w-[80%] bg-paper-soft rounded-sm animate-pulse" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-4 text-[12.5px] text-ink-mute italic">
+                {L.waitingLabel}
+              </p>
+            )
           ) : (
             <ul className="mt-4 space-y-3">
               {posterior.active_priors.map((p) => (
