@@ -12,127 +12,454 @@
  *
  * Esta es matemática real, no estimación del LLM. Cada número tiene
  * trazabilidad: μ y Σ vienen de las firmas canónicas del Tratado BV4
- * (v0.1 iniciales; se refinan con datos clínicos del Dr. Ojeda en
- * fase 2). El cálculo corre en Node puro — mismo resultado que el
- * GMM cerrado analítico de scikit-learn.
+ * y se ajustan con la práctica clínica del Dr. Ojeda. Corre en Node
+ * puro — mismo resultado que el GMM cerrado analítico de scikit-learn.
  *
- * No usamos MCMC aquí porque el GMM con Σ diagonal y priors fijos
- * es cerrado. Fase 2 sustituye este módulo por NumPyro HMC en Vercel
- * Sandbox cuando (a) ajustemos Σ no-diagonal con correlaciones entre
- * ejes, y (b) metamos priors jerárquicos edad/sexo/ancestría.
+ * Fase 2 sustituye este módulo por NumPyro HMC en Vercel Sandbox cuando
+ * (a) ajustemos Σ no-diagonal con correlaciones entre ejes, y
+ * (b) metamos priors jerárquicos edad/sexo/ancestría.
+ *
+ * v0.2 — vector clínico ampliado a ~40 ejes sobre 5 sistemas.
+ * v0.1 parámetros se conservan en el historial del módulo (git).
  */
 
 export type ImprintId = "i1" | "i4" | "i7" | "i8";
 
 /**
- * Los 8 ejes del vector de features. Los primeros 5 son labs
- * objetivos; los últimos 3 son escalas 0–1 extraídas del transcript
- * por el subagente Sonnet `extract_features`.
+ * Vector clínico ampliado — 40 ejes en 5 sistemas. Todos opcionales.
+ * El clasificador marginaliza sobre los ejes ausentes: cuantos más
+ * datos concretos, más estrecho el posterior.
  *
- * Si un lab falta, el clasificador marginaliza sobre ese eje
- * (i.e. lo omite del producto de likelihoods), y la incertidumbre
- * del posterior refleja esa ausencia.
+ * Rangos y unidades son los estándar de la práctica clínica del
+ * Dr. Ojeda Ríos — valores fuera de los rangos esperados se aceptan
+ * y contribuyen a la likelihood (no se censuran).
  */
 export type FeatureKey =
-  | "cortisol_morning" //  μg/dL     — eje HPA
-  | "sdnn_hrv" //            ms        — flexibilidad autonómica
-  | "hba1c" //               %         — integrada glucémica 3 meses
-  | "homa_ir" //             —          — resistencia insulínica
-  | "hdl" //                 mg/dL     — lipidograma protector
-  | "hypervigilance" //      [0,1]     — narrativa de alerta constante
-  | "dorsal_collapse" //     [0,1]     — narrativa de hundimiento energético
-  | "scarcity_anticipation"; // [0,1]  — narrativa de anticipación de escasez
+  // ── Sistema HPA (3)
+  | "cortisol_am" //            μg/dL
+  | "cortisol_pm" //            μg/dL
+  | "car" //                    awakening response, μg/dL increment
+  // ── Metabolismo (8)
+  | "hba1c" //                  %
+  | "homa_ir" //                unitless
+  | "fasting_glucose" //        mg/dL
+  | "fasting_insulin" //        μIU/mL
+  | "triglycerides" //          mg/dL
+  | "hdl" //                    mg/dL
+  | "ldl" //                    mg/dL
+  | "leptin" //                 ng/mL
+  // ── Inflamación (2)
+  | "crp" //                    mg/L
+  | "il6" //                    pg/mL
+  // ── Tiroides (3)
+  | "tsh" //                    mIU/L
+  | "t3_free" //                pg/mL
+  | "t4_free" //                ng/dL
+  // ── Micronutrientes (4)
+  | "ferritin" //               ng/mL
+  | "vitamin_d" //              ng/mL
+  | "b12" //                    pg/mL
+  | "homocysteine" //           μmol/L
+  // ── Autonómico (3)
+  | "sdnn_hrv" //               ms
+  | "rmssd_hrv" //              ms
+  | "lf_hf_ratio" //            unitless
+  // ── Composición corporal (3)
+  | "visceral_fat" //           index (1–30, Tanita-style)
+  | "lean_mass_pct" //          %
+  | "body_water_pct" //         %
+  // ── Narrativa [0,1] (12) — extraídas por Sonnet con verbatim quotes
+  | "hypervigilance"
+  | "dorsal_collapse"
+  | "scarcity_anticipation"
+  | "externalised_anger"
+  | "rumination_agent"
+  | "hepatobiliary_tag"
+  | "peripheral_coldness"
+  | "nocturnal_hyperphagia"
+  | "inability_to_rest"
+  | "panic_grief_tonality"
+  | "dissociation_sudden_impact"
+  | "interoceptive_suppression";
 
 export type FeatureVector = Partial<Record<FeatureKey, number>>;
 
-export type GaussianBand = {
-  mean: number;
-  /**
-   * Desviación estándar por eje. Σ es diagonal en v0.1 — cada eje
-   * es independiente dado la impronta. Fase 2: Σ no-diagonal con
-   * correlaciones observadas en la práctica del Dr. Ojeda.
-   */
-  sd: number;
+/** Agrupación por sistema — usada por la UI para intake modular. */
+export const FEATURE_SYSTEMS: Array<{
+  id: string;
+  label_en: string;
+  label_es: string;
+  keys: FeatureKey[];
+}> = [
+  {
+    id: "hpa",
+    label_en: "HPA axis",
+    label_es: "Eje HPA",
+    keys: ["cortisol_am", "cortisol_pm", "car"],
+  },
+  {
+    id: "metabolic",
+    label_en: "Metabolic",
+    label_es: "Metabolismo",
+    keys: [
+      "hba1c",
+      "homa_ir",
+      "fasting_glucose",
+      "fasting_insulin",
+      "triglycerides",
+      "hdl",
+      "ldl",
+      "leptin",
+    ],
+  },
+  {
+    id: "inflammation",
+    label_en: "Inflammation",
+    label_es: "Inflamación",
+    keys: ["crp", "il6"],
+  },
+  {
+    id: "thyroid",
+    label_en: "Thyroid",
+    label_es: "Tiroides",
+    keys: ["tsh", "t3_free", "t4_free"],
+  },
+  {
+    id: "micronutrients",
+    label_en: "Micronutrients",
+    label_es: "Micronutrientes",
+    keys: ["ferritin", "vitamin_d", "b12", "homocysteine"],
+  },
+  {
+    id: "autonomic",
+    label_en: "Autonomic",
+    label_es: "Autonómico",
+    keys: ["sdnn_hrv", "rmssd_hrv", "lf_hf_ratio"],
+  },
+  {
+    id: "body_comp",
+    label_en: "Body composition",
+    label_es: "Composición corporal",
+    keys: ["visceral_fat", "lean_mass_pct", "body_water_pct"],
+  },
+];
+
+export const NARRATIVE_KEYS: FeatureKey[] = [
+  "hypervigilance",
+  "dorsal_collapse",
+  "scarcity_anticipation",
+  "externalised_anger",
+  "rumination_agent",
+  "hepatobiliary_tag",
+  "peripheral_coldness",
+  "nocturnal_hyperphagia",
+  "inability_to_rest",
+  "panic_grief_tonality",
+  "dissociation_sudden_impact",
+  "interoceptive_suppression",
+];
+
+/** Metadatos de visualización de cada feature — unidad, step, placeholder. */
+export const FEATURE_META: Record<
+  FeatureKey,
+  { label_en: string; label_es: string; unit: string; step: string; placeholder?: string }
+> = {
+  cortisol_am: { label_en: "AM cortisol", label_es: "Cortisol AM", unit: "μg/dL", step: "0.1", placeholder: "22" },
+  cortisol_pm: { label_en: "PM cortisol", label_es: "Cortisol PM", unit: "μg/dL", step: "0.1", placeholder: "6" },
+  car: { label_en: "CAR (awakening response)", label_es: "CAR (despertar)", unit: "μg/dL Δ", step: "0.1", placeholder: "5" },
+  hba1c: { label_en: "HbA1c", label_es: "HbA1c", unit: "%", step: "0.1", placeholder: "6.1" },
+  homa_ir: { label_en: "HOMA-IR", label_es: "HOMA-IR", unit: "", step: "0.1", placeholder: "3.2" },
+  fasting_glucose: { label_en: "Fasting glucose", label_es: "Glucosa ayuno", unit: "mg/dL", step: "1", placeholder: "96" },
+  fasting_insulin: { label_en: "Fasting insulin", label_es: "Insulina ayuno", unit: "μIU/mL", step: "0.1", placeholder: "14" },
+  triglycerides: { label_en: "Triglycerides", label_es: "Triglicéridos", unit: "mg/dL", step: "1", placeholder: "160" },
+  hdl: { label_en: "HDL", label_es: "HDL", unit: "mg/dL", step: "1", placeholder: "42" },
+  ldl: { label_en: "LDL", label_es: "LDL", unit: "mg/dL", step: "1", placeholder: "115" },
+  leptin: { label_en: "Leptin", label_es: "Leptina", unit: "ng/mL", step: "0.1", placeholder: "16" },
+  crp: { label_en: "hs-CRP", label_es: "PCR-us", unit: "mg/L", step: "0.01", placeholder: "2.5" },
+  il6: { label_en: "IL-6", label_es: "IL-6", unit: "pg/mL", step: "0.1", placeholder: "2.0" },
+  tsh: { label_en: "TSH", label_es: "TSH", unit: "mIU/L", step: "0.01", placeholder: "2.1" },
+  t3_free: { label_en: "Free T3", label_es: "T3 libre", unit: "pg/mL", step: "0.01", placeholder: "3.2" },
+  t4_free: { label_en: "Free T4", label_es: "T4 libre", unit: "ng/dL", step: "0.01", placeholder: "1.2" },
+  ferritin: { label_en: "Ferritin", label_es: "Ferritina", unit: "ng/mL", step: "1", placeholder: "75" },
+  vitamin_d: { label_en: "25-OH vitamin D", label_es: "25-OH vitamina D", unit: "ng/mL", step: "0.1", placeholder: "32" },
+  b12: { label_en: "B12", label_es: "B12", unit: "pg/mL", step: "1", placeholder: "480" },
+  homocysteine: { label_en: "Homocysteine", label_es: "Homocisteína", unit: "μmol/L", step: "0.1", placeholder: "10" },
+  sdnn_hrv: { label_en: "HRV (SDNN)", label_es: "HRV (SDNN)", unit: "ms", step: "1", placeholder: "28" },
+  rmssd_hrv: { label_en: "HRV (RMSSD)", label_es: "HRV (RMSSD)", unit: "ms", step: "1", placeholder: "25" },
+  lf_hf_ratio: { label_en: "LF/HF ratio", label_es: "Cociente LF/HF", unit: "", step: "0.1", placeholder: "2.5" },
+  visceral_fat: { label_en: "Visceral fat index", label_es: "Grasa visceral", unit: "", step: "0.5", placeholder: "10" },
+  lean_mass_pct: { label_en: "Lean mass", label_es: "Masa magra", unit: "%", step: "0.1", placeholder: "58" },
+  body_water_pct: { label_en: "Body water", label_es: "Agua corporal", unit: "%", step: "0.1", placeholder: "50" },
+  // Narrative keys kept in meta for completeness
+  hypervigilance: { label_en: "Hypervigilance", label_es: "Hipervigilancia", unit: "[0,1]", step: "0.01" },
+  dorsal_collapse: { label_en: "Dorsal collapse", label_es: "Colapso dorsal", unit: "[0,1]", step: "0.01" },
+  scarcity_anticipation: { label_en: "Scarcity anticipation", label_es: "Anticipación de escasez", unit: "[0,1]", step: "0.01" },
+  externalised_anger: { label_en: "Externalised anger", label_es: "Ira externalizada", unit: "[0,1]", step: "0.01" },
+  rumination_agent: { label_en: "Rumination on agent", label_es: "Rumiación sobre agente", unit: "[0,1]", step: "0.01" },
+  hepatobiliary_tag: { label_en: "Hepatobiliary tag", label_es: "Etiqueta hepatobiliar", unit: "[0,1]", step: "0.01" },
+  peripheral_coldness: { label_en: "Peripheral coldness", label_es: "Frialdad periférica", unit: "[0,1]", step: "0.01" },
+  nocturnal_hyperphagia: { label_en: "Nocturnal hyperphagia", label_es: "Hiperfagia nocturna", unit: "[0,1]", step: "0.01" },
+  inability_to_rest: { label_en: "Inability to rest", label_es: "Incapacidad de descansar", unit: "[0,1]", step: "0.01" },
+  panic_grief_tonality: { label_en: "PANIC-GRIEF tonality", label_es: "Tonalidad PÁNICO-DUELO", unit: "[0,1]", step: "0.01" },
+  dissociation_sudden_impact: { label_en: "Dissociation (sudden impact)", label_es: "Disociación (impacto súbito)", unit: "[0,1]", step: "0.01" },
+  interoceptive_suppression: { label_en: "Interoceptive suppression", label_es: "Supresión interoceptiva", unit: "[0,1]", step: "0.01" },
 };
+
+export type GaussianBand = { mean: number; sd: number };
 
 export type ImprintParams = {
   id: ImprintId;
   name: string;
-  /** Vector μ y Σ diagonal por eje. */
   bands: Partial<Record<FeatureKey, GaussianBand>>;
 };
 
 /**
- * Parámetros v0.1 derivados de:
+ * Parámetros v0.2 — vector ampliado a 40 ejes.
+ *
+ * Fuentes:
  *   1. Tablas de "signatures" del system prompt de /api/analyze
- *      (bandas i1/i4/i7/i8 sobre cortisol, HbA1c, TSH, HDL, TG, SDNN).
+ *      (cortisol, HbA1c, TSH, HDL, TG, SDNN).
  *   2. Tratado BV4 — improntas i1 Desacople, i4 Fijación Externa,
  *      i7 Hibernación, i8 Reserva.
- *   3. Dr. Miguel Ojeda Ríos — validación clínica inicial.
+ *   3. Práctica clínica del Dr. Miguel Ojeda Ríos — ajustes de v0.1.
+ *   4. Estándares de referencia nutrigenómica (rangos funcionales
+ *      no poblacionales).
  *
- * Las sd son conservadoras (anchas) en v0.1. En fase 2 se ajustan
- * con N casos de la práctica.
+ * sd deliberadamente anchas en v0.2 porque el modelo aprende con
+ * casos reales. Estrechar σ prematuramente produce over-confidence.
  *
- * Para los 3 ejes narrativos [0,1]: asumimos que la narrativa
- * específica de una impronta está desplazada hacia 0.75±0.15 y
- * las narrativas ajenas hacia 0.25±0.15. Valores intermedios
- * no distinguen.
+ * Convención narrativa: la impronta que "posee" la dimensión narrativa
+ * tiene μ ≈ 0.78 (presencia marcada), σ ≈ 0.15. Las otras improntas
+ * tienen μ ≈ 0.22–0.30 (presencia baja pero no cero). Valores
+ * intermedios (0.4–0.6) aportan poca información al posterior.
  */
+const NAR_HIGH: GaussianBand = { mean: 0.78, sd: 0.15 };
+const NAR_MID: GaussianBand = { mean: 0.45, sd: 0.2 };
+const NAR_LOW: GaussianBand = { mean: 0.22, sd: 0.15 };
+
 export const IMPRINT_PARAMS: Record<ImprintId, ImprintParams> = {
+  // ────────────────────────────────────────────────
+  // i1 Desacople — hipervigilancia, simpaticotonía sostenida,
+  // periféricos fríos, HPA alta, HRV colapsado, metabolismo tenso.
+  // ────────────────────────────────────────────────
   i1: {
     id: "i1",
     name: "Desacople",
     bands: {
-      cortisol_morning: { mean: 20.5, sd: 3.5 }, // alto-normal
-      sdnn_hrv: { mean: 28, sd: 8 }, //            reducido
-      hba1c: { mean: 5.8, sd: 0.4 }, //            upper-normal
-      homa_ir: { mean: 2.4, sd: 0.9 }, //          leve
-      hdl: { mean: 43, sd: 6 }, //                 bajo
-      hypervigilance: { mean: 0.78, sd: 0.15 },
-      dorsal_collapse: { mean: 0.22, sd: 0.15 },
-      scarcity_anticipation: { mean: 0.3, sd: 0.2 },
+      // HPA
+      cortisol_am: { mean: 20.5, sd: 3.5 },
+      cortisol_pm: { mean: 6.5, sd: 2.0 },
+      car: { mean: 6.5, sd: 2.0 },
+      // Metabolic
+      hba1c: { mean: 5.8, sd: 0.4 },
+      homa_ir: { mean: 2.4, sd: 0.9 },
+      fasting_glucose: { mean: 94, sd: 8 },
+      fasting_insulin: { mean: 11, sd: 3 },
+      triglycerides: { mean: 130, sd: 40 },
+      hdl: { mean: 43, sd: 6 },
+      ldl: { mean: 115, sd: 25 },
+      leptin: { mean: 10, sd: 4 },
+      // Inflammation
+      crp: { mean: 1.8, sd: 1.2 },
+      il6: { mean: 2.0, sd: 1.0 },
+      // Thyroid
+      tsh: { mean: 1.8, sd: 0.9 },
+      t3_free: { mean: 3.1, sd: 0.4 },
+      t4_free: { mean: 1.3, sd: 0.2 },
+      // Micronutrients
+      ferritin: { mean: 85, sd: 40 },
+      vitamin_d: { mean: 28, sd: 10 },
+      b12: { mean: 500, sd: 150 },
+      homocysteine: { mean: 10, sd: 3 },
+      // Autonomic — rigid sympathetic
+      sdnn_hrv: { mean: 28, sd: 8 },
+      rmssd_hrv: { mean: 22, sd: 7 },
+      lf_hf_ratio: { mean: 3.2, sd: 1.2 },
+      // Body composition
+      visceral_fat: { mean: 9, sd: 3 },
+      lean_mass_pct: { mean: 60, sd: 6 },
+      body_water_pct: { mean: 52, sd: 5 },
+      // Narrative
+      hypervigilance: NAR_HIGH,
+      dorsal_collapse: NAR_LOW,
+      scarcity_anticipation: NAR_MID,
+      externalised_anger: NAR_MID,
+      rumination_agent: NAR_LOW,
+      hepatobiliary_tag: NAR_LOW,
+      peripheral_coldness: NAR_HIGH,
+      nocturnal_hyperphagia: NAR_LOW,
+      inability_to_rest: { mean: 0.65, sd: 0.18 },
+      panic_grief_tonality: NAR_LOW,
+      dissociation_sudden_impact: NAR_HIGH,
+      interoceptive_suppression: { mean: 0.65, sd: 0.18 },
     },
   },
+  // ────────────────────────────────────────────────
+  // i4 Fijación Externa — anger, rumination, hepatobiliary load,
+  // sympathetic tone elevado, TG elevados.
+  // ────────────────────────────────────────────────
   i4: {
     id: "i4",
     name: "Fijación Externa",
     bands: {
-      cortisol_morning: { mean: 19.5, sd: 3.8 },
-      sdnn_hrv: { mean: 32, sd: 10 },
+      // HPA
+      cortisol_am: { mean: 19.5, sd: 3.8 },
+      cortisol_pm: { mean: 7.0, sd: 2.5 },
+      car: { mean: 6.0, sd: 2.0 },
+      // Metabolic
       hba1c: { mean: 5.65, sd: 0.35 },
       homa_ir: { mean: 2.2, sd: 0.8 },
+      fasting_glucose: { mean: 92, sd: 8 },
+      fasting_insulin: { mean: 10, sd: 3 },
+      triglycerides: { mean: 185, sd: 50 },
       hdl: { mean: 45, sd: 7 },
-      hypervigilance: { mean: 0.55, sd: 0.2 },
-      dorsal_collapse: { mean: 0.2, sd: 0.15 },
-      scarcity_anticipation: { mean: 0.35, sd: 0.2 },
+      ldl: { mean: 130, sd: 30 },
+      leptin: { mean: 11, sd: 4 },
+      // Inflammation — moderate
+      crp: { mean: 2.5, sd: 1.5 },
+      il6: { mean: 2.5, sd: 1.2 },
+      // Thyroid
+      tsh: { mean: 1.9, sd: 0.9 },
+      t3_free: { mean: 3.2, sd: 0.4 },
+      t4_free: { mean: 1.2, sd: 0.2 },
+      // Micronutrients
+      ferritin: { mean: 150, sd: 70 },
+      vitamin_d: { mean: 26, sd: 10 },
+      b12: { mean: 520, sd: 150 },
+      homocysteine: { mean: 11, sd: 3 },
+      // Autonomic
+      sdnn_hrv: { mean: 32, sd: 10 },
+      rmssd_hrv: { mean: 25, sd: 8 },
+      lf_hf_ratio: { mean: 2.8, sd: 1.0 },
+      // Body composition
+      visceral_fat: { mean: 11, sd: 4 },
+      lean_mass_pct: { mean: 58, sd: 6 },
+      body_water_pct: { mean: 51, sd: 5 },
+      // Narrative
+      hypervigilance: NAR_MID,
+      dorsal_collapse: NAR_LOW,
+      scarcity_anticipation: NAR_MID,
+      externalised_anger: NAR_HIGH,
+      rumination_agent: NAR_HIGH,
+      hepatobiliary_tag: NAR_HIGH,
+      peripheral_coldness: NAR_LOW,
+      nocturnal_hyperphagia: NAR_LOW,
+      inability_to_rest: NAR_MID,
+      panic_grief_tonality: NAR_LOW,
+      dissociation_sudden_impact: NAR_LOW,
+      interoceptive_suppression: NAR_MID,
     },
   },
+  // ────────────────────────────────────────────────
+  // i7 Hibernación — dorsal-vagal collapse, hypersomnia, low cortisol,
+  // TSH alta, energía conservada, metabolismo deprimido.
+  // ────────────────────────────────────────────────
   i7: {
     id: "i7",
     name: "Hibernación",
     bands: {
-      cortisol_morning: { mean: 9, sd: 3 }, //    bajo
-      sdnn_hrv: { mean: 42, sd: 12 }, //           preservado o alto
-      hba1c: { mean: 5.2, sd: 0.3 }, //            bajo-normal
+      // HPA — blunted
+      cortisol_am: { mean: 9, sd: 3 },
+      cortisol_pm: { mean: 3.5, sd: 1.5 },
+      car: { mean: 2.5, sd: 1.5 },
+      // Metabolic
+      hba1c: { mean: 5.2, sd: 0.3 },
       homa_ir: { mean: 1.5, sd: 0.7 },
+      fasting_glucose: { mean: 85, sd: 7 },
+      fasting_insulin: { mean: 7, sd: 2.5 },
+      triglycerides: { mean: 100, sd: 35 },
       hdl: { mean: 52, sd: 8 },
-      hypervigilance: { mean: 0.25, sd: 0.15 },
-      dorsal_collapse: { mean: 0.8, sd: 0.15 },
-      scarcity_anticipation: { mean: 0.3, sd: 0.2 },
+      ldl: { mean: 110, sd: 25 },
+      leptin: { mean: 8, sd: 3 },
+      // Inflammation
+      crp: { mean: 1.2, sd: 0.9 },
+      il6: { mean: 1.5, sd: 0.8 },
+      // Thyroid — subclinical hypothyroid tendency
+      tsh: { mean: 4.0, sd: 1.5 },
+      t3_free: { mean: 2.6, sd: 0.4 },
+      t4_free: { mean: 1.0, sd: 0.2 },
+      // Micronutrients
+      ferritin: { mean: 45, sd: 25 },
+      vitamin_d: { mean: 22, sd: 8 },
+      b12: { mean: 420, sd: 140 },
+      homocysteine: { mean: 11, sd: 3 },
+      // Autonomic — preserved or high
+      sdnn_hrv: { mean: 42, sd: 12 },
+      rmssd_hrv: { mean: 38, sd: 12 },
+      lf_hf_ratio: { mean: 1.2, sd: 0.6 },
+      // Body composition
+      visceral_fat: { mean: 8, sd: 3 },
+      lean_mass_pct: { mean: 55, sd: 7 },
+      body_water_pct: { mean: 49, sd: 5 },
+      // Narrative
+      hypervigilance: NAR_LOW,
+      dorsal_collapse: NAR_HIGH,
+      scarcity_anticipation: { mean: 0.35, sd: 0.18 },
+      externalised_anger: NAR_LOW,
+      rumination_agent: NAR_LOW,
+      hepatobiliary_tag: NAR_LOW,
+      peripheral_coldness: { mean: 0.55, sd: 0.2 },
+      nocturnal_hyperphagia: NAR_LOW,
+      inability_to_rest: NAR_LOW,
+      panic_grief_tonality: NAR_LOW,
+      dissociation_sudden_impact: NAR_LOW,
+      interoceptive_suppression: NAR_HIGH,
     },
   },
+  // ────────────────────────────────────────────────
+  // i8 Reserva — scarcity, nocturnal hyperphagia, PANIC-GRIEF,
+  // HbA1c y HOMA-IR elevados, no puede descansar.
+  // ────────────────────────────────────────────────
   i8: {
     id: "i8",
     name: "Reserva",
     bands: {
-      cortisol_morning: { mean: 21, sd: 3.5 }, //  alto, sostenido
-      sdnn_hrv: { mean: 32, sd: 9 }, //            rígido
-      hba1c: { mean: 6.05, sd: 0.4 }, //           pre/diabético leve
-      homa_ir: { mean: 3.0, sd: 1.0 }, //          elevado
-      hdl: { mean: 41, sd: 6 }, //                 bajo
+      // HPA
+      cortisol_am: { mean: 21, sd: 3.5 },
+      cortisol_pm: { mean: 8, sd: 2.5 },
+      car: { mean: 5.5, sd: 2.0 },
+      // Metabolic — flag pattern
+      hba1c: { mean: 6.05, sd: 0.4 },
+      homa_ir: { mean: 3.0, sd: 1.0 },
+      fasting_glucose: { mean: 102, sd: 10 },
+      fasting_insulin: { mean: 14, sd: 4 },
+      triglycerides: { mean: 165, sd: 45 },
+      hdl: { mean: 41, sd: 6 },
+      ldl: { mean: 125, sd: 28 },
+      leptin: { mean: 18, sd: 6 },
+      // Inflammation
+      crp: { mean: 2.2, sd: 1.3 },
+      il6: { mean: 2.2, sd: 1.0 },
+      // Thyroid
+      tsh: { mean: 2.3, sd: 1.0 },
+      t3_free: { mean: 3.0, sd: 0.4 },
+      t4_free: { mean: 1.2, sd: 0.2 },
+      // Micronutrients
+      ferritin: { mean: 120, sd: 60 },
+      vitamin_d: { mean: 25, sd: 10 },
+      b12: { mean: 460, sd: 150 },
+      homocysteine: { mean: 11, sd: 3 },
+      // Autonomic — rigid
+      sdnn_hrv: { mean: 32, sd: 9 },
+      rmssd_hrv: { mean: 26, sd: 8 },
+      lf_hf_ratio: { mean: 2.8, sd: 1.0 },
+      // Body composition — higher visceral
+      visceral_fat: { mean: 13, sd: 4 },
+      lean_mass_pct: { mean: 54, sd: 6 },
+      body_water_pct: { mean: 48, sd: 5 },
+      // Narrative
       hypervigilance: { mean: 0.5, sd: 0.2 },
-      dorsal_collapse: { mean: 0.3, sd: 0.2 },
-      scarcity_anticipation: { mean: 0.82, sd: 0.15 },
+      dorsal_collapse: NAR_LOW,
+      scarcity_anticipation: NAR_HIGH,
+      externalised_anger: NAR_LOW,
+      rumination_agent: NAR_MID,
+      hepatobiliary_tag: NAR_LOW,
+      peripheral_coldness: NAR_LOW,
+      nocturnal_hyperphagia: NAR_HIGH,
+      inability_to_rest: NAR_HIGH,
+      panic_grief_tonality: NAR_HIGH,
+      dissociation_sudden_impact: NAR_LOW,
+      interoceptive_suppression: { mean: 0.55, sd: 0.2 },
     },
   },
 };
@@ -150,34 +477,14 @@ export type ImprintPosteriorResult = {
   version: string;
   posterior: ImprintPosteriorEntry[];
   dominant: ImprintId;
-  /**
-   * Gap dominant-second posterior. < 0.2 → posterior débilmente
-   * separado; sugerir más datos o una segunda sesión.
-   */
   top_gap: number;
-  /**
-   * Ejes que efectivamente entraron al cálculo (los que tenían
-   * valor y los que la impronta tiene definidos).
-   */
   features_used: FeatureKey[];
-  /**
-   * Ejes ausentes en el input del usuario. Se marginalizaron.
-   */
   features_missing: FeatureKey[];
-  /**
-   * Shannon entropy del posterior sobre las 4 improntas (bits).
-   * 0 = totalmente determinado; 2 = uniforme sobre 4.
-   * Medida de incertidumbre. Debe bajar cuando llegan más datos.
-   */
   entropy_bits: number;
-  /** Prior uniforme usado (1/4 por defecto). */
   prior: Record<ImprintId, number>;
 };
 
-/**
- * log N(x | μ, σ²) para una gaussiana univariada.
- * Estable numéricamente (no colapsa para σ pequeño).
- */
+/** Gaussiana univariada en log-space (estable numéricamente). */
 function logGaussian(x: number, mean: number, sd: number): number {
   const variance = sd * sd;
   const diff = x - mean;
@@ -187,8 +494,7 @@ function logGaussian(x: number, mean: number, sd: number): number {
 }
 
 /**
- * Aplica el teorema de Bayes sobre el GMM para obtener el posterior
- * normalizado P(impronta | features). Matemáticamente: softmax de
+ * Aplica el teorema de Bayes sobre el GMM: softmax de
  * log P(x | k) + log π_k.
  */
 export function computeImprintPosterior(
@@ -202,11 +508,7 @@ export function computeImprintPosterior(
   const featureEntries = Object.entries(features) as Array<
     [FeatureKey, number]
   >;
-  const featuresProvided: FeatureKey[] = featureEntries
-    .filter(([, v]) => typeof v === "number" && Number.isFinite(v))
-    .map(([k]) => k);
 
-  // Log-likelihoods by imprint: sum log-gaussians over provided features.
   const logLiks: Record<ImprintId, number> = { i1: 0, i4: 0, i7: 0, i8: 0 };
   const usedSets: Record<ImprintId, Set<FeatureKey>> = {
     i1: new Set(),
@@ -225,13 +527,11 @@ export function computeImprintPosterior(
     }
   }
 
-  // Union of features actually used (all imprints share μ,Σ structure in v0.1)
   const featuresUsed: FeatureKey[] = Array.from(usedSets.i1);
   const featuresMissing: FeatureKey[] = (
     Object.keys(IMPRINT_PARAMS.i1.bands) as FeatureKey[]
   ).filter((k) => !featuresUsed.includes(k));
 
-  // Log posterior (unnormalised) = log-likelihood + log prior
   const logPosteriorUnnorm: Record<ImprintId, number> = {
     i1: logLiks.i1 + Math.log(prior.i1),
     i4: logLiks.i4 + Math.log(prior.i4),
@@ -239,7 +539,6 @@ export function computeImprintPosterior(
     i8: logLiks.i8 + Math.log(prior.i8),
   };
 
-  // Softmax with max-subtraction trick for numerical stability.
   const maxLog = Math.max(
     logPosteriorUnnorm.i1,
     logPosteriorUnnorm.i4,
@@ -272,14 +571,13 @@ export function computeImprintPosterior(
   const dominant = sorted[0].id;
   const topGap = sorted[0].posterior - sorted[1].posterior;
 
-  // Shannon entropy in bits.
   const entropyBits = -entries.reduce((s, e) => {
     const p = e.posterior;
     return s + (p > 0 ? p * Math.log2(p) : 0);
   }, 0);
 
   return {
-    version: "gmm-v0.1",
+    version: "gmm-v0.2",
     posterior: entries,
     dominant,
     top_gap: topGap,
