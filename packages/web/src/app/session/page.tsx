@@ -57,21 +57,20 @@ export default async function SessionPage({
         <div className="h-[2px] bg-ink" />
       </header>
 
-      <article className="mx-auto max-w-[1480px] px-6 md:px-10 py-10 pb-16">
-        <section className="mb-10">
-          <h1 className="editorial text-[38px] md:text-[46px] leading-[1] text-ink">
-            {locale === "es" ? "Una sesión clínica" : "A clinical session"}
-            <br />
+      <article className="mx-auto max-w-[1480px] px-6 md:px-10 py-6 pb-16">
+        <section className="mb-5 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+          <h1 className="editorial text-[26px] md:text-[32px] leading-[1.05] text-ink">
+            {locale === "es" ? "Una sesión clínica " : "A clinical session "}
             <span className="editorial-italic text-accent">
               {locale === "es"
                 ? "en tiempo de inferencia."
                 : "in inference time."}
             </span>
           </h1>
-          <p className="mt-6 max-w-[68ch] text-[14px] leading-[1.6] text-ink-soft">
+          <p className="max-w-[56ch] text-[12.5px] leading-[1.5] text-ink-soft">
             {locale === "es"
-              ? "Haiku 4.5 conduce la entrevista turno a turno. Al cerrar, Sonnet 4.6 extrae los priors activos y calcula el posterior clínico. Opus 4.7 reformula el mismo JSON en dos registros —paciente y clínico— con lenguaje adaptado."
-              : "Haiku 4.5 runs the interview turn by turn. On close, Sonnet 4.6 extracts active priors and computes the clinical posterior. Opus 4.7 reframes the same JSON in two registers — patient and clinician — with language adapted to each."}
+              ? "Haiku 4.5 entrevista. Sonnet 4.6 calcula el posterior. Opus 4.7 reformula en dos registros —paciente y clínico."
+              : "Haiku 4.5 interviews. Sonnet 4.6 computes the posterior. Opus 4.7 reframes into two registers — patient and clinician."}
           </p>
         </section>
 

@@ -136,20 +136,27 @@ export const DiscordanceSchema = z.object({
 export type Discordance = z.infer<typeof DiscordanceSchema>;
 
 /**
- * When red flags fire or labs contradict safe imprint inference, the
- * analyzer refuses to produce a full posterior and returns a referral
- * recommendation instead.
+ * Safety priority — a graded signal to the clinician, not a refusal.
+ *
+ * The system ALWAYS produces a posterior (Inferentia is a clinician-
+ * facing tool, not direct-to-consumer). safety_priority communicates
+ * context the clinician should weigh before intervening nutritionally
+ * or with molecules:
+ *
+ * - "none": no safety concern detected.
+ * - "elevated": caveat-level — condition modulates the signature or
+ *   warrants confirmation before acting (e.g., TSH > 10, untreated
+ *   severe hypothyroid; substance dependence without treatment;
+ *   recent major loss <6 weeks). The posterior is still useful; act
+ *   carefully.
+ * - "critical": active suicidal ideation with plan/intent, active
+ *   psychosis impairing the validity of the interview, or a medical
+ *   instability disclosed mid-interview. Intervention in the imprint
+ *   layer should be deferred until safety is addressed. The posterior
+ *   is still returned — the clinician sees it and decides.
  */
-export const ReferralSchema = z.object({
-  kind: z.enum(["referral"]),
-  reason_en: z.string(),
-  reason_es: z.string(),
-  suggested_next_steps_en: z.array(z.string()).min(1).max(5),
-  suggested_next_steps_es: z.array(z.string()).min(1).max(5),
-  triggered_flags: z.array(z.string()).min(1),
-});
-
-export type Referral = z.infer<typeof ReferralSchema>;
+export const SafetyPrioritySchema = z.enum(["none", "elevated", "critical"]);
+export type SafetyPriority = z.infer<typeof SafetyPrioritySchema>;
 
 export const ClinicalPosteriorSchema = z.object({
   kind: z.enum(["posterior"]).default("posterior"),
@@ -187,19 +194,13 @@ export const ClinicalPosteriorSchema = z.object({
     .min(0)
     .max(1)
     .describe("Estimated reduction in free energy, 0..1"),
+  /** Safety signal to the clinician — graded, not blocking. */
+  safety_priority: SafetyPrioritySchema.default("none"),
+  /** Short explanation shown when safety_priority is elevated/critical. */
+  safety_rationale: z.string().optional(),
 });
 
 export type ClinicalPosterior = z.infer<typeof ClinicalPosteriorSchema>;
-
-/**
- * Either a full clinical posterior, or a referral when red flags fire
- * or the data prohibits safe inference.
- */
-export const AnalyzeResultSchema = z.discriminatedUnion("kind", [
-  ClinicalPosteriorSchema,
-  ReferralSchema,
-]);
-export type AnalyzeResult = z.infer<typeof AnalyzeResultSchema>;
 
 /**
  * Utility: compute how informative the intake is. Used by the analyzer
@@ -278,3 +279,143 @@ export const DualRenderSchema = z.object({
 export type PatientView = z.infer<typeof PatientViewSchema>;
 export type ClinicianView = z.infer<typeof ClinicianViewSchema>;
 export type DualRender = z.infer<typeof DualRenderSchema>;
+
+/**
+ * Nutritional Program — Output 4 del MVP.
+ * El clínico ve borrador editable + racional molecular; el paciente ve
+ * la versión firmada con alimentos, ritmos y experimentos de flexibilidad.
+ * "Salutogénico" = orientado a expandir el cono cognitivo, no a prohibir.
+ */
+
+const FoodEmphasiseSchema = z.object({
+  name: z.string(),
+  why: z.string().describe("One sentence — why this food for this imprint"),
+  when: z
+    .string()
+    .optional()
+    .describe("Optional timing guidance (breakfast, post-training, evening)"),
+});
+
+const FoodReduceSchema = z.object({
+  name: z.string(),
+  why: z.string(),
+});
+
+const RhythmSchema = z.object({
+  title: z.string().describe("e.g., 'Eating window 10h'"),
+  instruction: z
+    .string()
+    .describe("One-sentence actionable instruction in the patient register"),
+});
+
+const FlexibilityExperimentSchema = z.object({
+  title: z.string(),
+  prompt: z
+    .string()
+    .describe(
+      "A gentle experiment the patient tries to expose a predictive rigidity (e.g., eat without screen for 3 days, savoury vs sweet breakfast)",
+    ),
+  duration_days: z.number().int().min(1).max(28).default(7),
+});
+
+const MolecularRationaleSchema = z.object({
+  target_node: z
+    .string()
+    .describe("Node in the factor graph this rationale addresses"),
+  molecules: z.array(z.string()).min(1).max(4),
+  mechanism: z.string().describe("Short mechanism — clinician register"),
+});
+
+export const NutritionalProgramSchema = z.object({
+  patient_id: z.string(),
+  imprint_id: z.enum(["i1", "i4", "i7", "i8"]),
+  imprint_name: z.string(),
+  headline: z
+    .string()
+    .describe("One-sentence patient-register headline for the program"),
+  foods_emphasise: z.array(FoodEmphasiseSchema).min(3).max(8),
+  foods_reduce: z.array(FoodReduceSchema).min(1).max(6),
+  rhythms: z.array(RhythmSchema).min(2).max(5),
+  flexibility_experiments: z.array(FlexibilityExperimentSchema).min(1).max(4),
+  molecular_rationale: z.array(MolecularRationaleSchema).min(2).max(5),
+  clinician_notes: z
+    .string()
+    .describe("Short editable note for the clinician, 1–3 sentences"),
+  cautions: z
+    .array(z.string())
+    .max(5)
+    .default([])
+    .describe("Interactions, contraindications, things to double-check"),
+  /**
+   * Signature state — hackathon MVP keeps this client-side in
+   * sessionStorage. In fase 2 this becomes a real audit log.
+   */
+  signed_by: z.string().nullable().default(null),
+  signed_at: z.string().nullable().default(null),
+});
+
+export type NutritionalProgram = z.infer<typeof NutritionalProgramSchema>;
+
+/**
+ * Agency Panel — Output 5 del MVP. Outcome primario del sistema.
+ *
+ * Ocho ítems Likert 1–5 distribuidos en tres dimensiones:
+ *  - mastery (4): versión breve de Pearlin Mastery Scale (dominio público).
+ *  - interoception (2): ítems propios (MAIA está bajo licencia — no se copia).
+ *  - perceived_options (2): ítems propios sobre cono cognitivo.
+ *
+ * Pre = estimación del sistema al cierre de la entrevista.
+ * Post = proyección del sistema asumiendo el programa firmado adoptado
+ *        durante ~8 semanas. En fase 2 este será medición real longitudinal.
+ *
+ * Cada ítem lleva justificación (por qué el sistema estima ese valor)
+ * para auditabilidad clínica.
+ */
+
+export const AgencyDimensionSchema = z.enum([
+  "mastery",
+  "interoception",
+  "perceived_options",
+]);
+export type AgencyDimension = z.infer<typeof AgencyDimensionSchema>;
+
+export const AgencyItemSchema = z.object({
+  id: z.string(),
+  dimension: AgencyDimensionSchema,
+  prompt: z.string().describe("Short item wording, patient register"),
+  pre: z.number().min(1).max(5),
+  post: z.number().min(1).max(5),
+  rationale_pre: z
+    .string()
+    .describe("One sentence — why the system estimates this pre value"),
+  rationale_post: z
+    .string()
+    .describe("One sentence — why the system projects this post value"),
+});
+
+export const AgencyPanelSchema = z.object({
+  patient_id: z.string(),
+  imprint_id: z.enum(["i1", "i4", "i7", "i8"]),
+  items: z.array(AgencyItemSchema).length(8),
+  summary_en: z
+    .string()
+    .describe("One-sentence neutral summary of the pre/post shift in English"),
+  summary_es: z
+    .string()
+    .describe("One-sentence neutral summary of the pre/post shift in Spanish"),
+  /**
+   * Delta per dimension (post - pre averaged over items in each dimension).
+   * Computed client-side, not LLM-generated, to avoid arithmetic drift.
+   * Kept in schema for persistence convenience.
+   */
+  horizon_weeks: z
+    .number()
+    .int()
+    .min(2)
+    .max(24)
+    .default(8)
+    .describe("Projection horizon the post column assumes"),
+});
+
+export type AgencyItem = z.infer<typeof AgencyItemSchema>;
+export type AgencyPanel = z.infer<typeof AgencyPanelSchema>;

@@ -100,6 +100,43 @@ export default function ResultClient({
 
   return (
     <>
+      {/* Safety banner — graded signal, not a block -------------- */}
+      {posterior.safety_priority !== "none" && (
+        <section
+          className={`mt-2 border px-6 py-4 bg-paper-raised ${
+            posterior.safety_priority === "critical"
+              ? "border-danger"
+              : "border-accent"
+          }`}
+        >
+          <p
+            className="eyebrow"
+            style={{
+              color:
+                posterior.safety_priority === "critical" ? "#8A2C1B" : undefined,
+            }}
+          >
+            {posterior.safety_priority === "critical"
+              ? locale === "es"
+                ? "Prioridad de seguridad — crítica"
+                : "Safety priority — critical"
+              : locale === "es"
+                ? "Prioridad de seguridad — elevada"
+                : "Safety priority — elevated"}
+          </p>
+          {posterior.safety_rationale && (
+            <p className="mt-2 text-[13px] text-ink-soft leading-relaxed">
+              {posterior.safety_rationale}
+            </p>
+          )}
+          <p className="mt-3 text-[10.5px] tabular tracking-wide uppercase text-ink-mute">
+            {locale === "es"
+              ? "El clínico valora esta señal antes de intervenir. El análisis sigue disponible."
+              : "The clinician weighs this signal before intervening. The analysis remains available."}
+          </p>
+        </section>
+      )}
+
       {/* Headline — thesis-first, carries the story --------------- */}
       <section className="mt-2 border border-ink bg-paper-raised">
         <div className="px-6 md:px-10 py-8 grid grid-cols-12 gap-x-10">
@@ -391,7 +428,28 @@ export default function ResultClient({
       </section>
 
       {/* Footer strip: navigation ---------------------------------- */}
-      <section className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 border-t border-rule pt-10 text-[13px]">
+      {/* The nutritional program is the next step in the clinical arc:
+          result (posterior + dual render) → program (clinician signs)
+          → agency panel (fase 2). We highlight it as the first card. */}
+      <section className="mt-16 grid grid-cols-1 md:grid-cols-4 gap-6 border-t border-rule pt-10 text-[13px]">
+        <Link
+          href={locale === "es" ? "/session/program?lang=es" : "/session/program"}
+          className="border-2 border-ink bg-paper-raised px-5 py-4 hover:border-accent transition-colors"
+        >
+          <p className="eyebrow eyebrow-accent">
+            {locale === "es" ? "Siguiente paso" : "Next step"}
+          </p>
+          <p className="mt-2 editorial text-[16px] text-ink">
+            {locale === "es"
+              ? "Programa nutricional ↗"
+              : "Nutritional program ↗"}
+          </p>
+          <p className="mt-1 text-[11px] text-ink-mute">
+            {locale === "es"
+              ? "Output 4 · firmable"
+              : "Output 4 · signable"}
+          </p>
+        </Link>
         <Link
           href={locale === "es" ? "/network?lang=es" : "/network"}
           className="border border-rule bg-paper-raised px-5 py-4 hover:border-ink transition-colors"

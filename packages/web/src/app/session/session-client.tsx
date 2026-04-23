@@ -1,17 +1,15 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   PATIENT_ANA_PROFILE,
   type PrescriptedTurn,
 } from "@/lib/patient-ana";
 import type {
-  AnalyzeResult,
   ClinicalPosterior,
   Intake,
   Labs,
-  Referral,
 } from "@/lib/clinical-schema";
 
 type Message = {
@@ -26,7 +24,6 @@ type Stage =
   | "interviewing"
   | "analyzing"
   | "ready_posterior"
-  | "ready_referral"
   | "rendering"
   | "error";
 
@@ -110,7 +107,7 @@ export default function SessionClient({
             labsEmpty: "Ningún lab cargado — la confianza se limita",
             redFlagsSection: "Tamizaje de seguridad",
             redFlagsLead:
-              "Cinco preguntas Sí/No. Si cualquiera es Sí, el sistema no infiere impronta y sugiere derivación.",
+              "Cinco preguntas Sí/No. Las respuestas afirmativas elevan la señal de seguridad; el posterior clínico siempre se emite.",
             loadPreset: "Cargar preset Ana (demo)",
             proceed: "Comenzar entrevista →",
             playNext: "Siguiente turno",
@@ -127,10 +124,10 @@ export default function SessionClient({
             error: "Algo salió mal.",
             freeEnergy: "Δ energía libre estimada",
             labsMissing: "Panel de labs incompleto — confianza acotada",
-            referralTitle: "Derivación recomendada",
-            referralHint:
-              "El tamizaje detectó señales que requieren atención profesional antes de inferir improntas.",
-            viewReferral: "Ver recomendación",
+            safetyElevated: "Prioridad de seguridad — elevada",
+            safetyCritical: "Prioridad de seguridad — crítica",
+            safetyHint:
+              "El clínico valora esta señal antes de intervenir. El análisis sigue disponible.",
             yes: "Sí",
             no: "No",
           }
@@ -142,7 +139,7 @@ export default function SessionClient({
             labsEmpty: "No labs loaded — confidence will be bounded",
             redFlagsSection: "Safety screening",
             redFlagsLead:
-              "Five yes/no questions. Any Yes triggers a referral instead of an imprint posterior.",
+              "Five yes/no questions. Affirmative answers raise the safety signal; the clinical posterior is always produced.",
             loadPreset: "Load Ana preset (demo)",
             proceed: "Start interview →",
             playNext: "Next turn",
@@ -159,10 +156,10 @@ export default function SessionClient({
             error: "Something went wrong.",
             freeEnergy: "Est. free-energy Δ",
             labsMissing: "Lab panel missing — confidence bounded",
-            referralTitle: "Referral recommended",
-            referralHint:
-              "Triage surfaced signals that need professional attention before imprint inference.",
-            viewReferral: "See recommendation",
+            safetyElevated: "Safety priority — elevated",
+            safetyCritical: "Safety priority — critical",
+            safetyHint:
+              "The clinician weighs this signal before intervening. The analysis remains available.",
             yes: "Yes",
             no: "No",
           },
@@ -186,7 +183,6 @@ export default function SessionClient({
   const [nextTurnIdx, setNextTurnIdx] = useState(0);
   const [stage, setStage] = useState<Stage>("intake");
   const [posterior, setPosterior] = useState<ClinicalPosterior | null>(null);
-  const [referral, setReferral] = useState<Referral | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const loadAnaPreset = useCallback(() => {
@@ -231,7 +227,6 @@ export default function SessionClient({
     setNextTurnIdx(0);
     setStage("intake");
     setPosterior(null);
-    setReferral(null);
     setErrorMsg(null);
   }, []);
 
@@ -263,14 +258,8 @@ export default function SessionClient({
         setStage("error");
         return;
       }
-      const result = j.result as AnalyzeResult;
-      if (result.kind === "referral") {
-        setReferral(result);
-        setStage("ready_referral");
-      } else {
-        setPosterior(result);
-        setStage("ready_posterior");
-      }
+      setPosterior(j.posterior as ClinicalPosterior);
+      setStage("ready_posterior");
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : String(err));
       setStage("error");
@@ -306,6 +295,13 @@ export default function SessionClient({
 
   const labsCount = Object.values(labs).filter((v) => typeof v === "number").length;
   const transcriptDone = nextTurnIdx >= scriptedTurns.length;
+
+  // Auto-scroll the chat transcript to the last message on every new turn.
+  const chatScrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = chatScrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages.length]);
 
   // ─────────────────────────────────── INTAKE SCREEN
   if (stage === "intake") {
@@ -449,10 +445,13 @@ export default function SessionClient({
   }
 
   // ─────────────────────────────────── INTERVIEW + SYNTHESIS
+  // Fixed viewport height split: each column scrolls independently so the
+  // chat transcript stays anchored while the right-side posterior panel can
+  // grow without pushing the chat off-screen.
   return (
-    <div className="grid grid-cols-12 gap-6">
-      <section className="col-span-12 lg:col-span-7 border border-ink bg-paper-raised">
-        <header className="flex items-start justify-between gap-4 px-6 py-4 border-b border-rule">
+    <div className="grid grid-cols-12 gap-6 lg:h-[calc(100vh-180px)] lg:min-h-[640px]">
+      <section className="col-span-12 lg:col-span-7 border border-ink bg-paper-raised flex flex-col lg:h-full lg:min-h-0">
+        <header className="flex items-start justify-between gap-4 px-6 py-4 border-b border-rule shrink-0">
           <div>
             <p className="eyebrow">Step 2 · {PATIENT_ANA_PROFILE.name}, {PATIENT_ANA_PROFILE.age}</p>
             <p className="mt-1 text-[11.5px] text-ink-soft max-w-[50ch]">
@@ -475,7 +474,10 @@ export default function SessionClient({
           </div>
         </header>
 
-        <div className="h-[460px] overflow-y-auto px-6 py-5 space-y-4 bg-paper-soft">
+        <div
+          ref={chatScrollRef}
+          className="flex-1 min-h-0 overflow-y-auto px-6 py-5 space-y-4 bg-paper-soft h-[460px] lg:h-auto"
+        >
           {messages.map((m) => (
             <div
               key={m.id}
@@ -503,7 +505,7 @@ export default function SessionClient({
           ))}
         </div>
 
-        <footer className="px-6 py-4 border-t border-rule flex items-center justify-between gap-4 bg-paper-raised">
+        <footer className="px-6 py-4 border-t border-rule flex items-center justify-between gap-4 bg-paper-raised shrink-0">
           <p className="text-[11px] text-ink-mute max-w-[44ch]">{L.demoNote}</p>
           {!transcriptDone ? (
             <button
@@ -522,10 +524,6 @@ export default function SessionClient({
               {stage === "rendering" ? L.rendering : L.render}
               <span className="inline-block w-5 h-px bg-paper" />
             </button>
-          ) : stage === "ready_referral" ? (
-            <span className="tabular text-[10.5px] tracking-[0.18em] uppercase text-danger">
-              {L.referralTitle}
-            </span>
           ) : (
             <button
               onClick={runAnalyze}
@@ -539,37 +537,41 @@ export default function SessionClient({
         </footer>
       </section>
 
-      {/* RIGHT panel */}
-      <aside className="col-span-12 lg:col-span-5 space-y-5">
-        {/* Referral box supersedes everything when active */}
-        {stage === "ready_referral" && referral && (
-          <div className="border border-danger bg-paper-raised px-5 py-4">
-            <p className="eyebrow" style={{ color: "#8A2C1B" }}>
-              {L.referralTitle}
+      {/* RIGHT panel — scrolls independently so the chat column stays anchored */}
+      <aside className="col-span-12 lg:col-span-5 space-y-5 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:pr-1">
+        {/* Safety banner — shown when posterior flags elevated/critical context */}
+        {posterior && posterior.safety_priority !== "none" && (
+          <div
+            className={`border px-5 py-4 bg-paper-raised ${
+              posterior.safety_priority === "critical"
+                ? "border-danger"
+                : "border-accent"
+            }`}
+          >
+            <p
+              className="eyebrow"
+              style={{
+                color:
+                  posterior.safety_priority === "critical" ? "#8A2C1B" : undefined,
+              }}
+            >
+              {posterior.safety_priority === "critical"
+                ? L.safetyCritical
+                : L.safetyElevated}
             </p>
-            <p className="mt-3 text-[12.5px] text-ink-soft leading-relaxed">
-              {locale === "es" ? referral.reason_es : referral.reason_en}
-            </p>
-            <p className="mt-4 eyebrow">
-              {locale === "es" ? "Próximos pasos" : "Next steps"}
-            </p>
-            <ul className="mt-2 space-y-1.5 text-[12px] text-ink-soft">
-              {(locale === "es"
-                ? referral.suggested_next_steps_es
-                : referral.suggested_next_steps_en
-              ).map((s, i) => (
-                <li key={i}>· {s}</li>
-              ))}
-            </ul>
+            {posterior.safety_rationale && (
+              <p className="mt-3 text-[12.5px] text-ink-soft leading-relaxed">
+                {posterior.safety_rationale}
+              </p>
+            )}
             <p className="mt-4 text-[10px] tabular tracking-wide uppercase text-ink-mute">
-              {L.referralHint}
+              {L.safetyHint}
             </p>
           </div>
         )}
 
         {/* Priors panel — skeletons during analyze */}
-        {stage !== "ready_referral" && (
-          <>
+        <>
             <div className="border border-rule bg-paper-raised px-5 py-4">
               <div className="flex items-center justify-between">
                 <p className="eyebrow eyebrow-accent">{L.priorsTitle}</p>
@@ -695,7 +697,6 @@ export default function SessionClient({
               )}
             </div>
           </>
-        )}
 
         {errorMsg && (
           <div className="border border-danger px-4 py-3 text-[12px] text-danger">

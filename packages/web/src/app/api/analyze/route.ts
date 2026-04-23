@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { MODELS } from "@/lib/thesis";
 import {
-  AnalyzeResultSchema,
+  ClinicalPosteriorSchema,
   IntakeSchema,
   countLabs,
   type Intake,
@@ -28,9 +28,11 @@ const ANALYST_SYSTEM = `You are Inferentia's clinical analyst. You receive:
  1. A short clinical interview transcript.
  2. An intake: demographics, labs (optional), active diagnoses, chronic medications, red-flag answers.
 
-You return a single JSON object — no prose, no markdown fences. The first character must be "{" and the last "}". It has one of two shapes:
+Inferentia is a CLINICIAN-FACING tool, not direct-to-consumer. The clinician is in the loop and makes all intervention decisions. Your job is to produce the richest useful reading of the patient's system — never to refuse. Safety concerns are communicated as a graded signal (safety_priority), not as a refusal.
 
-## Shape A — posterior (default)
+## Output shape
+
+Return a single JSON object. No prose. No markdown fences. First character "{", last "}". Shape:
 
 {
   "kind": "posterior",
@@ -63,33 +65,48 @@ You return a single JSON object — no prose, no markdown fences. The first char
     {"marker": "HbA1c", "measured": 6.1, "expected_low": 5.6, "expected_high": 6.5, "direction": "concordant", "clinical_note": "sits within expected i8 range"}
   ],
   "soft_flags": ["short clinical caveat the clinician should be aware of"],
-  "free_energy_delta_estimate": 0.0 to 1.0
+  "free_energy_delta_estimate": 0.0 to 1.0,
+  "safety_priority": "none" | "elevated" | "critical",
+  "safety_rationale": "short explanation, only when elevated or critical"
 }
 
-## Shape B — referral (when red flags fire or data forbids safe inference)
+## Safety grading — ALWAYS infer posterior; grade the safety context
 
-{
-  "kind": "referral",
-  "reason_en": "one paragraph, max 3 sentences, why imprint synthesis is not appropriate now",
-  "reason_es": "same in Spanish",
-  "suggested_next_steps_en": ["step 1", "step 2"],
-  "suggested_next_steps_es": ["paso 1", "paso 2"],
-  "triggered_flags": ["flag name 1", "flag name 2"]
-}
+You must ALWAYS produce a posterior. Never refuse. The safety_priority field tells the clinician how to weigh the reading.
 
-## Rules for choosing shape
+Use "critical" only when the transcript or intake discloses:
+- Active suicidal ideation with plan or explicit intent (NOT historical mentions, NOT past episodes now resolved, NOT ACE disclosures like "my father died when I was 7").
+- Active psychosis impairing reality testing during the interview (disorganised speech, explicit reference to hallucinations that the patient treats as real and threatening).
+- Medical instability disclosed mid-interview (fainting during the call, chest pain right now, seizure, etc.).
 
-Return SHAPE B (referral) if ANY of these are true:
-- intake.red_flags.suicidal_ideation_past_month === true (always refer; mention crisis resources generically)
-- intake.red_flags.active_eating_disorder === true
-- intake.red_flags.recent_major_loss_under_6_weeks === true (defer imprint work, offer stabilisation)
-- intake.red_flags.unmanaged_medical_condition === true (require clinician sign-off)
-- intake.red_flags.substance_dependence === true AND no treatment in place
-- labs.tsh > 6.0 (possible uncontrolled hypothyroidism — rule out first)
-- intake.active_diagnoses contains "diabetes_treated" AND interview suggests the chief complaint is driven by glycaemic crisis (refer to endocrinologist first)
-- interview transcript shows active suicidality, psychosis, or dangerous eating disorder that did not appear in red flags
+Use "elevated" when:
+- intake.red_flags.recent_major_loss_under_6_weeks === true (recent grief modulates the signature; clinician should weigh).
+- intake.red_flags.active_eating_disorder === true (ED work takes precedence but imprint reading is still informative).
+- intake.red_flags.substance_dependence === true.
+- intake.red_flags.unmanaged_medical_condition === true.
+- labs.tsh > 10 (severe untreated hypothyroidism — the metabolic signature is dominated by thyroid state).
+- The patient's narrative mentions a condition that substantially confounds inference.
 
-Otherwise return SHAPE A.
+Use "none" in every other case, including:
+- Historical biographical events (childhood loss, past trauma, ACE disclosures). These are EVIDENCE for the posterior, not safety triggers.
+- Treated diagnoses (diabetes on metformin, hypothyroid on T4, depression on SSRI stable). These become soft_flags, not safety_priority.
+- intake.red_flags.suicidal_ideation_past_month === true by itself without active plan/intent in the transcript — this becomes an "elevated" caveat: the clinician should re-assess, but imprint inference is still clinically useful.
+
+safety_rationale is REQUIRED when safety_priority is "elevated" or "critical", and MUST be omitted when "none".
+
+## Soft flags are for context, not safety
+
+Use soft_flags to help the clinician interpret the posterior:
+- "Lab panel missing — confidence bounded" when had_objective_data is false.
+- "Diabetes on pharmacotherapy — metabolic signature modulated by treatment" when metformin or equivalent is in chronic_medications.
+- "SSRI on board — serotonergic tone confounds cortisol and interoceptive readings" when ssri_snri is in chronic_medications.
+- "Posterior weakly separated (top-vs-second gap < 0.2) — consider a follow-up interview" if applicable.
+- "Very short transcript — inference provisional".
+
+## had_objective_data
+
+- Set to true when at least 3 labs are present in the intake.
+- When false, bound confidence at 0.65 and emit the lab-missing soft_flag.
 
 ## BV4 candidate patterns
 
@@ -227,7 +244,7 @@ Return the JSON object now.`;
       );
     }
 
-    const validated = AnalyzeResultSchema.safeParse(parsed);
+    const validated = ClinicalPosteriorSchema.safeParse(parsed);
     if (!validated.success) {
       return Response.json(
         {
@@ -246,7 +263,7 @@ Return the JSON object now.`;
         output: response.usage.output_tokens,
         cached: response.usage.cache_read_input_tokens,
       },
-      result: validated.data,
+      posterior: validated.data,
     });
   } catch (err) {
     return Response.json(
