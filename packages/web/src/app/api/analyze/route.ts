@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { MODELS } from "@/lib/thesis";
 import { ClinicalPosteriorSchema } from "@/lib/clinical-schema";
+import { extractJsonObject } from "@/lib/extract-json";
 
 export const runtime = "nodejs";
 export const maxDuration = 90;
@@ -99,7 +100,7 @@ Return the JSON clinical posterior now.`;
   try {
     const response = await client.messages.create({
       model: MODELS.SUBAGENT,
-      max_tokens: 3500,
+      max_tokens: 6000,
       temperature: 0.4,
       system: [
         {
@@ -108,20 +109,29 @@ Return the JSON clinical posterior now.`;
           cache_control: { type: "ephemeral" },
         },
       ],
-      messages: [{ role: "user", content: userPrompt }],
+      messages: [
+        { role: "user", content: userPrompt },
+        // Prefill forces a JSON continuation with no preamble.
+        { role: "assistant", content: "{" },
+      ],
     });
 
-    // Concatenate text blocks in the response
-    const raw = response.content
+    const body = response.content
       .filter((b) => b.type === "text")
       .map((b) => (b as { type: "text"; text: string }).text)
       .join("");
+    const raw = "{" + body;
 
-    // Strip code fences defensively
-    const cleaned = raw
-      .replace(/^```(?:json)?\s*/i, "")
-      .replace(/\s*```$/i, "")
-      .trim();
+    const cleaned = extractJsonObject(raw);
+    if (!cleaned) {
+      return Response.json(
+        {
+          error: "JSON extraction failed",
+          raw: raw.slice(0, 1200),
+        },
+        { status: 502 },
+      );
+    }
 
     let parsed: unknown;
     try {
@@ -131,7 +141,8 @@ Return the JSON clinical posterior now.`;
         {
           error: "JSON parse failed",
           detail: err instanceof Error ? err.message : String(err),
-          raw: cleaned.slice(0, 1200),
+          raw: cleaned.slice(0, 1500),
+          stop_reason: response.stop_reason,
         },
         { status: 502 },
       );

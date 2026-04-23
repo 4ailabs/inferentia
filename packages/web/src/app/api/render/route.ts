@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { MODELS } from "@/lib/thesis";
 import { DualRenderSchema, type ClinicalPosterior } from "@/lib/clinical-schema";
+import { extractJsonObject } from "@/lib/extract-json";
 
 export const runtime = "nodejs";
 export const maxDuration = 90;
@@ -89,7 +90,7 @@ Produce the dual render JSON now.${languageInstruction}`;
   try {
     const response = await client.messages.create({
       model: MODELS.ORCHESTRATOR,
-      max_tokens: 3000,
+      max_tokens: 6000,
       // Opus 4.7 deprecated explicit temperature — rely on defaults.
       system: [
         {
@@ -98,18 +99,30 @@ Produce the dual render JSON now.${languageInstruction}`;
           cache_control: { type: "ephemeral" },
         },
       ],
-      messages: [{ role: "user", content: userPrompt }],
+      messages: [
+        { role: "user", content: userPrompt },
+        // Prefill: force the model to continue a JSON object, no preamble possible.
+        { role: "assistant", content: "{" },
+      ],
     });
 
-    const raw = response.content
+    // Rebuild the text, prepending the prefill brace we injected.
+    const body = response.content
       .filter((b) => b.type === "text")
       .map((b) => (b as { type: "text"; text: string }).text)
       .join("");
+    const raw = "{" + body;
 
-    const cleaned = raw
-      .replace(/^```(?:json)?\s*/i, "")
-      .replace(/\s*```$/i, "")
-      .trim();
+    const cleaned = extractJsonObject(raw);
+    if (!cleaned) {
+      return Response.json(
+        {
+          error: "JSON extraction failed",
+          raw: raw.slice(0, 1200),
+        },
+        { status: 502 },
+      );
+    }
 
     let parsed: unknown;
     try {
@@ -119,7 +132,8 @@ Produce the dual render JSON now.${languageInstruction}`;
         {
           error: "JSON parse failed",
           detail: err instanceof Error ? err.message : String(err),
-          raw: cleaned.slice(0, 1200),
+          raw: cleaned.slice(0, 1500),
+          stop_reason: response.stop_reason,
         },
         { status: 502 },
       );
