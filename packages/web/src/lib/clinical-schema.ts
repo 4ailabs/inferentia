@@ -1,6 +1,79 @@
 import { z } from "zod";
 
 /**
+ * Intake schema — structured data the patient or clinician enters
+ * before the interview starts. Every field is optional; missing fields
+ * lower the confidence of downstream inference and are flagged in the
+ * clinician view.
+ */
+
+export const LabsSchema = z.object({
+  hba1c: z.number().min(0).max(20).optional(),
+  homa_ir: z.number().min(0).max(30).optional(),
+  fasting_glucose: z.number().min(0).max(600).optional(),
+  triglycerides: z.number().min(0).max(2000).optional(),
+  hdl: z.number().min(0).max(200).optional(),
+  ldl: z.number().min(0).max(500).optional(),
+  cortisol_morning: z.number().min(0).max(60).optional(),
+  tsh: z.number().min(0).max(200).optional(),
+  vitamin_d: z.number().min(0).max(200).optional(),
+  crp: z.number().min(0).max(100).optional(),
+  ferritin: z.number().min(0).max(2000).optional(),
+  sdnn_hrv: z.number().min(0).max(300).optional(),
+});
+
+export type Labs = z.infer<typeof LabsSchema>;
+
+// These flags are boolean answers to the 5 red-flag screening questions.
+// If any is true, /api/analyze must refuse to infer imprints and return
+// a referral recommendation instead.
+export const RedFlagsSchema = z.object({
+  suicidal_ideation_past_month: z.boolean().default(false),
+  active_eating_disorder: z.boolean().default(false),
+  recent_major_loss_under_6_weeks: z.boolean().default(false),
+  unmanaged_medical_condition: z.boolean().default(false),
+  substance_dependence: z.boolean().default(false),
+});
+
+export type RedFlags = z.infer<typeof RedFlagsSchema>;
+
+export const ActiveDiagnosisSchema = z.enum([
+  "diabetes_treated",
+  "hypothyroidism",
+  "autoimmune",
+  "cardiovascular",
+  "cancer_history",
+  "depression_treated",
+  "anxiety_treated",
+  "other",
+]);
+
+export const ChronicMedicationSchema = z.enum([
+  "corticosteroids",
+  "antipsychotics",
+  "beta_blockers",
+  "ssri_snri",
+  "metformin",
+  "thyroid_hormone",
+  "oral_contraceptive",
+  "hrt",
+  "other",
+]);
+
+export const IntakeSchema = z.object({
+  patient_id: z.string(),
+  age: z.number().int().min(12).max(110).optional(),
+  sex: z.enum(["F", "M", "other"]).optional(),
+  labs: LabsSchema.default({}),
+  active_diagnoses: z.array(ActiveDiagnosisSchema).default([]),
+  chronic_medications: z.array(ChronicMedicationSchema).default([]),
+  red_flags: RedFlagsSchema,
+  notes: z.string().max(1000).optional(),
+});
+
+export type Intake = z.infer<typeof IntakeSchema>;
+
+/**
  * Clinical posterior schema — the canonical JSON returned by the
  * /api/analyze skill. Every downstream view (patient render, clinician
  * render, network activation) consumes this schema.
@@ -45,7 +118,41 @@ export const ModulatorSchema = z.object({
   mechanism: z.string(),
 });
 
+/**
+ * Discordance — a single measured biomarker vs the range the dominant
+ * imprint's signature would predict. Flagged when the patient value lies
+ * outside the expected range; these drive the "⚠ discordancia" badges
+ * in the clinician view.
+ */
+export const DiscordanceSchema = z.object({
+  marker: z.string(),
+  measured: z.number(),
+  expected_low: z.number(),
+  expected_high: z.number(),
+  direction: z.enum(["above_expected", "below_expected", "concordant"]),
+  clinical_note: z.string(),
+});
+
+export type Discordance = z.infer<typeof DiscordanceSchema>;
+
+/**
+ * When red flags fire or labs contradict safe imprint inference, the
+ * analyzer refuses to produce a full posterior and returns a referral
+ * recommendation instead.
+ */
+export const ReferralSchema = z.object({
+  kind: z.enum(["referral"]),
+  reason_en: z.string(),
+  reason_es: z.string(),
+  suggested_next_steps_en: z.array(z.string()).min(1).max(5),
+  suggested_next_steps_es: z.array(z.string()).min(1).max(5),
+  triggered_flags: z.array(z.string()).min(1),
+});
+
+export type Referral = z.infer<typeof ReferralSchema>;
+
 export const ClinicalPosteriorSchema = z.object({
+  kind: z.enum(["posterior"]).default("posterior"),
   patient_id: z.string(),
   summary_en: z.string(),
   summary_es: z.string(),
@@ -59,15 +166,22 @@ export const ClinicalPosteriorSchema = z.object({
         return Math.abs(sum - 1.0) <= 0.06;
       },
       {
-        message:
-          "imprint_posterior values must sum to 1.0 ± 0.06",
+        message: "imprint_posterior values must sum to 1.0 ± 0.06",
       },
     ),
   dominant_imprint: z.enum(["i1", "i4", "i7", "i8"]),
   confidence: z.number().min(0).max(1),
+  /**
+   * Boolean: lab panel was meaningfully informative (at least 3 labs
+   * present). When false the confidence is bounded and clinician view
+   * shows a "labs missing" caveat.
+   */
+  had_objective_data: z.boolean(),
   recommended_labs: z.array(RecommendedTestSchema).max(6),
   recommended_snps: z.array(RecommendedSnpSchema).max(5),
   modulators: z.array(ModulatorSchema).max(5),
+  discordances: z.array(DiscordanceSchema).max(8).default([]),
+  soft_flags: z.array(z.string()).max(6).default([]),
   free_energy_delta_estimate: z
     .number()
     .min(0)
@@ -76,6 +190,25 @@ export const ClinicalPosteriorSchema = z.object({
 });
 
 export type ClinicalPosterior = z.infer<typeof ClinicalPosteriorSchema>;
+
+/**
+ * Either a full clinical posterior, or a referral when red flags fire
+ * or the data prohibits safe inference.
+ */
+export const AnalyzeResultSchema = z.discriminatedUnion("kind", [
+  ClinicalPosteriorSchema,
+  ReferralSchema,
+]);
+export type AnalyzeResult = z.infer<typeof AnalyzeResultSchema>;
+
+/**
+ * Utility: compute how informative the intake is. Used by the analyzer
+ * to set `had_objective_data` and bound confidence accordingly.
+ */
+export function countLabs(labs: Labs | undefined): number {
+  if (!labs) return 0;
+  return Object.values(labs).filter((v) => typeof v === "number").length;
+}
 
 /**
  * Dual render schema — what Opus 4.7 produces from the posterior.

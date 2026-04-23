@@ -249,6 +249,67 @@ export default function ResultClient({
               </ul>
             </div>
 
+            {/* Discordances — lab vs imprint signature */}
+            {posterior.discordances && posterior.discordances.length > 0 && (
+              <div>
+                <p className="eyebrow">
+                  {locale === "es"
+                    ? "Labs vs firma esperada"
+                    : "Labs vs expected signature"}
+                </p>
+                <ul className="mt-2 space-y-2">
+                  {posterior.discordances.map((d) => {
+                    const isDiscordant = d.direction !== "concordant";
+                    return (
+                      <li
+                        key={d.marker}
+                        className={`py-2 px-3 text-[12px] border ${
+                          isDiscordant ? "border-danger bg-danger/5" : "border-rule"
+                        }`}
+                      >
+                        <div className="flex items-baseline justify-between">
+                          <span className="tabular font-medium text-ink">
+                            {d.marker}
+                          </span>
+                          <span
+                            className={`tabular text-[11px] ${
+                              isDiscordant ? "text-danger" : "text-ink-quiet"
+                            }`}
+                          >
+                            {d.measured} · expected {d.expected_low}–{d.expected_high}
+                            {isDiscordant && (
+                              <>
+                                {" "}· {d.direction === "above_expected" ? "↑" : "↓"}
+                              </>
+                            )}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-[11.5px] text-ink-quiet leading-snug">
+                          {d.clinical_note}
+                        </p>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
+
+            {/* Soft flags — missing labs, medication confounds, etc. */}
+            {posterior.soft_flags && posterior.soft_flags.length > 0 && (
+              <div className="border-l-2 border-accent pl-4 py-2">
+                <p className="eyebrow eyebrow-accent">
+                  {locale === "es" ? "Caveats" : "Caveats"}
+                </p>
+                <ul className="mt-2 space-y-1">
+                  {posterior.soft_flags.map((f, i) => (
+                    <li key={i} className="text-[12px] text-ink-soft">
+                      · {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <div>
               <p className="eyebrow">
                 {locale === "es" ? "Diferencial" : "Differential"}
