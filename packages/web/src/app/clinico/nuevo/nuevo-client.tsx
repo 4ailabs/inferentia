@@ -2,48 +2,199 @@
 
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
+import { ALL_LAB_KEYS, LAB_REFERENCE, type LabKey } from "@/lib/math/labs-zscore";
 import {
-  FEATURE_META,
-  FEATURE_SYSTEMS,
-  NARRATIVE_KEYS,
-  type FeatureKey,
-} from "@/lib/math/gmm-imprint";
+  ALL_SENSATION_IDS,
+  SENSATIONS,
+  type BodyZone,
+  type SensationId,
+} from "@/lib/math/sensations";
+import { IMPRINT_NAMES, type NarrativeMark } from "@/lib/math/imprint-bayes";
 
-type Labs = Partial<Record<FeatureKey, number>>;
-
-type PosteriorEntry = {
-  id: "i1" | "i4" | "i7" | "i8";
-  name: string;
-  posterior: number;
-  log_likelihood: number;
-};
+type LabValues = Partial<Record<LabKey, number>>;
 
 type ClassifyResponse = {
   ok: boolean;
-  tool: string;
-  model_version: string;
-  trace: {
-    input_features: Record<string, number>;
-    input_features_count: number;
-    features_used: string[];
-    features_missing: string[];
-  };
-  narrative_extraction: {
-    used: boolean;
-    quotes: Record<string, string> | null;
-    usage: { input: number; output: number; cached: number | null } | null;
-  };
-  posterior: {
-    version: string;
-    posterior: PosteriorEntry[];
-    dominant: string;
-    top_gap: number;
-    features_used: string[];
-    features_missing: string[];
-    entropy_bits: number;
-    prior: Record<string, number>;
-  };
   error?: string;
+  pipeline: string;
+  declared: {
+    primary: { id: SensationId; number: number; name_es: string; name_en: string; weight: number };
+    secondary: {
+      id: SensationId;
+      number: number;
+      name_es: string;
+      name_en: string;
+      weight: number;
+    } | null;
+  };
+  inputs_trace: {
+    labs_provided: string[];
+    labs_zscored: string[];
+    reported_body_zones: BodyZone[];
+    transcript_chars: number;
+    narrative_used: boolean;
+  };
+  narrative: {
+    marks: Record<string, { score: number; quote: string }>;
+    suggested_sensations: Array<{ id: SensationId; score: number; quote: string }>;
+    usage: { input: number; output: number; cached: number | null } | null;
+  } | null;
+  layer_cascade: {
+    version: string;
+    markers: Record<
+      string,
+      {
+        key: string;
+        expected_z: number;
+        expected_sd_z: number;
+        expected_raw: number | null;
+        ci68_raw: [number, number] | null;
+        unit: string | null;
+        components: Array<{
+          sensation_id: SensationId;
+          sensation_name_es: string;
+          posterior_weight: number;
+          contribution_z: number;
+        }>;
+      }
+    >;
+  };
+  layer_discordances: Array<{
+    key: string;
+    observed_raw: number;
+    observed_z: number;
+    expected_z: number;
+    expected_sd_z: number;
+    observed_z_deviation: number;
+    direction: "concordant" | "above_expected" | "below_expected";
+    severity: "concordant" | "mild" | "moderate" | "strong";
+    note_es: string;
+    note_en: string;
+  }>;
+  layer_imprint: {
+    version: string;
+    posterior: Array<{
+      id: keyof typeof IMPRINT_NAMES;
+      name_es: string;
+      name_en: string;
+      posterior: number;
+      log_lik_sensations: number;
+      log_lik_marks: number;
+    }>;
+    dominant: keyof typeof IMPRINT_NAMES;
+    top_gap: number;
+    entropy_bits: number;
+  };
+  layer_allostatic: {
+    type: 1 | 2 | 3;
+    type_label_es: string;
+    type_label_en: string;
+    confidence: number;
+    rationale_es: string;
+    rationale_en: string;
+  };
+};
+
+const LAB_SYSTEMS: Array<{
+  id: string;
+  label_es: string;
+  label_en: string;
+  keys: LabKey[];
+}> = [
+  {
+    id: "hpa",
+    label_es: "Eje HPA",
+    label_en: "HPA axis",
+    keys: ["cortisol_am", "cortisol_pm", "car", "dhea_s"],
+  },
+  {
+    id: "metabolic",
+    label_es: "Metabolismo",
+    label_en: "Metabolic",
+    keys: [
+      "hba1c",
+      "homa_ir",
+      "fasting_glucose",
+      "fasting_insulin",
+      "triglycerides",
+      "hdl",
+      "ldl",
+      "leptin",
+      "ghrelin",
+    ],
+  },
+  {
+    id: "inflammation",
+    label_es: "Inflamación",
+    label_en: "Inflammation",
+    keys: ["crp", "il6", "tnf_alpha", "fibrinogen"],
+  },
+  {
+    id: "thyroid",
+    label_es: "Tiroides",
+    label_en: "Thyroid",
+    keys: ["tsh", "t3_free", "t4_free"],
+  },
+  {
+    id: "micronutrients",
+    label_es: "Micronutrientes",
+    label_en: "Micronutrients",
+    keys: ["ferritin", "vitamin_d", "b12", "homocysteine"],
+  },
+  {
+    id: "autonomic",
+    label_es: "Autonómico",
+    label_en: "Autonomic",
+    keys: ["sdnn_hrv", "rmssd_hrv", "lf_hf_ratio", "catecholamines"],
+  },
+  {
+    id: "body_comp",
+    label_es: "Composición corporal",
+    label_en: "Body composition",
+    keys: ["visceral_fat", "lean_mass_pct", "body_water_pct"],
+  },
+  {
+    id: "hormonal",
+    label_es: "Hormonal",
+    label_en: "Hormonal",
+    keys: ["testosterone", "estradiol", "aldosterone"],
+  },
+];
+
+const ALL_BODY_ZONES: BodyZone[] = [
+  "ocular",
+  "oral_jaw",
+  "cervical_throat",
+  "thoracic_chest",
+  "dorsal_back",
+  "diaphragm_epigastric",
+  "abdominal",
+  "hepatobiliary",
+  "pelvic_genital",
+  "skin_face",
+  "articular_skeletal",
+  "renal_lumbar",
+  "peripheral_extremities",
+  "global_depletion",
+  "cardiovascular",
+];
+
+const ZONE_LABEL: Record<BodyZone, { es: string; en: string }> = {
+  ocular: { es: "Ocular / frente", en: "Ocular / forehead" },
+  oral_jaw: { es: "Mandíbula / boca", en: "Jaw / mouth" },
+  cervical_throat: { es: "Cuello / garganta", en: "Neck / throat" },
+  thoracic_chest: { es: "Pecho / torácico", en: "Chest / thoracic" },
+  dorsal_back: { es: "Espalda media / dorsal", en: "Mid / dorsal back" },
+  diaphragm_epigastric: { es: "Diafragma / epigastrio", en: "Diaphragm / epigastrium" },
+  abdominal: { es: "Abdomen", en: "Abdomen" },
+  hepatobiliary: { es: "Hipocondrio derecho / hígado", en: "Right hypochondrium / liver" },
+  pelvic_genital: { es: "Pelvis / genital", en: "Pelvis / genital" },
+  skin_face: { es: "Piel / cara", en: "Skin / face" },
+  articular_skeletal: { es: "Articulaciones / huesos", en: "Joints / bones" },
+  renal_lumbar: { es: "Renal / lumbar", en: "Renal / lumbar" },
+  peripheral_extremities: { es: "Extremidades / periferia", en: "Extremities / periphery" },
+  global_depletion: { es: "Depleción global", en: "Global depletion" },
+  cardiovascular: { es: "Cardiovascular", en: "Cardiovascular" },
 };
 
 export default function NuevoClient({
@@ -53,7 +204,15 @@ export default function NuevoClient({
 }) {
   const locale = initialLocale;
   const [caseId, setCaseId] = useState("");
-  const [labs, setLabs] = useState<Labs>({});
+  const [primarySensation, setPrimarySensation] = useState<SensationId | "">(
+    "",
+  );
+  const [secondarySensation, setSecondarySensation] = useState<SensationId | "">(
+    "",
+  );
+  const [primaryWeight, setPrimaryWeight] = useState<number>(0.7);
+  const [labs, setLabs] = useState<LabValues>({});
+  const [zones, setZones] = useState<Set<BodyZone>>(new Set());
   const [transcript, setTranscript] = useState("");
   const [openSystems, setOpenSystems] = useState<Record<string, boolean>>({
     hpa: true,
@@ -63,6 +222,7 @@ export default function NuevoClient({
     micronutrients: false,
     autonomic: false,
     body_comp: false,
+    hormonal: false,
   });
   const [running, setRunning] = useState(false);
   const [response, setResponse] = useState<ClassifyResponse | null>(null);
@@ -71,101 +231,138 @@ export default function NuevoClient({
   const L =
     locale === "es"
       ? {
-          caseStep: "Paso 1 · Identificador anonimizado",
-          caseHint:
-            "Usa un alias no identificable (ej. 'A-042', 'mujer-34'). Sin nombres, fechas, clínica.",
+          step1: "Paso 1 · Identificador anonimizado",
+          caseHint: "Alias no identificable. Sin nombres, fechas, clínica.",
           caseIdLabel: "ID del caso",
-          labsStep: "Paso 2 · Datos objetivos",
+          step2: "Paso 2 · Sensación activa (la aporta el clínico)",
+          sensationHint:
+            "El clínico identifica la sensación por test muscular + escucha somática. El sistema calcula cascada, discordancias, impronta y carga alostática a partir de esta declaración.",
+          primaryLabel: "Sensación primaria",
+          secondaryLabel: "Sensación secundaria (opcional)",
+          weightLabel: "Peso de la primaria",
+          selectPlaceholder: "— Selecciona —",
+          step3: "Paso 3 · Labs",
           labsHint:
-            "Introduce los ejes que tengas. El clasificador marginaliza los faltantes. Cuantos más ejes, más estrecho el posterior.",
-          narrStep: "Paso 3 · Narrativa clínica",
-          narrHint:
-            "Pega transcripto de entrevista, notas propias o resumen. Sonnet 4.6 puntúa 12 dimensiones [0,1] con cita verbatim cada una.",
-          run: "Ejecutar clasificador",
-          running: "Corriendo tool call…",
-          noInput:
-            "Introduce al menos un lab o una narrativa antes de clasificar.",
-          toolExec: "Tool call ejecutado",
-          modelVersion: "Modelo",
-          posteriorTitle: "Posterior Bayesiano P(impronta | x)",
+            "Introduce los valores que tengas. Se compararán contra la firma esperada de las sensaciones declaradas.",
+          step4: "Paso 4 · Localización corporal (descriptivo)",
+          zonesHint:
+            "¿Dónde ubica el paciente la sensación? Se registra para el expediente — no entra al cálculo de inferencia.",
+          step5: "Paso 5 · Narrativa clínica",
+          transcriptHint:
+            "Pega transcripto anonimizado o notas. Sonnet 4.6 puntuará las 13 marcas discriminativas y propondrá sensaciones candidatas como segunda opinión (no reemplaza tu juicio).",
+          run: "Correr pipeline BV4",
+          running: "Corriendo pipeline…",
+          noPrimary: "Selecciona una sensación primaria antes de correr.",
+          declaredTitle: "Sensaciones declaradas",
+          layerCascadeTitle: "Cascada bioquímica esperada",
+          layerCascadeSub:
+            "Mezcla ponderada de las cascadas de las sensaciones declaradas",
+          layerDiscordancesTitle: "Discordancias labs vs esperado",
+          layerImprintTitle: "Posterior sobre improntas",
+          layerImprintSub:
+            "Bayes condicional sobre las sensaciones declaradas + marcas narrativas",
+          layerAllostaticTitle: "Carga alostática (McEwen)",
+          narrativeTitle: "Lectura de Sonnet (segunda opinión)",
+          suggestedSensationsTitle:
+            "Sensaciones candidatas que Sonnet detectó en el transcript",
+          suggestedHint:
+            "Si Sonnet sugiere una sensación que tú no habías considerado, revisa — pero la decisión final es tuya.",
+          marksTitle: "Marcas narrativas discriminativas",
           dominant: "Dominante",
-          topGap: "Gap dominante-segunda",
+          expected: "Esperado",
+          observed: "Observado",
+          deviation: "Desviación",
+          confidence: "Confianza",
+          topGap: "Distancia 1ª–2ª",
           entropy: "Entropía (bits)",
-          featuresUsed: "Ejes utilizados",
-          featuresMissing: "Ejes marginalizados",
-          narrTitle: "12 dimensiones narrativas extraídas",
-          narrNote: "Cada cita es verbatim del transcript.",
-          disclaimer:
-            "Posterior = softmax( log P(x|k) + log π_k ). P(x|k) = producto de gaussianas independientes por eje. Parámetros μ,σ en lib/math/gmm-imprint.ts (v0.2).",
-          emptyOut: "Al ejecutar verás el posterior, log-likelihoods, entropía, y las citas verbatim.",
-          logLik: "log P(x|impronta)",
-          openAll: "Abrir todo",
-          closeAll: "Cerrar todo",
         }
       : {
-          caseStep: "Step 1 · Anonymised identifier",
-          caseHint:
-            "Use a non-identifying alias (e.g. 'A-042', 'woman-34'). No names, dates, clinic.",
+          step1: "Step 1 · Anonymised identifier",
+          caseHint: "Non-identifying alias. No names, dates, clinic.",
           caseIdLabel: "Case ID",
-          labsStep: "Step 2 · Objective data",
+          step2: "Step 2 · Active sensation (clinician-provided)",
+          sensationHint:
+            "The clinician identifies the sensation via muscle test + somatic listening. The system computes cascade, discordances, imprint and allostatic load from this declaration.",
+          primaryLabel: "Primary sensation",
+          secondaryLabel: "Secondary sensation (optional)",
+          weightLabel: "Primary weight",
+          selectPlaceholder: "— Select —",
+          step3: "Step 3 · Labs",
           labsHint:
-            "Enter whatever axes you have. The classifier marginalises missing ones. More axes → tighter posterior.",
-          narrStep: "Step 3 · Clinical narrative",
-          narrHint:
-            "Paste transcript, own notes, or summary. Sonnet 4.6 scores 12 [0,1] dimensions with a verbatim quote each.",
-          run: "Run classifier",
-          running: "Executing tool call…",
-          noInput: "Enter at least one lab or narrative before classifying.",
-          toolExec: "Tool call executed",
-          modelVersion: "Model",
-          posteriorTitle: "Bayesian posterior P(imprint | x)",
+            "Enter whichever values you have. They'll be compared against the predicted signature of the declared sensations.",
+          step4: "Step 4 · Body location (descriptive)",
+          zonesHint:
+            "Where does the patient locate the sensation? Stored for the record — does not enter the inference.",
+          step5: "Step 5 · Clinical narrative",
+          transcriptHint:
+            "Paste anonymised transcript or notes. Sonnet 4.6 will score the 13 discriminative marks and suggest candidate sensations as second opinion (does not replace your judgement).",
+          run: "Run BV4 pipeline",
+          running: "Running pipeline…",
+          noPrimary: "Select a primary sensation before running.",
+          declaredTitle: "Declared sensations",
+          layerCascadeTitle: "Expected biochemical cascade",
+          layerCascadeSub:
+            "Weighted mixture of cascades from the declared sensations",
+          layerDiscordancesTitle: "Labs vs expected discordances",
+          layerImprintTitle: "Posterior over imprints",
+          layerImprintSub:
+            "Conditional Bayes on declared sensations + narrative marks",
+          layerAllostaticTitle: "Allostatic load (McEwen)",
+          narrativeTitle: "Sonnet's read (second opinion)",
+          suggestedSensationsTitle:
+            "Candidate sensations Sonnet detected in transcript",
+          suggestedHint:
+            "If Sonnet suggests a sensation you hadn't considered, review — but the final call is yours.",
+          marksTitle: "Discriminative narrative marks",
           dominant: "Dominant",
-          topGap: "Dominant-second gap",
+          expected: "Expected",
+          observed: "Observed",
+          deviation: "Deviation",
+          confidence: "Confidence",
+          topGap: "1st–2nd gap",
           entropy: "Entropy (bits)",
-          featuresUsed: "Axes used",
-          featuresMissing: "Axes marginalised",
-          narrTitle: "12 extracted narrative dimensions",
-          narrNote: "Each quote is verbatim from the transcript.",
-          disclaimer:
-            "Posterior = softmax( log P(x|k) + log π_k ). P(x|k) = product of per-axis independent Gaussians. Parameters μ,σ in lib/math/gmm-imprint.ts (v0.2).",
-          emptyOut:
-            "On run you will see the posterior, log-likelihoods, entropy, and verbatim quotes.",
-          logLik: "log P(x|imprint)",
-          openAll: "Open all",
-          closeAll: "Close all",
         };
 
   const toggleSystem = (id: string) =>
-    setOpenSystems((prev) => ({ ...prev, [id]: !prev[id] }));
+    setOpenSystems((p) => ({ ...p, [id]: !p[id] }));
 
-  const openOrCloseAll = (open: boolean) => {
-    const next: Record<string, boolean> = {};
-    for (const s of FEATURE_SYSTEMS) next[s.id] = open;
-    setOpenSystems(next);
+  const toggleZone = (z: BodyZone) => {
+    setZones((prev) => {
+      const next = new Set(prev);
+      if (next.has(z)) next.delete(z);
+      else next.add(z);
+      return next;
+    });
   };
 
-  const hasAnyInput =
-    Object.keys(labs).length > 0 || transcript.trim().length > 0;
-
-  const labsCount = Object.keys(labs).length;
+  const canRun = primarySensation !== "";
 
   const run = useCallback(async () => {
-    if (!hasAnyInput) {
-      setError(L.noInput);
+    if (!canRun) {
+      setError(L.noPrimary);
       return;
     }
     setRunning(true);
     setError(null);
     setResponse(null);
     try {
+      const payload: Record<string, unknown> = {
+        primary_sensation: primarySensation,
+        primary_weight: primaryWeight,
+        labs,
+        reported_body_zones: Array.from(zones),
+        locale,
+      };
+      if (secondarySensation && secondarySensation !== primarySensation) {
+        payload.secondary_sensation = secondarySensation;
+      }
+      if (transcript.trim().length > 0) {
+        payload.transcript = transcript.trim();
+      }
       const res = await fetch("/api/classify", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          transcript: transcript.trim() || undefined,
-          labs,
-          locale,
-        }),
+        body: JSON.stringify(payload),
       });
       const j = (await res.json()) as ClassifyResponse;
       if (!res.ok || !j.ok) {
@@ -178,29 +375,51 @@ export default function NuevoClient({
     } finally {
       setRunning(false);
     }
-  }, [hasAnyInput, transcript, labs, locale, L.noInput]);
+  }, [
+    canRun,
+    primarySensation,
+    secondarySensation,
+    primaryWeight,
+    labs,
+    zones,
+    transcript,
+    locale,
+    L.noPrimary,
+  ]);
 
-  const posteriorSorted = useMemo(
+  // All sensations sorted by number for the dropdown
+  const sensationOptions = useMemo(
     () =>
-      response
-        ? [...response.posterior.posterior].sort((a, b) => b.posterior - a.posterior)
-        : [],
+      ALL_SENSATION_IDS.map((id) => ({
+        id,
+        number: SENSATIONS[id].number,
+        label: locale === "es" ? SENSATIONS[id].name_es : SENSATIONS[id].name_en,
+        signal:
+          locale === "es"
+            ? SENSATIONS[id].primitive_signal_es
+            : SENSATIONS[id].primitive_signal_en,
+      })),
+    [locale],
+  );
+
+  const nonConcordantDisc = useMemo(
+    () =>
+      response?.layer_discordances.filter((d) => d.severity !== "concordant") ??
+      [],
     [response],
   );
 
   return (
     <>
       <section className="mt-4 grid grid-cols-12 gap-6">
-        {/* ─── Input column ────────────────────────────────── */}
-        <div className="col-span-12 lg:col-span-7 space-y-6">
-          {/* Step 1 — case ID */}
-          <div className="border border-rule bg-paper-raised px-5 py-5">
-            <p className="eyebrow eyebrow-accent">{L.caseStep}</p>
-            <p className="mt-2 text-[11.5px] text-ink-mute max-w-[60ch]">
-              {L.caseHint}
-            </p>
+        {/* ─── Input column ───────────────────────────────── */}
+        <div className="col-span-12 lg:col-span-6 space-y-5">
+          {/* Step 1 */}
+          <div className="border border-rule bg-paper-raised px-5 py-4">
+            <p className="eyebrow eyebrow-accent">{L.step1}</p>
+            <p className="mt-1.5 text-[11px] text-ink-mute">{L.caseHint}</p>
             <label className="block mt-3">
-              <span className="text-[10.5px] tabular tracking-wide uppercase text-ink-mute">
+              <span className="text-[10px] tabular tracking-wide uppercase text-ink-mute">
                 {L.caseIdLabel}
               </span>
               <input
@@ -213,37 +432,102 @@ export default function NuevoClient({
             </label>
           </div>
 
-          {/* Step 2 — modular labs by system */}
+          {/* Step 2 — Sensation (declared) */}
+          <div className="border-2 border-ink bg-paper-raised px-5 py-4">
+            <p className="eyebrow eyebrow-accent">{L.step2}</p>
+            <p className="mt-1.5 text-[11px] text-ink-mute max-w-[60ch] leading-snug">
+              {L.sensationHint}
+            </p>
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+              <label className="flex flex-col gap-1">
+                <span className="text-[10px] tabular tracking-wide uppercase text-ink-mute">
+                  {L.primaryLabel} *
+                </span>
+                <select
+                  value={primarySensation}
+                  onChange={(e) =>
+                    setPrimarySensation(e.target.value as SensationId)
+                  }
+                  className="border border-rule bg-paper px-2 py-1.5 text-[12.5px] text-ink focus:border-accent outline-none"
+                >
+                  <option value="">{L.selectPlaceholder}</option>
+                  {sensationOptions.map((o) => (
+                    <option key={o.id} value={o.id}>
+                      #{o.number} — {o.label}
+                    </option>
+                  ))}
+                </select>
+                {primarySensation && (
+                  <span className="text-[10.5px] text-ink-quiet italic leading-snug">
+                    {sensationOptions.find((o) => o.id === primarySensation)?.signal}
+                  </span>
+                )}
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-[10px] tabular tracking-wide uppercase text-ink-mute">
+                  {L.secondaryLabel}
+                </span>
+                <select
+                  value={secondarySensation}
+                  onChange={(e) =>
+                    setSecondarySensation(e.target.value as SensationId)
+                  }
+                  className="border border-rule bg-paper px-2 py-1.5 text-[12.5px] text-ink focus:border-accent outline-none"
+                >
+                  <option value="">{L.selectPlaceholder}</option>
+                  {sensationOptions
+                    .filter((o) => o.id !== primarySensation)
+                    .map((o) => (
+                      <option key={o.id} value={o.id}>
+                        #{o.number} — {o.label}
+                      </option>
+                    ))}
+                </select>
+                {secondarySensation && (
+                  <span className="text-[10.5px] text-ink-quiet italic leading-snug">
+                    {
+                      sensationOptions.find((o) => o.id === secondarySensation)
+                        ?.signal
+                    }
+                  </span>
+                )}
+              </label>
+            </div>
+            {secondarySensation && (
+              <label className="flex items-center gap-3 mt-4">
+                <span className="text-[10px] tabular tracking-wide uppercase text-ink-mute whitespace-nowrap">
+                  {L.weightLabel}
+                </span>
+                <input
+                  type="range"
+                  min="0.5"
+                  max="1.0"
+                  step="0.05"
+                  value={primaryWeight}
+                  onChange={(e) => setPrimaryWeight(Number(e.target.value))}
+                  className="flex-1"
+                />
+                <span className="tabular text-[11.5px] text-accent w-[80px] text-right">
+                  {(primaryWeight * 100).toFixed(0)}% /{" "}
+                  {((1 - primaryWeight) * 100).toFixed(0)}%
+                </span>
+              </label>
+            )}
+          </div>
+
+          {/* Step 3 — Labs */}
           <div className="border border-rule bg-paper-raised">
             <div className="px-5 py-4 border-b border-rule flex items-baseline justify-between gap-3">
               <div>
-                <p className="eyebrow eyebrow-accent">{L.labsStep}</p>
-                <p className="mt-1 text-[11.5px] text-ink-mute max-w-[60ch]">
-                  {L.labsHint}
-                </p>
+                <p className="eyebrow eyebrow-accent">{L.step3}</p>
+                <p className="mt-1 text-[11px] text-ink-mute">{L.labsHint}</p>
               </div>
-              <div className="flex items-baseline gap-3 shrink-0 text-[10.5px] tabular tracking-wide uppercase">
-                <button
-                  onClick={() => openOrCloseAll(true)}
-                  className="text-ink-mute hover:text-ink transition-colors"
-                >
-                  {L.openAll}
-                </button>
-                <span className="text-rule">·</span>
-                <button
-                  onClick={() => openOrCloseAll(false)}
-                  className="text-ink-mute hover:text-ink transition-colors"
-                >
-                  {L.closeAll}
-                </button>
-                <span className="text-rule">·</span>
-                <span className="tabular text-accent">
-                  {labsCount}/26
-                </span>
-              </div>
+              <span className="tabular text-[10.5px] text-accent">
+                {Object.keys(labs).length} / {ALL_LAB_KEYS.length}
+              </span>
             </div>
             <ul className="divide-y divide-rule">
-              {FEATURE_SYSTEMS.map((sys) => {
+              {LAB_SYSTEMS.map((sys) => {
                 const isOpen = openSystems[sys.id] ?? false;
                 const filled = sys.keys.filter(
                   (k) => typeof labs[k] === "number",
@@ -252,13 +536,13 @@ export default function NuevoClient({
                   <li key={sys.id}>
                     <button
                       onClick={() => toggleSystem(sys.id)}
-                      className="w-full flex items-center justify-between px-5 py-3 text-left hover:bg-paper-soft transition-colors"
+                      className="w-full flex items-center justify-between px-5 py-2.5 text-left hover:bg-paper-soft"
                     >
                       <span className="flex items-baseline gap-3">
-                        <span className="text-[10px] tabular tracking-[0.18em] uppercase text-ink-mute w-4">
+                        <span className="text-[10px] tabular text-ink-mute w-4">
                           {isOpen ? "−" : "+"}
                         </span>
-                        <span className="editorial text-[14px] text-ink">
+                        <span className="editorial text-[13.5px] text-ink">
                           {locale === "es" ? sys.label_es : sys.label_en}
                         </span>
                       </span>
@@ -267,25 +551,27 @@ export default function NuevoClient({
                       </span>
                     </button>
                     {isOpen && (
-                      <div className="px-5 pb-4 pt-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-3">
+                      <div className="px-5 pb-3 pt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
                         {sys.keys.map((k) => {
-                          const meta = FEATURE_META[k];
+                          const ref = LAB_REFERENCE[k];
                           return (
-                            <label key={k} className="flex flex-col gap-1">
-                              <span className="text-[10.5px] tabular tracking-wide uppercase text-ink-mute">
-                                {locale === "es" ? meta.label_es : meta.label_en}{" "}
-                                {meta.unit && (
+                            <label key={k} className="flex flex-col gap-0.5">
+                              <span className="text-[10px] tabular tracking-wide uppercase text-ink-mute">
+                                {k}{" "}
+                                {ref?.unit && (
                                   <span className="text-ink-mute/70">
-                                    {meta.unit}
+                                    {ref.unit}
                                   </span>
                                 )}
                               </span>
                               <input
                                 type="number"
-                                step={meta.step}
+                                step="0.01"
                                 inputMode="decimal"
                                 value={(labs[k] ?? "") as number | ""}
-                                placeholder={meta.placeholder ?? ""}
+                                placeholder={
+                                  ref ? String(Math.round(ref.mean * 100) / 100) : ""
+                                }
                                 onChange={(e) => {
                                   const raw = e.target.value;
                                   setLabs((prev) => {
@@ -295,7 +581,7 @@ export default function NuevoClient({
                                     return next;
                                   });
                                 }}
-                                className="border border-rule bg-paper px-3 py-1.5 text-[13px] tabular text-ink focus:border-accent outline-none"
+                                className="border border-rule bg-paper px-2 py-1 text-[12.5px] tabular text-ink focus:border-accent outline-none"
                               />
                             </label>
                           );
@@ -308,30 +594,57 @@ export default function NuevoClient({
             </ul>
           </div>
 
-          {/* Step 3 — narrative */}
-          <div className="border border-rule bg-paper-raised px-5 py-5">
-            <p className="eyebrow eyebrow-accent">{L.narrStep}</p>
-            <p className="mt-2 text-[11.5px] text-ink-mute max-w-[60ch]">
-              {L.narrHint}
+          {/* Step 4 — Body location (descriptive) */}
+          <div className="border border-rule bg-paper-raised px-5 py-4">
+            <p className="eyebrow">{L.step4}</p>
+            <p className="mt-1 text-[11px] text-ink-mute max-w-[60ch]">
+              {L.zonesHint}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {ALL_BODY_ZONES.map((z) => {
+                const isOn = zones.has(z);
+                return (
+                  <button
+                    key={z}
+                    type="button"
+                    onClick={() => toggleZone(z)}
+                    className={`px-2.5 py-1 text-[10.5px] tabular tracking-wide transition-colors ${
+                      isOn
+                        ? "bg-ink text-paper"
+                        : "border border-rule text-ink-mute hover:border-ink"
+                    }`}
+                  >
+                    {locale === "es" ? ZONE_LABEL[z].es : ZONE_LABEL[z].en}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Step 5 — Transcript */}
+          <div className="border border-rule bg-paper-raised px-5 py-4">
+            <p className="eyebrow eyebrow-accent">{L.step5}</p>
+            <p className="mt-1 text-[11px] text-ink-mute max-w-[60ch]">
+              {L.transcriptHint}
             </p>
             <textarea
               value={transcript}
               onChange={(e) => setTranscript(e.target.value)}
-              className="mt-4 w-full h-[260px] border border-rule bg-paper px-3 py-2 text-[13px] text-ink-soft focus:border-accent outline-none leading-[1.55] resize-y"
+              className="mt-3 w-full h-[200px] border border-rule bg-paper px-3 py-2 text-[13px] text-ink-soft focus:border-accent outline-none leading-[1.55] resize-y"
               placeholder={
                 locale === "es"
-                  ? "Pega aquí el transcript ya anonimizado…"
-                  : "Paste the anonymised transcript here…"
+                  ? "Pega transcript ya anonimizado…"
+                  : "Paste anonymised transcript…"
               }
             />
-            <p className="mt-2 text-[10.5px] tabular text-ink-mute">
+            <p className="mt-1.5 text-[10px] tabular text-ink-mute">
               {transcript.trim().length} chars
             </p>
           </div>
 
           <button
             onClick={run}
-            disabled={running || !hasAnyInput}
+            disabled={running || !canRun}
             className="inline-flex items-center gap-3 bg-accent text-paper px-5 py-3 text-[13px] tracking-wide hover:bg-accent-deep transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {running ? L.running : L.run}
@@ -345,181 +658,317 @@ export default function NuevoClient({
           )}
         </div>
 
-        {/* ─── Output column ────────────────────────────────── */}
-        <div className="col-span-12 lg:col-span-5 space-y-6">
+        {/* ─── Output column ──────────────────────────────── */}
+        <div className="col-span-12 lg:col-span-6 space-y-5">
           {!response ? (
-            <div className="border border-rule bg-paper-soft px-5 py-6">
-              <p className="eyebrow text-ink-mute">
-                {locale === "es" ? "Salida del tool" : "Tool output"}
-              </p>
-              <p className="mt-3 text-[12.5px] italic text-ink-mute leading-snug">
-                {L.emptyOut}
-              </p>
+            <div className="border border-rule bg-paper-soft px-5 py-6 text-[12px] italic text-ink-mute leading-snug">
+              {locale === "es"
+                ? "Al correr: el sistema toma la sensación que declaraste, mezcla las cascadas esperadas (si hay secundaria), calcula discordancias contra los labs, infiere impronta condicional, y clasifica carga alostática tipo McEwen. Sonnet entra sólo para marcas narrativas y segunda opinión de sensación."
+                : "On run: the system takes your declared sensation, mixes expected cascades (if secondary given), computes discordances vs labs, infers conditional imprint, and classifies McEwen allostatic load. Sonnet only scores narrative marks and provides second-opinion sensations."}
             </div>
           ) : (
             <>
-              {/* Tool call header */}
-              <div className="border-2 border-ink bg-paper-raised px-5 py-4">
-                <p className="eyebrow eyebrow-accent">{L.toolExec}</p>
-                <p className="mt-3 tabular text-[13px] text-ink">
-                  {response.tool}
-                  <span className="text-ink-mute">
-                    {" "}· {L.modelVersion} {response.model_version}
-                  </span>
-                </p>
-                {response.narrative_extraction.used &&
-                  response.narrative_extraction.usage && (
-                    <p className="mt-2 text-[10.5px] tabular text-ink-mute">
-                      Sonnet 4.6 · {response.narrative_extraction.usage.input} in /
-                      {" "}
-                      {response.narrative_extraction.usage.output} out
-                      {response.narrative_extraction.usage.cached
-                        ? ` · ${response.narrative_extraction.usage.cached} cached`
-                        : ""}
+              {/* Declared sensations banner */}
+              <div className="border-2 border-accent bg-paper-raised px-5 py-4">
+                <p className="eyebrow eyebrow-accent">{L.declaredTitle}</p>
+                <div className="mt-3 flex flex-wrap items-baseline gap-x-4 gap-y-2">
+                  <div>
+                    <span className="tabular text-[10px] tracking-wide uppercase text-ink-mute">
+                      Primaria
+                    </span>
+                    <p className="editorial text-[16px] text-ink">
+                      #{response.declared.primary.number}{" "}
+                      {locale === "es"
+                        ? response.declared.primary.name_es
+                        : response.declared.primary.name_en}{" "}
+                      <span className="tabular text-[12px] text-accent">
+                        {(response.declared.primary.weight * 100).toFixed(0)}%
+                      </span>
                     </p>
+                  </div>
+                  {response.declared.secondary && (
+                    <div>
+                      <span className="tabular text-[10px] tracking-wide uppercase text-ink-mute">
+                        Secundaria
+                      </span>
+                      <p className="editorial text-[16px] text-ink">
+                        #{response.declared.secondary.number}{" "}
+                        {locale === "es"
+                          ? response.declared.secondary.name_es
+                          : response.declared.secondary.name_en}{" "}
+                        <span className="tabular text-[12px] text-ink-quiet">
+                          {(response.declared.secondary.weight * 100).toFixed(0)}%
+                        </span>
+                      </p>
+                    </div>
                   )}
+                </div>
               </div>
 
-              {/* Posterior bars */}
-              <div className="border border-rule bg-paper-raised px-5 py-5">
-                <p className="eyebrow">{L.posteriorTitle}</p>
-                <ul className="mt-4 space-y-3">
-                  {posteriorSorted.map((p) => {
-                    const pct = p.posterior * 100;
-                    const isDominant = p.id === response.posterior.dominant;
-                    return (
-                      <li key={p.id}>
-                        <div className="flex items-baseline justify-between">
-                          <span
-                            className={
-                              isDominant
-                                ? "editorial text-[15px] text-ink"
-                                : "editorial text-[15px] text-ink-quiet"
-                            }
-                          >
-                            {p.id.toUpperCase()} · {p.name}
-                            {isDominant && (
-                              <span className="ml-2 tabular text-[9.5px] tracking-[0.18em] uppercase text-accent">
-                                {L.dominant}
-                              </span>
+              {/* Cascade expected */}
+              <div className="border border-rule bg-paper-raised px-5 py-4">
+                <div className="flex items-baseline justify-between">
+                  <div>
+                    <p className="eyebrow eyebrow-accent">{L.layerCascadeTitle}</p>
+                    <p className="mt-1 text-[10.5px] text-ink-mute">
+                      {L.layerCascadeSub}
+                    </p>
+                  </div>
+                  <span className="tabular text-[9.5px] text-ink-mute">
+                    {response.layer_cascade.version}
+                  </span>
+                </div>
+                <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-[11px]">
+                  {Object.values(response.layer_cascade.markers)
+                    .filter((m) => Math.abs(m.expected_z) > 0.3)
+                    .sort(
+                      (a, b) =>
+                        Math.abs(b.expected_z) - Math.abs(a.expected_z),
+                    )
+                    .slice(0, 14)
+                    .map((m) => {
+                      const dir =
+                        m.expected_z > 0 ? "↑" : m.expected_z < 0 ? "↓" : "=";
+                      return (
+                        <li key={m.key} className="flex items-baseline justify-between gap-2">
+                          <span className="tabular text-ink">{m.key}</span>
+                          <span className="tabular text-ink-quiet">
+                            {dir} z {m.expected_z.toFixed(2)}±
+                            {m.expected_sd_z.toFixed(2)}
+                            {m.expected_raw !== null && m.unit && (
+                              <>
+                                {" "}
+                                ({m.expected_raw.toFixed(2)} {m.unit})
+                              </>
                             )}
                           </span>
-                          <span className="tabular text-[12px] text-accent">
+                        </li>
+                      );
+                    })}
+                </ul>
+              </div>
+
+              {/* Discordances */}
+              <div className="border border-rule bg-paper-raised px-5 py-4">
+                <p className="eyebrow eyebrow-accent">{L.layerDiscordancesTitle}</p>
+                {response.layer_discordances.length === 0 ? (
+                  <p className="mt-3 text-[11.5px] italic text-ink-mute">
+                    {locale === "es"
+                      ? "Sin labs para comparar."
+                      : "No labs to compare."}
+                  </p>
+                ) : (
+                  <ul className="mt-3 space-y-2">
+                    {response.layer_discordances.map((d) => {
+                      const color =
+                        d.severity === "strong"
+                          ? "border-danger bg-danger/5"
+                          : d.severity === "moderate"
+                            ? "border-accent bg-accent/5"
+                            : d.severity === "mild"
+                              ? "border-rule"
+                              : "border-rule opacity-60";
+                      return (
+                        <li
+                          key={d.key}
+                          className={`border px-3 py-2 text-[11.5px] ${color}`}
+                        >
+                          <div className="flex items-baseline justify-between gap-2">
+                            <span className="tabular font-medium text-ink">
+                              {d.key}
+                            </span>
+                            <span className="tabular text-[10.5px] text-ink-quiet">
+                              {L.observed} {d.observed_raw.toFixed(2)} · z{" "}
+                              {d.observed_z.toFixed(2)} · {L.expected} z{" "}
+                              {d.expected_z.toFixed(2)}±
+                              {d.expected_sd_z.toFixed(2)} ·{" "}
+                              {d.observed_z_deviation >= 0 ? "+" : ""}
+                              {d.observed_z_deviation.toFixed(2)}σ
+                            </span>
+                          </div>
+                          <p className="mt-1 text-[11px] text-ink-quiet leading-snug">
+                            {locale === "es" ? d.note_es : d.note_en}
+                          </p>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+
+              {/* Imprint */}
+              <div className="border border-rule bg-paper-raised px-5 py-4">
+                <div className="flex items-baseline justify-between">
+                  <div>
+                    <p className="eyebrow eyebrow-accent">{L.layerImprintTitle}</p>
+                    <p className="mt-1 text-[10.5px] text-ink-mute">
+                      {L.layerImprintSub}
+                    </p>
+                  </div>
+                  <span className="tabular text-[9.5px] text-ink-mute">
+                    {response.layer_imprint.version}
+                  </span>
+                </div>
+                <ul className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5">
+                  {response.layer_imprint.posterior.slice(0, 8).map((ip) => {
+                    const pct = ip.posterior * 100;
+                    const isDom = ip.id === response.layer_imprint.dominant;
+                    return (
+                      <li key={ip.id} className="text-[11.5px]">
+                        <div className="flex items-baseline justify-between">
+                          <span className={isDom ? "text-ink" : "text-ink-quiet"}>
+                            {ip.id} · {ip.name_es}
+                          </span>
+                          <span className="tabular text-accent">
                             {pct.toFixed(1)}%
                           </span>
                         </div>
-                        <div className="mt-1 h-[5px] bg-paper-soft overflow-hidden">
+                        <div className="mt-0.5 h-[3px] bg-paper-soft overflow-hidden">
                           <div
                             className={
-                              isDominant
-                                ? "h-full bg-accent"
-                                : "h-full bg-ink-quiet"
+                              isDom ? "h-full bg-accent" : "h-full bg-ink-quiet"
                             }
                             style={{ width: `${pct}%` }}
                           />
                         </div>
-                        <p className="mt-1 text-[10px] tabular text-ink-mute">
-                          {L.logLik} = {p.log_likelihood.toFixed(3)}
-                        </p>
                       </li>
                     );
                   })}
                 </ul>
-                <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-2 text-[11px] tabular">
+                <div className="mt-3 grid grid-cols-2 gap-x-4 text-[10.5px] tabular">
                   <div>
                     <span className="text-ink-mute">{L.topGap}</span>{" "}
                     <span className="text-ink">
-                      {response.posterior.top_gap.toFixed(3)}
+                      {response.layer_imprint.top_gap.toFixed(3)}
                     </span>
                   </div>
                   <div>
                     <span className="text-ink-mute">{L.entropy}</span>{" "}
                     <span className="text-ink">
-                      {response.posterior.entropy_bits.toFixed(3)}
+                      {response.layer_imprint.entropy_bits.toFixed(3)}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Narrative 12-dim */}
-              {response.narrative_extraction.used &&
-                response.narrative_extraction.quotes && (
-                  <div className="border border-rule bg-paper-raised px-5 py-5">
-                    <p className="eyebrow">{L.narrTitle}</p>
-                    <p className="mt-2 text-[11px] italic text-ink-mute">
-                      {L.narrNote}
-                    </p>
-                    <ul className="mt-4 space-y-3">
-                      {NARRATIVE_KEYS.map((dim) => {
-                        const val =
-                          (response.trace.input_features as Record<string, number>)[
-                            dim
-                          ] ?? 0;
-                        const quote =
-                          response.narrative_extraction.quotes?.[dim] ?? "";
-                        const meta = FEATURE_META[dim];
-                        return (
-                          <li key={dim}>
+              {/* Allostatic load */}
+              <div
+                className={`border-2 px-5 py-4 bg-paper-raised ${
+                  response.layer_allostatic.type === 3
+                    ? "border-danger"
+                    : "border-ink"
+                }`}
+              >
+                <p className="eyebrow eyebrow-accent">{L.layerAllostaticTitle}</p>
+                <p className="mt-3 editorial text-[16px] text-ink">
+                  {locale === "es"
+                    ? response.layer_allostatic.type_label_es
+                    : response.layer_allostatic.type_label_en}
+                </p>
+                <p className="mt-2 text-[11px] tabular text-ink-quiet">
+                  {L.confidence}:{" "}
+                  {(response.layer_allostatic.confidence * 100).toFixed(0)}%
+                </p>
+                <p className="mt-3 text-[12px] text-ink-soft leading-relaxed">
+                  {locale === "es"
+                    ? response.layer_allostatic.rationale_es
+                    : response.layer_allostatic.rationale_en}
+                </p>
+              </div>
+
+              {/* Narrative — second opinion */}
+              {response.narrative && (
+                <div className="border border-rule bg-paper-raised px-5 py-4">
+                  <p className="eyebrow">{L.narrativeTitle}</p>
+                  <p className="mt-1 text-[10.5px] text-ink-mute">
+                    Sonnet 4.6 · {response.narrative.usage?.input ?? 0} in /{" "}
+                    {response.narrative.usage?.output ?? 0} out
+                    {response.narrative.usage?.cached
+                      ? ` · ${response.narrative.usage.cached} cached`
+                      : ""}
+                  </p>
+
+                  {response.narrative.suggested_sensations.length > 0 && (
+                    <div className="mt-4">
+                      <p className="eyebrow eyebrow-accent">
+                        {L.suggestedSensationsTitle}
+                      </p>
+                      <p className="mt-1 text-[10.5px] italic text-ink-mute">
+                        {L.suggestedHint}
+                      </p>
+                      <ul className="mt-2 space-y-2">
+                        {response.narrative.suggested_sensations.map((s) => {
+                          const matchesPrimary = s.id === primarySensation;
+                          const matchesSecondary = s.id === secondarySensation;
+                          const matchLabel = matchesPrimary
+                            ? "✓ primaria"
+                            : matchesSecondary
+                              ? "✓ secundaria"
+                              : "";
+                          return (
+                            <li key={s.id}>
+                              <div className="flex items-baseline justify-between gap-2">
+                                <span className="tabular text-[11px] text-ink">
+                                  #{SENSATIONS[s.id].number}{" "}
+                                  {locale === "es"
+                                    ? SENSATIONS[s.id].name_es
+                                    : SENSATIONS[s.id].name_en}
+                                </span>
+                                <span className="tabular text-[10.5px]">
+                                  {matchLabel && (
+                                    <span className="text-accent mr-2">
+                                      {matchLabel}
+                                    </span>
+                                  )}
+                                  <span className="text-ink-quiet">
+                                    {s.score.toFixed(2)}
+                                  </span>
+                                </span>
+                              </div>
+                              {s.quote && (
+                                <blockquote className="mt-0.5 border-l-2 border-rule pl-3 text-[11px] italic text-ink-quiet leading-snug">
+                                  &ldquo;{s.quote}&rdquo;
+                                </blockquote>
+                              )}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
+
+                  <div className="mt-4">
+                    <p className="eyebrow">{L.marksTitle}</p>
+                    <ul className="mt-2 space-y-1">
+                      {Object.entries(response.narrative.marks)
+                        .filter(([, v]) => v.score >= 0.3)
+                        .sort((a, b) => b[1].score - a[1].score)
+                        .slice(0, 6)
+                        .map(([mark, v]) => (
+                          <li key={mark} className="text-[11px]">
                             <div className="flex items-baseline justify-between gap-2">
-                              <span className="tabular text-[10.5px] tracking-wide uppercase text-ink-mute">
-                                {locale === "es" ? meta.label_es : meta.label_en}
-                              </span>
-                              <span className="tabular text-[11px] text-accent">
-                                {val.toFixed(2)}
+                              <span className="tabular text-ink-quiet">{mark}</span>
+                              <span className="tabular text-accent">
+                                {v.score.toFixed(2)}
                               </span>
                             </div>
-                            <div className="mt-1 h-[3px] bg-paper-soft overflow-hidden">
-                              <div
-                                className="h-full bg-accent"
-                                style={{ width: `${val * 100}%` }}
-                              />
-                            </div>
-                            {quote && (
-                              <blockquote className="mt-1.5 border-l-2 border-rule pl-3 text-[11px] italic text-ink-quiet leading-snug">
-                                &ldquo;{quote}&rdquo;
+                            {v.quote && !v.quote.startsWith("(") && (
+                              <blockquote className="mt-0.5 border-l-2 border-rule pl-3 text-[10.5px] italic text-ink-quiet leading-snug">
+                                &ldquo;{v.quote}&rdquo;
                               </blockquote>
                             )}
                           </li>
-                        );
-                      })}
+                        ))}
                     </ul>
                   </div>
-                )}
-
-              {/* Trace */}
-              <div className="border border-rule bg-paper-raised px-5 py-5">
-                <p className="eyebrow">
-                  {locale === "es" ? "Trazabilidad" : "Trace"}
-                </p>
-                <dl className="mt-4 space-y-3 text-[11.5px]">
-                  <div>
-                    <dt className="text-ink-mute">
-                      {L.featuresUsed} ({response.posterior.features_used.length})
-                    </dt>
-                    <dd className="mt-0.5 tabular text-ink leading-relaxed">
-                      {response.posterior.features_used.join(" · ") || "—"}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-ink-mute">
-                      {L.featuresMissing} (
-                      {response.posterior.features_missing.length})
-                    </dt>
-                    <dd className="mt-0.5 tabular text-ink-quiet leading-relaxed">
-                      {response.posterior.features_missing.join(" · ") || "—"}
-                    </dd>
-                  </div>
-                </dl>
-                <p className="mt-4 text-[10.5px] italic text-ink-mute leading-snug">
-                  {L.disclaimer}
-                </p>
-              </div>
+                </div>
+              )}
             </>
           )}
         </div>
       </section>
 
-      <section className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-5 border-t border-rule pt-8 text-[13px]">
+      <section className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-5 border-t border-rule pt-8 text-[13px]">
         <Link
           href={locale === "es" ? "/clinico/sesion?lang=es" : "/clinico/sesion"}
           className="border border-rule bg-paper-raised px-5 py-4 hover:border-ink transition-colors"
@@ -527,7 +976,7 @@ export default function NuevoClient({
           <p className="eyebrow">
             {locale === "es" ? "Caso ejemplo" : "Example case"}
           </p>
-          <p className="mt-2 editorial text-[16px] text-ink">
+          <p className="mt-2 editorial text-[15px] text-ink">
             {locale === "es"
               ? "Sesión guiada sintética →"
               : "Guided synthetic session →"}
@@ -540,7 +989,7 @@ export default function NuevoClient({
           <p className="eyebrow">
             {locale === "es" ? "Otra vista" : "Other view"}
           </p>
-          <p className="mt-2 editorial text-[16px] text-ink">
+          <p className="mt-2 editorial text-[15px] text-ink">
             {locale === "es" ? "Vista paciente →" : "Patient view →"}
           </p>
         </Link>
@@ -549,7 +998,7 @@ export default function NuevoClient({
           className="border border-rule bg-paper-raised px-5 py-4 hover:border-ink transition-colors"
         >
           <p className="eyebrow">{locale === "es" ? "Regresar" : "Back"}</p>
-          <p className="mt-2 editorial text-[16px] text-ink">
+          <p className="mt-2 editorial text-[15px] text-ink">
             {locale === "es" ? "Inferentia ↗" : "Inferentia ↗"}
           </p>
         </Link>
