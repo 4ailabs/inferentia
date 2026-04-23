@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import ResultClient from "./result-client";
+import AgenciaClient from "./agencia-client";
 import { getDict, resolveLocale } from "@/lib/i18n";
 import { LocaleToggle } from "@/components/locale-toggle";
 
@@ -15,12 +15,12 @@ export async function generateMetadata({
   return {
     title:
       locale === "es"
-        ? "Resultado de sesión — Inferentia"
-        : "Session result — Inferentia",
+        ? "Panel de agencia — Inferentia"
+        : "Agency panel — Inferentia",
   };
 }
 
-export default async function ResultPage({
+export default async function AgencyPage({
   searchParams,
 }: {
   searchParams: SearchParams;
@@ -45,18 +45,18 @@ export default async function ResultPage({
               <span className="h-4 w-px bg-rule" />
               <p className="eyebrow">
                 {locale === "es"
-                  ? "Figura iii.b · Resultado de sesión"
-                  : "Figure iii.b · Session result"}
+                  ? "Clínico · Figura iii.d · Panel de agencia"
+                  : "Clinician · Figure iii.d · Agency panel"}
               </p>
             </div>
-            <LocaleToggle locale={locale} pathname="/session/result" search={sp} />
+            <LocaleToggle locale={locale} pathname="/clinico/agencia" search={sp} />
           </div>
         </div>
         <div className="h-[2px] bg-ink" />
       </header>
 
       <article className="mx-auto max-w-[1480px] px-6 md:px-10 py-10 pb-16">
-        <ResultClient initialLocale={locale} />
+        <AgenciaClient initialLocale={locale} />
       </article>
 
       <footer className="border-t border-ink">

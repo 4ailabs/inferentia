@@ -9,6 +9,12 @@ import type {
   DualRender,
   NutritionalProgram,
 } from "@/lib/clinical-schema";
+import {
+  STORAGE_KEYS,
+  readStored,
+  subscribeSharedState,
+  writeStored,
+} from "@/lib/role";
 
 type SessionPayload = {
   posterior: ClinicalPosterior;
@@ -17,10 +23,6 @@ type SessionPayload = {
 };
 
 type LoadState = "loading" | "ready" | "empty" | "error";
-
-const SESSION_KEY = "inferentia:last_session";
-const PROGRAM_KEY = "inferentia:last_program";
-const PANEL_KEY = "inferentia:last_agency";
 
 function isValidSessionPayload(x: unknown): x is SessionPayload {
   if (!x || typeof x !== "object") return false;
@@ -44,7 +46,7 @@ function averageValue(items: AgencyItem[], which: "pre" | "post") {
   return items.reduce((s, i) => s + i[which], 0) / items.length;
 }
 
-export default function AgencyClient({
+export default function AgenciaClient({
   initialLocale,
 }: {
   initialLocale: "en" | "es";
@@ -61,8 +63,8 @@ export default function AgencyClient({
       ? {
           emptyTitle: "No hay sesión disponible.",
           emptyBody:
-            "Ejecuta una sesión primero — regresa a /session y completa el flujo.",
-          backToSession: "← /session",
+            "Ejecuta una sesión primero — regresa a /clinico/sesion y completa el flujo.",
+          backToSession: "← /clinico/sesion",
           composing: "Sonnet 4.6 está componiendo el panel de agencia…",
           composingSub:
             "Anclando pre/post en el posterior clínico y el programa firmado.",
@@ -97,8 +99,8 @@ export default function AgencyClient({
       : {
           emptyTitle: "No session available.",
           emptyBody:
-            "Run a session first — go back to /session and complete the flow.",
-          backToSession: "← /session",
+            "Run a session first — go back to /clinico/sesion and complete the flow.",
+          backToSession: "← /clinico/sesion",
           composing: "Sonnet 4.6 is composing the agency panel…",
           composingSub:
             "Anchoring pre/post in the posterior and the signed program.",
@@ -134,49 +136,35 @@ export default function AgencyClient({
   useEffect(() => {
     const run = async () => {
       try {
-        const raw = sessionStorage.getItem(SESSION_KEY);
-        if (!raw) {
+        const session = readStored<SessionPayload>(STORAGE_KEYS.session);
+        if (!session || !isValidSessionPayload(session)) {
           setLoadState("empty");
           return;
         }
-        const parsed: unknown = JSON.parse(raw);
-        if (!isValidSessionPayload(parsed)) {
-          setLoadState("empty");
-          return;
-        }
-        setPosterior(parsed.posterior);
+        setPosterior(session.posterior);
 
-        let prog: NutritionalProgram | null = null;
-        const cachedProg = sessionStorage.getItem(PROGRAM_KEY);
-        if (cachedProg) {
-          try {
-            const p = JSON.parse(cachedProg) as NutritionalProgram;
-            if (p.patient_id === parsed.posterior.patient_id) prog = p;
-          } catch {
-            // ignore
-          }
-        }
+        const cachedProg = readStored<NutritionalProgram>(STORAGE_KEYS.program);
+        const prog =
+          cachedProg && cachedProg.patient_id === session.posterior.patient_id
+            ? cachedProg
+            : null;
         setProgram(prog);
 
-        const cachedPanel = sessionStorage.getItem(PANEL_KEY);
-        if (cachedPanel) {
-          try {
-            const p = JSON.parse(cachedPanel) as AgencyPanel;
-            if (p.patient_id === parsed.posterior.patient_id) {
-              setPanel(p);
-              setLoadState("ready");
-              return;
-            }
-          } catch {
-            // ignore and recompose
-          }
+        const cachedPanel = readStored<AgencyPanel>(STORAGE_KEYS.panel);
+        if (
+          cachedPanel &&
+          cachedPanel.patient_id === session.posterior.patient_id
+        ) {
+          setPanel(cachedPanel);
+          setLoadState("ready");
+          return;
         }
 
         const res = await fetch("/api/agency", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({
-            posterior: parsed.posterior,
+            posterior: session.posterior,
             program: prog,
             locale,
           }),
@@ -189,7 +177,7 @@ export default function AgencyClient({
         }
         const next = j.panel as AgencyPanel;
         setPanel(next);
-        sessionStorage.setItem(PANEL_KEY, JSON.stringify(next));
+        writeStored(STORAGE_KEYS.panel, next);
         setLoadState("ready");
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err));
@@ -197,6 +185,16 @@ export default function AgencyClient({
       }
     };
     run();
+    return subscribeSharedState((key) => {
+      if (key === STORAGE_KEYS.program) {
+        const next = readStored<NutritionalProgram>(STORAGE_KEYS.program);
+        if (next) setProgram(next);
+      }
+      if (key === STORAGE_KEYS.panel) {
+        const next = readStored<AgencyPanel>(STORAGE_KEYS.panel);
+        if (next) setPanel(next);
+      }
+    });
   }, [locale]);
 
   const regenerate = useCallback(async () => {
@@ -217,7 +215,7 @@ export default function AgencyClient({
       }
       const next = j.panel as AgencyPanel;
       setPanel(next);
-      sessionStorage.setItem(PANEL_KEY, JSON.stringify(next));
+      writeStored(STORAGE_KEYS.panel, next);
       setLoadState("ready");
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -248,7 +246,7 @@ export default function AgencyClient({
         <p className="editorial text-[18px] text-ink">{L.emptyTitle}</p>
         <p className="mt-3 text-[13px] text-ink-soft">{L.emptyBody}</p>
         <Link
-          href={locale === "es" ? "/session?lang=es" : "/session"}
+          href={locale === "es" ? "/clinico/sesion?lang=es" : "/clinico/sesion"}
           className="mt-5 inline-flex bg-ink text-paper px-4 py-2 text-[12px] tracking-wide"
         >
           {L.backToSession}
@@ -510,7 +508,7 @@ export default function AgencyClient({
       {/* Footer nav -------------------------------------------------- */}
       <section className="mt-14 grid grid-cols-1 md:grid-cols-4 gap-6 border-t border-rule pt-10 text-[13px]">
         <Link
-          href={locale === "es" ? "/session/result?lang=es" : "/session/result"}
+          href={locale === "es" ? "/clinico/resultado?lang=es" : "/clinico/resultado"}
           className="border border-rule bg-paper-raised px-5 py-4 hover:border-ink transition-colors"
         >
           <p className="eyebrow">{locale === "es" ? "Regresar" : "Back"}</p>
@@ -518,7 +516,7 @@ export default function AgencyClient({
         </Link>
         <Link
           href={
-            locale === "es" ? "/session/program?lang=es" : "/session/program"
+            locale === "es" ? "/clinico/programa?lang=es" : "/clinico/programa"
           }
           className="border border-rule bg-paper-raised px-5 py-4 hover:border-ink transition-colors"
         >

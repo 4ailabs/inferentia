@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import AgencyClient from "./agency-client";
+import PacienteResultadoClient from "./paciente-resultado-client";
 import { getDict, resolveLocale } from "@/lib/i18n";
 import { LocaleToggle } from "@/components/locale-toggle";
 
@@ -15,12 +15,12 @@ export async function generateMetadata({
   return {
     title:
       locale === "es"
-        ? "Panel de agencia — Inferentia"
-        : "Agency panel — Inferentia",
+        ? "Tu lectura · Paciente — Inferentia"
+        : "Your reading · Patient — Inferentia",
   };
 }
 
-export default async function AgencyPage({
+export default async function PacienteResultadoPage({
   searchParams,
 }: {
   searchParams: SearchParams;
@@ -33,34 +33,32 @@ export default async function AgencyPage({
   return (
     <main className="min-h-screen bg-paper text-ink">
       <header className="border-b border-rule">
-        <div className="mx-auto max-w-[1480px] px-6 md:px-10">
+        <div className="mx-auto max-w-[1280px] px-6 md:px-10">
           <div className="flex items-end justify-between py-5">
             <div className="flex items-end gap-6">
               <Link
-                href={`/${langSuffix}`}
+                href={`/paciente${langSuffix}`}
                 className="running-head hover:text-accent transition-colors"
               >
-                ← {t.masthead.running_head}
+                ← {locale === "es" ? "Tu espacio" : "Your space"}
               </Link>
               <span className="h-4 w-px bg-rule" />
               <p className="eyebrow">
-                {locale === "es"
-                  ? "Figura iii.d · Panel de agencia"
-                  : "Figure iii.d · Agency panel"}
+                {locale === "es" ? "Paciente · Tu lectura" : "Patient · Your reading"}
               </p>
             </div>
-            <LocaleToggle locale={locale} pathname="/session/agency" search={sp} />
+            <LocaleToggle locale={locale} pathname="/paciente/resultado" search={sp} />
           </div>
         </div>
         <div className="h-[2px] bg-ink" />
       </header>
 
-      <article className="mx-auto max-w-[1480px] px-6 md:px-10 py-10 pb-16">
-        <AgencyClient initialLocale={locale} />
+      <article className="mx-auto max-w-[1000px] px-6 md:px-10 py-10 pb-16">
+        <PacienteResultadoClient initialLocale={locale} />
       </article>
 
       <footer className="border-t border-ink">
-        <div className="mx-auto max-w-[1480px] px-6 md:px-10 py-6 flex items-center justify-between text-[11px] text-ink-mute">
+        <div className="mx-auto max-w-[1280px] px-6 md:px-10 py-6 flex items-center justify-between text-[11px] text-ink-mute">
           <Link
             href={`/${langSuffix}`}
             className="tabular tracking-wider hover:text-ink transition-colors"

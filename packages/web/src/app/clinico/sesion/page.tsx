@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import SessionClient from "./session-client";
+import SesionClient from "./sesion-client";
 import { getAnaScript } from "@/lib/patient-ana";
 import { getDict, resolveLocale } from "@/lib/i18n";
 import { LocaleToggle } from "@/components/locale-toggle";
@@ -47,11 +47,11 @@ export default async function SessionPage({
               <span className="h-4 w-px bg-rule" />
               <p className="eyebrow">
                 {locale === "es"
-                  ? "Figura iii · Sesión clínica en vivo"
-                  : "Figure iii · Live clinical session"}
+                  ? "Clínico · Figura iii · Sesión en vivo"
+                  : "Clinician · Figure iii · Live session"}
               </p>
             </div>
-            <LocaleToggle locale={locale} pathname="/session" search={sp} />
+            <LocaleToggle locale={locale} pathname="/clinico/sesion" search={sp} />
           </div>
         </div>
         <div className="h-[2px] bg-ink" />
@@ -74,7 +74,7 @@ export default async function SessionPage({
           </p>
         </section>
 
-        <SessionClient locale={locale} scriptedTurns={script} />
+        <SesionClient locale={locale} scriptedTurns={script} />
 
         <section className="mt-16 grid grid-cols-12 gap-x-10 border-t border-rule pt-10">
           <div className="col-span-12 md:col-span-4">

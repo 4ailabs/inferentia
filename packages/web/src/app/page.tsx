@@ -46,10 +46,22 @@ export default async function Home({
             </div>
             <nav className="hidden md:flex items-center gap-6 text-[12px] tracking-wide text-ink-quiet">
               <Link
-                href={`/session${langSuffix}`}
+                href={`/clinico/sesion${langSuffix}`}
                 className="text-accent hover:text-accent-deep transition-colors font-medium"
               >
-                {locale === "es" ? "Sesión" : "Session"}
+                {locale === "es" ? "Clínico" : "Clinician"}
+              </Link>
+              <Link
+                href={`/paciente${langSuffix}`}
+                className="hover:text-ink transition-colors"
+              >
+                {locale === "es" ? "Paciente" : "Patient"}
+              </Link>
+              <Link
+                href={`/demo${langSuffix}`}
+                className="hover:text-ink transition-colors italic"
+              >
+                Demo
               </Link>
               <Link href={`/network${langSuffix}`} className="hover:text-ink transition-colors">
                 {t.masthead.nav.network}
@@ -121,16 +133,64 @@ export default async function Home({
               </aside>
             </div>
 
-            <div className="mt-12 flex flex-wrap items-center gap-6">
+            <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
               <Link
-                href={`/session${langSuffix}`}
-                className="group inline-flex items-center gap-3 bg-accent text-paper px-5 py-3 text-[13px] tracking-wide hover:bg-accent-deep transition-colors"
+                href={`/clinico/sesion${langSuffix}`}
+                className="group border-2 border-ink bg-paper-raised px-5 py-5 hover:border-accent transition-colors"
               >
-                {locale === "es"
-                  ? "Iniciar sesión en vivo →"
-                  : "Start a live session →"}
-                <span className="inline-block w-6 h-px bg-paper transition-transform group-hover:translate-x-1" />
+                <p className="eyebrow eyebrow-accent">
+                  {locale === "es" ? "Entrar como clínico" : "Enter as clinician"}
+                </p>
+                <p className="mt-3 editorial text-[19px] text-ink leading-tight">
+                  {locale === "es"
+                    ? "Conducir la entrevista · firmar el programa →"
+                    : "Run the interview · sign the program →"}
+                </p>
+                <p className="mt-3 text-[11.5px] text-ink-mute leading-snug">
+                  {locale === "es"
+                    ? "Intake con labs + red flags. Síntesis clínica. Firma que publica al paciente."
+                    : "Intake with labs + red flags. Clinical synthesis. Signing publishes to the patient."}
+                </p>
               </Link>
+              <Link
+                href={`/paciente${langSuffix}`}
+                className="group border border-rule bg-paper-raised px-5 py-5 hover:border-ink transition-colors"
+              >
+                <p className="eyebrow">
+                  {locale === "es" ? "Entrar como paciente" : "Enter as patient"}
+                </p>
+                <p className="mt-3 editorial text-[19px] text-ink leading-tight">
+                  {locale === "es"
+                    ? "Ver mi lectura y mi programa →"
+                    : "See my reading and my program →"}
+                </p>
+                <p className="mt-3 text-[11.5px] text-ink-mute leading-snug">
+                  {locale === "es"
+                    ? "Lenguaje humano, sin taxonomía técnica. Solo lo firmado por tu clínico."
+                    : "Plain language, no technical taxonomy. Only what your clinician has signed."}
+                </p>
+              </Link>
+              <Link
+                href={`/demo${langSuffix}`}
+                className="group border border-rule bg-paper-raised px-5 py-5 hover:border-accent transition-colors"
+              >
+                <p className="eyebrow">
+                  {locale === "es" ? "Demo · Jurado" : "Demo · Jury"}
+                </p>
+                <p className="mt-3 editorial italic text-[19px] text-accent leading-tight">
+                  {locale === "es"
+                    ? "Split screen simultáneo →"
+                    : "Simultaneous split screen →"}
+                </p>
+                <p className="mt-3 text-[11.5px] text-ink-mute leading-snug">
+                  {locale === "es"
+                    ? "Paciente y clínico en una sola pantalla (hero shot del hackathon)."
+                    : "Patient and clinician in one canvas (the hackathon hero shot)."}
+                </p>
+              </Link>
+            </div>
+
+            <div className="mt-8 flex flex-wrap items-center gap-6">
               <Link
                 href={`/network${langSuffix}`}
                 className="inline-flex items-center gap-2 text-[13px] text-ink underline decoration-rule underline-offset-4 decoration-1 hover:decoration-ink transition-colors"

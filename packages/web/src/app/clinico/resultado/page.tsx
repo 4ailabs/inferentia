@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import ProgramClient from "./program-client";
+import ResultadoClient from "./resultado-client";
 import { getDict, resolveLocale } from "@/lib/i18n";
 import { LocaleToggle } from "@/components/locale-toggle";
 
@@ -15,12 +15,12 @@ export async function generateMetadata({
   return {
     title:
       locale === "es"
-        ? "Programa nutricional — Inferentia"
-        : "Nutritional program — Inferentia",
+        ? "Resultado de sesión — Inferentia"
+        : "Session result — Inferentia",
   };
 }
 
-export default async function ProgramPage({
+export default async function ResultPage({
   searchParams,
 }: {
   searchParams: SearchParams;
@@ -45,18 +45,18 @@ export default async function ProgramPage({
               <span className="h-4 w-px bg-rule" />
               <p className="eyebrow">
                 {locale === "es"
-                  ? "Figura iii.c · Programa nutricional"
-                  : "Figure iii.c · Nutritional program"}
+                  ? "Clínico · Figura iii.b · Resultado clínico"
+                  : "Clinician · Figure iii.b · Clinical result"}
               </p>
             </div>
-            <LocaleToggle locale={locale} pathname="/session/program" search={sp} />
+            <LocaleToggle locale={locale} pathname="/clinico/resultado" search={sp} />
           </div>
         </div>
         <div className="h-[2px] bg-ink" />
       </header>
 
       <article className="mx-auto max-w-[1480px] px-6 md:px-10 py-10 pb-16">
-        <ProgramClient initialLocale={locale} />
+        <ResultadoClient initialLocale={locale} />
       </article>
 
       <footer className="border-t border-ink">

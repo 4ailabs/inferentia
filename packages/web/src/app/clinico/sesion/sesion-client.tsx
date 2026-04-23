@@ -11,6 +11,7 @@ import type {
   Intake,
   Labs,
 } from "@/lib/clinical-schema";
+import { STORAGE_KEYS, writeStored } from "@/lib/role";
 
 type Message = {
   id: string;
@@ -282,11 +283,13 @@ export default function SessionClient({
         setStage("error");
         return;
       }
-      sessionStorage.setItem(
-        "inferentia:last_session",
-        JSON.stringify({ posterior, render: j.render, locale }),
-      );
-      router.push(`/session/result${locale === "es" ? "?lang=es" : ""}`);
+      // Persist in localStorage so the patient tab/window picks it up.
+      writeStored(STORAGE_KEYS.session, {
+        posterior,
+        render: j.render,
+        locale,
+      });
+      router.push(`/clinico/resultado${locale === "es" ? "?lang=es" : ""}`);
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : String(err));
       setStage("error");
