@@ -46,7 +46,7 @@ export default async function Home({
             </div>
             <nav className="hidden md:flex items-center gap-6 text-[12px] tracking-wide text-ink-quiet">
               <Link
-                href={`/clinico/sesion${langSuffix}`}
+                href={`/clinico/nuevo${langSuffix}`}
                 className="text-accent hover:text-accent-deep transition-colors font-medium"
               >
                 {locale === "es" ? "Clínico" : "Clinician"}
@@ -135,21 +135,28 @@ export default async function Home({
 
             <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
               <Link
-                href={`/clinico/sesion${langSuffix}`}
+                href={`/clinico/nuevo${langSuffix}`}
                 className="group border-2 border-ink bg-paper-raised px-5 py-5 hover:border-accent transition-colors"
               >
-                <p className="eyebrow eyebrow-accent">
-                  {locale === "es" ? "Entrar como clínico" : "Enter as clinician"}
-                </p>
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="eyebrow eyebrow-accent">
+                    {locale === "es"
+                      ? "Consola del clínico"
+                      : "Clinician console"}
+                  </p>
+                  <span className="tabular text-[9.5px] tracking-[0.16em] uppercase text-accent border border-accent px-1.5 py-0.5">
+                    {locale === "es" ? "Matemática real" : "Real math"}
+                  </span>
+                </div>
                 <p className="mt-3 editorial text-[19px] text-ink leading-tight">
                   {locale === "es"
-                    ? "Conducir la entrevista · firmar el programa →"
-                    : "Run the interview · sign the program →"}
+                    ? "Caso real · clasificación bayesiana →"
+                    : "Real case · Bayesian classification →"}
                 </p>
                 <p className="mt-3 text-[11.5px] text-ink-mute leading-snug">
                   {locale === "es"
-                    ? "Intake con labs + red flags. Síntesis clínica. Firma que publica al paciente."
-                    : "Intake with labs + red flags. Clinical synthesis. Signing publishes to the patient."}
+                    ? "Pega labs anonimizados + narrativa clínica. GMM Bayesiano audita la impronta dominante con log-likelihoods y entropía. Sesión guiada en /clinico/sesion."
+                    : "Paste anonymised labs + clinical narrative. Bayesian GMM audits the dominant imprint with log-likelihoods and entropy. Guided session in /clinico/sesion."}
                 </p>
               </Link>
               <Link
