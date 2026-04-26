@@ -71,22 +71,22 @@ export default async function Home({
             >
               {es ? (
                 <>
-                  Identificamos los 13 patrones
+                  La enfermedad crónica es la firma
                   <br />
-                  que sostienen la enfermedad crónica.
+                  de priors predictivos rígidos.
                   <br />
                   <span className="editorial-italic text-accent">
-                    Calculamos qué intervenciones los liberan.
+                    Restauramos la agencia para actualizarlos.
                   </span>
                 </>
               ) : (
                 <>
-                  We identify the 13 patterns
+                  Chronic disease is the signature
                   <br />
-                  sustaining chronic disease.
+                  of rigid predictive priors.
                   <br />
                   <span className="editorial-italic text-accent">
-                    We compute what loosens them.
+                    We restore agency to update them.
                   </span>
                 </>
               )}
