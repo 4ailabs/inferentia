@@ -76,7 +76,7 @@ export default async function Home({
                   que sostienen la enfermedad crónica.
                   <br />
                   <span className="editorial-italic text-accent">
-                    Calculamos qué intervenciones los aflojan.
+                    Calculamos qué intervenciones los liberan.
                   </span>
                 </>
               ) : (
@@ -253,7 +253,7 @@ export default async function Home({
             </h2>
             <p className="mt-6 text-[15px] md:text-[16px] leading-[1.65] text-ink-soft max-w-[58ch]">
               {es
-                ? "22 nodos metabólicos conectados en un gradiente que va de procesos reversibles a daño estructural. El motor de Inferentia mide dónde está el paciente en esa red, qué nodos son aún reversibles y qué moléculas específicas aflojan el sistema antes de que el daño se cristalice."
+                ? "22 nodos metabólicos conectados en un gradiente que va de procesos reversibles a daño estructural. El motor de Inferentia mide dónde está el paciente en esa red, qué nodos son aún reversibles y qué moléculas específicas liberan el sistema antes de que el daño se cristalice."
                 : "22 metabolic nodes connected in a gradient that goes from reversible processes to structural damage. Inferentia's engine measures where the patient is in that network, which nodes are still reversible, and which specific molecules loosen the system before damage crystallizes."}
             </p>
           </div>
