@@ -4,6 +4,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { ClinicalPosterior, DualRender } from "@/lib/clinical-schema";
 import { STORAGE_KEYS, readStored, subscribeSharedState } from "@/lib/role";
+import { PredictiveBodyMap } from "@/components/predictive-body-map";
+import { MetabolicSignatureChart } from "@/components/metabolic-signature-chart";
+import { GeneticPanel } from "@/components/genetic-panel";
+import type { ImprintId } from "@/lib/math/sensations";
 
 type Payload = {
   posterior: ClinicalPosterior;
@@ -145,6 +149,28 @@ export default function ResultadoClient({
         </div>
       </section>
 
+      {/* Predictive Body Map (hero) -------------------------------- */}
+      <section className="mt-6">
+        <PredictiveBodyMap
+          imprintId={posterior.dominant_imprint as ImprintId}
+          imprintName={
+            posterior.imprint_posterior.find(
+              (i) => i.id === posterior.dominant_imprint,
+            )?.name ?? posterior.dominant_imprint
+          }
+          strength={
+            posterior.imprint_posterior.find(
+              (i) => i.id === posterior.dominant_imprint,
+            )?.posterior ?? posterior.confidence
+          }
+          priors={posterior.active_priors.slice(0, 4).map((p) => ({
+            label: p.label,
+            strength: p.strength,
+          }))}
+          locale={locale}
+        />
+      </section>
+
       {/* Safety banner when applicable ----------------------------- */}
       {posterior.safety_priority !== "none" && (
         <section
@@ -218,44 +244,12 @@ export default function ResultadoClient({
                   ? "Labs vs firma esperada"
                   : "Labs vs expected signature"}
               </p>
-              <ul className="mt-2 space-y-2">
-                {posterior.discordances.map((d) => {
-                  const isDiscordant = d.direction !== "concordant";
-                  return (
-                    <li
-                      key={d.marker}
-                      className={`py-2 px-3 text-[12px] border ${
-                        isDiscordant
-                          ? "border-danger bg-danger/5"
-                          : "border-rule"
-                      }`}
-                    >
-                      <div className="flex items-baseline justify-between">
-                        <span className="tabular font-medium text-ink">
-                          {d.marker}
-                        </span>
-                        <span
-                          className={`tabular text-[11px] ${
-                            isDiscordant ? "text-danger" : "text-ink-quiet"
-                          }`}
-                        >
-                          {d.measured} · expected {d.expected_low}–
-                          {d.expected_high}
-                          {isDiscordant && (
-                            <>
-                              {" "}
-                              · {d.direction === "above_expected" ? "↑" : "↓"}
-                            </>
-                          )}
-                        </span>
-                      </div>
-                      <p className="mt-1 text-[11.5px] text-ink-quiet leading-snug">
-                        {d.clinical_note}
-                      </p>
-                    </li>
-                  );
-                })}
-              </ul>
+              <div className="mt-4">
+                <MetabolicSignatureChart 
+                  discordances={posterior.discordances} 
+                  locale={locale} 
+                />
+              </div>
             </div>
           )}
 
@@ -303,17 +297,13 @@ export default function ResultadoClient({
               <p className="eyebrow">
                 {locale === "es" ? "Panel genético" : "Genetic panel"}
               </p>
-              <ul className="mt-2 space-y-2">
-                {render.clinician.genetic_panel.map((g) => (
-                  <li key={g.rsid} className="text-[12px]">
-                    <span className="tabular text-accent font-medium">
-                      {g.rsid}
-                    </span>{" "}
-                    <span className="text-ink-soft">{g.gene}</span>
-                    <span className="text-ink-quiet"> · {g.clinical_action}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="mt-4">
+                <GeneticPanel 
+                  snps={render.clinician.genetic_panel}
+                  dominantImprint={posterior.dominant_imprint}
+                  locale={locale}
+                />
+              </div>
             </div>
           </div>
 

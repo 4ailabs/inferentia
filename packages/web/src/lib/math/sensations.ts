@@ -848,6 +848,7 @@ export function imprintsForSensation(
   s: SensationId,
 ): { primary: ImprintId[]; secondary: ImprintId[] } {
   const entry = SENSATIONS[s];
+  if (!entry) return { primary: [], secondary: [] };
   return { primary: entry.imprints_primary, secondary: entry.imprints_secondary };
 }
 

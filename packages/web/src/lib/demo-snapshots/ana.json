@@ -1,0 +1,123 @@
+{
+  "case_id": "ana-demo",
+  "thinking_excerpt": "",
+  "prose_excerpt": "# Síntesis Orquestadora — Caso 34F, i8 Reserva + i2\n\n## Lectura integrada\n\nEl caso converge limpiamente en las tres dimensiones. La **impronta i8 Reserva** queda bien sostenida por la tríada canónica: shock originario (separación materna hospitalaria a los 3 años, en plena ventana crítica del circuito PANIC/GRIEF de Panksepp), firma conductual (\"no se da permiso de parar\" = hipervigilancia del recurso, imposibilidad de soltar), y firma somática exacta (dificultad para bajar de peso pese a esfuerzo, ansiedad nocturna como signo de reactivación circadiana del eje HPA). La co-activación con **i2** no es Escasez (confusión del clínico; i2 es Acorazamiento) sino blindaje defensivo compatible con el patrón \"no parar\" como armadura permanente.\n\nEl **Metabolic Mathematician** dibuja un sistema en carga alostática tipo 3 (desregulación multisistémica, no focal), con 45.7% de carga y 12 nodos rígidos. Lo más informativo no es el número global sino la **flexibilidad de agencia predictiva en 0.18** — este es el correlato biométrico de la cristalización del prior i8. El sistema literalmente ha perdido capacidad de actualizar predicciones; opera en modo \"reserva permanente\" como estado estaciona\n\n…[abbreviated for snapshot]…\n\n",
+  "final_synthesis": {
+    "executive_summary": "Mujer 34a con 6 años de fatiga crónica, ansiedad nocturna y resistencia a pérdida de peso, sobre impronta i8 Reserva (separación materna hospitalaria a los 3a) con co-activación i2 defensiva. Sistema en carga alostática tipo 3 con agencia predictiva muy baja (0.18); leverage primario en control inflamatorio. Estrategia: intervención molecular escalonada anti-inflamatoria/sensibilizante (reforzada por SNP FADS1) sincronizada con trabajo clínico del prior de separación, que es el cuello de botella real.",
+    "diagnostic_layers": {
+      "convencional": "Síndrome metabólico temprano (IR periférica + hepática, inflamación sistémica, dislipidemia borderline, adiposidad visceral, fatiga crónica, ansiedad nocturna)",
+      "imprint_active": "i8 Reserva (primaria) con i2 Acorazamiento co-activado (moderado)",
+      "sensation_active": "Abandono + Vulnerabilidad",
+      "shock_originario": "Separación materna prolongada a los 3 años por hospitalización — ventana crítica del circuito PANIC/GRIEF; instalación de prior de escasez afectiva y material con retención metabólica compensatoria",
+      "allostatic_type": "McEwen tipo 3 (desregulación multisistémica: inflamación + IR + endotelio simultáneos)"
+    },
+    "predictive_analysis": {
+      "system_burden_pct": 45.7,
+      "primary_leverage": "inflammation_control",
+      "expected_gain_pct": 7.8,
+      "horizon_weeks": 12,
+      "ceiling_note": "predictive_agency en 0.18 indica prior muy cristalizado; ganancia molecular tope ~8% sin trabajo concurrente del prior i8"
+    },
+    "intervention_plan": {
+      "level_0_prior_work": "Trabajo clínico del explorador sobre el prior i8 de separación materna (ventana 3 años, hospitalización): reencuadre del programa de reserva, restauración de agencia para soltar el acumulado afectivo-material. Fuera de mi scope molecular, pero es el cuello de botella real del caso. Sin este nivel, el protocolo molecular tendrá techo ~8% de ganancia y riesgo de recaída por lealtad al patrón.",
+      "level_1_molecular_primary": [
+        {
+          "id": "epa_dha",
+          "dose": "2000 mg/día (EPA:DHA ~2:1)",
+          "timing": "con comida principal rica en grasa (mediodía)",
+          "rationale": "Piedra angular en este caso por SNP rs174547/FADS1: conversión ALA→EPA deficiente, obligando a aporte marino preformado. Genera resolvinas/protectinas que resuelven inflamación sistémica, hepática y endotelial (nodos top). Alineado con i8 (modula eje PANIC/GRIEF vía fluidez de membrana en circuitos límbicos).",
+          "evidence_level": "A"
+        },
+        {
+          "id": "curcumin",
+          "dose": "1000 mg/día fitosoma Meriva",
+          "timing": "dividido en 2 tomas con comida grasa (desayuno y cena)",
+          "rationale": "Inhibe NF-kB y activa Nrf2 — ataca directamente los tres nodos rígidos top (systemic_inflammation 0.88, adipose_inflammation 0.85, endothelial_inflammation 0.62). Fitosoma por biodisponibilidad. Forma de elección vs curcumina no formulada.",
+          "evidence_level": "B"
+        },
+        {
+          "id": "n_acetyl_cysteine",
+          "dose": "1200 mg/día",
+          "timing": "en ayunas, 2 tomas (mañana y tarde)",
+          "rationale": "Doble función crítica: (1) precursor de glutatión → hepatoprotección en IR hepática; (2) modulador glutamatérgico prefrontal → aborda ansiedad nocturna sin crear dependencia ni interferir con trabajo del prior. Introducir en semana 5 para no saturar adherencia.",
+          "evidence_level": "B"
+        }
+      ],
+      "level_2_molecular_secondary": [
+        {
+          "id": "quercetin",
+          "dose": "500 mg/día",
+          "timing": "con comida grasa, idealmente co-administrada con omega-3",
+          "rationale": "Sinergia con EPA/DHA en endotelio y adipocito; estabilización de mastocitos relevante dado componente ansioso. Introducir semana 5.",
+          "evidence_level": "B"
+        },
+        {
+          "id": "sulforaphane",
+          "dose": "30 mg/día (extracto estandarizado o germinados de brócoli)",
+          "timing": "en ayunas",
+          "rationale": "Activador Nrf2 complementario; aborda glucose_toxicity y hepatic_inflammation. Introducir semana 5-6.",
+          "evidence_level": "B"
+        },
+        {
+          "id": "berberine",
+          "dose": "500 mg x 2 (titular desde 500 mg/día semana 7)",
+          "timing": "antes de comida principal y cena",
+          "rationale": "Activa AMPK → mejora insulin_sensitivity (flexibility 0.30) y dyslipidemia. Introducir en fase 2-3 tras estabilizar base anti-inflamatoria; titular por riesgo GI.",
+          "evidence_level": "A"
+        }
+      ],
+      "level_3_food_first": [
+        "Salmón salvaje, sardinas, caballa 3x/semana (EPA/DHA preformado; crítico por FADS1)",
+        "Germinados de brócoli frescos diarios (sulforafano activo)",
+        "Cebolla morada y manzana con piel (quercetina)",
+        "Cúrcuma fresca con pimienta negra en preparaciones grasas (curcumina nativa)",
+        "Avena integral entera 40-50 g/día (beta-glucanos → LDL y saciedad; refuerza satiety 0.49)",
+        "Kale, rúcula, berros (sulforafano + nitratos endoteliales)",
+        "Legumbres lentas diarias (fibra fermentable, estabilidad glucémica)",
+        "Frutos rojos (polifenoles antocianinas)",
+        "Té verde matcha (EGCG, sinergia Nrf2)"
+      ],
+      "sequencing": {
+        "weeks_1_4": "Fase 1 — Cimentación. EPA+DHA 2g + Curcumina fitosoma 1g + Food-first completo. Construcción de adherencia y tolerancia. Clínico inicia trabajo del prior en paralelo.",
+        "weeks_5_8": "Fase 2 — Ampliación. Añadir NAC 1.2g, Quercetina 500 mg, Sulforafano 30 mg. Monitorizar respuesta subjetiva (sueño, ansiedad nocturna, energía).",
+        "weeks_9_12": "Fase 3 — Sensibilización insulínica. Introducir Berberina titulada 500→1000 mg. Reevaluación bioquímica y de componentes de flexibilidad en semana 8 y 12."
+      },
+      "contraindications_resolved": [
+        "Sin medicación actual → sin interacciones activas",
+        "Sin alergias conocidas → sin restricción de pescado (confirmar)",
+        "No embarazo → dosis terapéuticas seguras",
+        "SNP rs174547/FADS1: favorece EPA/DHA marino preformado sobre fuentes vegetales (ALA insuficiente)",
+        "Vigilar berberina si inicia anticonceptivos (inhibe CYP3A4)",
+        "Curcumina: confirmar ausencia de cálculos biliares antes de dosis completa"
+      ]
+    },
+    "monitoring": {
+      "biomarkers_to_repeat_8w": [
+        "HbA1c",
+        "HOMA-IR (glucosa e insulina ayuno)",
+        "hsCRP",
+        "Perfil lipídico completo (incluyendo triglicéridos y ApoB si posible)",
+        "ALT/AST/GGT",
+        "HRV SDNN (wearable o registro estructurado)",
+        "Peso y circunferencia de cintura",
+        "Escala subjetiva sueño y ansiedad nocturna"
+      ],
+      "flexibility_components_to_reassess": [
+        "inflammation_control (objetivo >0.50)",
+        "insulin_sensitivity (objetivo >0.45)",
+        "predictive_agency (indicador crítico del trabajo del prior; objetivo >0.30)",
+        "autonomic_flexibility (vía HRV)"
+      ],
+      "red_flags": [
+        "Empeoramiento de ansiedad nocturna en semana 2-3: posible reactivación del prior i8 por el propio proceso terapéutico; NO escalar suplementos, consultar con clínico",
+        "predictive_agency sin movimiento en semana 8: señal inequívoca de que el prior es el cuello de botella; intensificar trabajo clínico antes de añadir más moléculas",
+        "Pérdida de peso paradójicamente dolorosa o culposa: activación de lealtad i8 al patrón de reserva; trabajo clínico urgente",
+        "Intolerancia GI sostenida a curcumina o berberina: reducir dosis, no abandonar",
+        "Hipotiroidismo subclínico emergente con sulforafano a dosis altas: medir TSH si síntomas"
+      ]
+    },
+    "salutogenic_narrative_for_patient": "Tu cuerpo aprendió muy pronto, cuando eras muy pequeña, que había que guardar reservas por si volvía a faltar lo esencial. Seis años después ese aprendizaje sigue activo y se expresa en inflamación baja pero constante, en dificultad para soltar peso, en ansiedad que aparece justo cuando el mundo se calma. Vamos a hacer dos cosas en paralelo: tu terapeuta va a trabajar contigo el origen de esa reserva, y desde la nutrición vamos a aflojar al sistema con alimentos y moléculas muy concretas que reducen la inflamación y le devuelven flexibilidad al metabolismo. Lo primero que sentirás probablemente sea el sueño más profundo y la tarde con más energía. El peso se mueve después, cuando el cuerpo siente que puede soltar sin peligro.",
+    "confidence": "moderate",
+    "confidence_rationale": "Alta convergencia entre shock biográfico documentado, firma somática canónica i8 (retención visceral, HbA1c tendencial, hambre nocturna equivalente), y patrón metabólico predicho. El SNP rs174547 refuerza con precisión la elección molecular principal. La moderación proviene de la agencia predictiva muy baja (0.18): indica prior muy cristalizado, lo que significa que el techo de ganancia molecular aislada es ~8% y el éxito del protocolo depende críticamente de que el trabajo del prior por parte del clínico avance en paralelo. Si ese nivel 0 no se activa, la confianza baja a low."
+  }
+}

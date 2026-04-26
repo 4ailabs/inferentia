@@ -107,6 +107,18 @@
   --radius-xl: 6px;
 }
 
+html {
+  /* Reserva el ancho del scrollbar siempre — evita que el viewport cambie
+     de ancho cuando una página tiene scroll y otra no, o cuando el contenido
+     cambia de alto por interacciones (causa típica de "la página tiembla"). */
+  scrollbar-gutter: stable;
+  /* Previene rebotes en iOS Safari que se sienten como temblores */
+  overscroll-behavior-y: none;
+  /* Scroll normal — "smooth" puede interpretarse como temblor por algunos
+     trackpads. Mejor dejar el scroll nativo del sistema. */
+  scroll-behavior: auto;
+}
+
 html, body {
   background: var(--paper);
   color: var(--ink);
@@ -114,6 +126,39 @@ html, body {
   font-feature-settings: "ss01", "cv02";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+/* Anti-FOUT: reserve the leading space the editorial heading will occupy once
+   Fraunces loads. Fallback Georgia is wider, so we force the line-height
+   to match Fraunces' natural leading and prevent the hero from dropping a
+   line when fonts swap. */
+.editorial {
+  font-synthesis: none;
+}
+
+/* Entrance animation: only opacity, no transform — evita layout shift si el
+   usuario hace scroll durante la animación. Corta (280ms) y stagger modesto. */
+@keyframes paper-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.stage-enter {
+  animation: paper-fade 280ms ease-out both;
+  will-change: opacity;
+}
+.stage-enter-1 { animation-delay: 0ms; }
+.stage-enter-2 { animation-delay: 60ms; }
+.stage-enter-3 { animation-delay: 120ms; }
+.stage-enter-4 { animation-delay: 180ms; }
+.stage-enter-5 { animation-delay: 240ms; }
+@media (prefers-reduced-motion: reduce) {
+  .stage-enter { animation: none; opacity: 1; }
 }
 
 ::selection {

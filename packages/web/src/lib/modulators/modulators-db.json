@@ -1,0 +1,952 @@
+[
+  {
+    "modulator_id": "quercetin",
+    "display_name_es": "Quercetina",
+    "display_name_en": "Quercetin",
+    "molecular_class": "flavonol",
+    "target_nodes": ["systemic_inflammation", "adipose_inflammation", "endothelial_inflammation", "dyslipidemia"],
+    "target_flexibility_components": ["inflammation_control", "insulin_sensitivity"],
+    "mechanism_brief": "Polyphenolic flavonol that inhibits NF-kB and stabilizes mast cells, reducing pro-inflammatory cytokines and improving endothelial function.",
+    "mechanism_detailed": "Acts as a direct antioxidant, modulates NF-kB, Nrf2 and AMPK pathways, inhibits xanthine oxidase and stabilizes mast cells reducing histamine release. Improves endothelial nitric oxide bioavailability.",
+    "pathway_genes": ["NFKB1", "NFE2L2", "PRKAA1", "TNF", "IL6"],
+    "snp_interactions": [],
+    "food_sources_mg_per_100g": {"cebolla_roja": 20, "manzana_con_piel": 4, "alcaparras": 180, "kale": 8},
+    "dose_range": {
+      "low": 250,
+      "therapeutic": 500,
+      "high": 1000,
+      "max_safe": 1500,
+      "unit": "mg/day",
+      "timing": "with fatty meal, divided into 2 doses"
+    },
+    "forms_bioavailability": {
+      "preferred": "quercetin phytosome (Quercefit) or with bromelain",
+      "poor": "pure aglycone without lipid vehicle",
+      "note": "low oral bioavailability (~2%); phytosome forms increase absorption 20x"
+    },
+    "contraindications": ["anticoagulants (potentiates warfarin)", "pregnancy at high doses", "advanced kidney disease"],
+    "synergies": ["epa_dha", "resveratrol", "vitamin_d3"],
+    "antagonisms": [],
+    "evidence_level": "B",
+    "evidence_notes": "RCTs in hypertension and metabolic syndrome; modest meta-analyses.",
+    "key_references": [
+      "Li 2016, Nutrients",
+      "Serban 2016, J Am Heart Assoc",
+      "Ostadmohammadi 2019, Phytother Res"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable", "i8": "favorable"}
+  },
+  {
+    "modulator_id": "epa_dha",
+    "display_name_es": "EPA + DHA (omega-3 marino)",
+    "display_name_en": "EPA + DHA (marine omega-3)",
+    "molecular_class": "omega-3 fatty acid",
+    "target_nodes": ["systemic_inflammation", "hepatic_inflammation", "fatty_liver", "dyslipidemia", "endothelial_inflammation", "atherosclerosis"],
+    "target_flexibility_components": ["inflammation_control", "lipid_distribution", "insulin_sensitivity", "fatty_acid_oxidation"],
+    "mechanism_brief": "Long-chain polyunsaturated fatty acids that give rise to resolvins and protectins, resolving inflammation and improving membrane fluidity.",
+    "mechanism_detailed": "EPA and DHA compete with arachidonic acid for COX/LOX, generating anti-inflammatory series-3 eicosanoids and pro-resolving mediators (E/D resolvins, protectins, maresins). Activate GPR120, reduce hepatic triglycerides via decreased SREBP-1c and increased PPAR-alpha beta-oxidation.",
+    "pathway_genes": ["FADS1", "FADS2", "ELOVL2", "PPARA", "SREBF1", "FFAR4"],
+    "snp_interactions": [
+      {"snp": "rs174547", "gene": "FADS1", "effect": "minor allele reduces conversion of ALA to EPA/DHA; requires direct dietary intake"},
+      {"snp": "rs1535", "gene": "FADS2", "effect": "modulates delta-6 desaturase efficiency"}
+    ],
+    "food_sources_mg_per_100g": {"salmon_salvaje": 2200, "sardina": 1480, "caballa": 2600, "anchoas": 1400},
+    "dose_range": {
+      "low": 1000,
+      "therapeutic": 2000,
+      "high": 4000,
+      "max_safe": 5000,
+      "unit": "mg/day",
+      "timing": "with main fat-rich meal"
+    },
+    "forms_bioavailability": {
+      "preferred": "re-esterified triglycerides (rTG) or phospholipids (krill)",
+      "poor": "ethyl esters (EE) fasting",
+      "note": "rTG improves absorption ~70% vs EE; verify oxidation index TOTOX <19"
+    },
+    "contraindications": ["doses >3 g/day with anticoagulants without supervision", "fish/shellfish allergy", "scheduled surgery (discontinue 7 days prior)"],
+    "synergies": ["vitamin_d3", "coq10_ubiquinol", "curcumin"],
+    "antagonisms": [],
+    "evidence_level": "A",
+    "evidence_notes": "Robust meta-analyses in triglycerides, CV events (REDUCE-IT with icosapent), and NAFLD.",
+    "key_references": [
+      "Bhatt 2019, N Engl J Med (REDUCE-IT)",
+      "Calder 2017, Biochem Soc Trans",
+      "Scorletti 2014, Hepatology",
+      "Skulas-Ray 2019, Circulation"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable", "i8": "favorable", "i11": "favorable"}
+  },
+  {
+    "modulator_id": "berberine",
+    "display_name_es": "Berberina",
+    "display_name_en": "Berberine",
+    "molecular_class": "isoquinoline alkaloid",
+    "target_nodes": ["high_glucose", "systemic_IR", "hepatic_IR", "dyslipidemia", "fatty_liver", "LDL_elevated", "visceral_adiposity"],
+    "target_flexibility_components": ["insulin_sensitivity", "lipid_distribution", "inflammation_control"],
+    "mechanism_brief": "Alkaloid that activates AMPK and modulates microbiota, reducing glycemia and lipids with efficacy comparable to metformin in meta-analyses.",
+    "mechanism_detailed": "Activates hepatic and muscle AMPK, mildly inhibits mitochondrial complex I (similar to metformin), increases LDL receptor expression via mRNA stabilization (statin-independent mechanism), and restructures microbiota toward butyrate-producing profiles.",
+    "pathway_genes": ["PRKAA1", "PRKAA2", "LDLR", "PCSK9", "SREBF2"],
+    "snp_interactions": [],
+    "food_sources_mg_per_100g": {},
+    "dose_range": {
+      "low": 500,
+      "therapeutic": 1000,
+      "high": 1500,
+      "max_safe": 1500,
+      "unit": "mg/day",
+      "timing": "divided into 2-3 doses with main meals"
+    },
+    "forms_bioavailability": {
+      "preferred": "berberine HCl with silymarin or berberine phytosome",
+      "poor": "pure berberine fasting (bioavailability <1%)",
+      "note": "co-administration with silymarin increases bioavailability via P-gp inhibition"
+    },
+    "contraindications": ["pregnancy", "lactation", "neonates (displaces bilirubin)", "CYP3A4 interaction (cyclosporine, tacrolimus)", "bradycardia"],
+    "synergies": ["silymarin", "alpha_lipoic_acid", "chromium_picolinate"],
+    "antagonisms": [],
+    "evidence_level": "A",
+    "evidence_notes": "Consistent meta-analyses in HbA1c, LDL and NAFLD; effect comparable to metformin in some endpoints.",
+    "key_references": [
+      "Yin 2008, Metabolism",
+      "Lan 2015, J Ethnopharmacol",
+      "Dong 2012, Evid Based Complement Alternat Med",
+      "Koppen 2017, J Am Coll Nutr"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable", "i8": "favorable"}
+  },
+  {
+    "modulator_id": "curcumin",
+    "display_name_es": "Curcumina (fitosoma Meriva)",
+    "display_name_en": "Curcumin (Meriva phytosome)",
+    "molecular_class": "polyphenol (diarylheptanoid)",
+    "target_nodes": ["systemic_inflammation", "hepatic_inflammation", "fatty_liver", "adipose_inflammation", "endothelial_inflammation", "fibrosis_hepatic"],
+    "target_flexibility_components": ["inflammation_control", "insulin_sensitivity"],
+    "mechanism_brief": "Polyphenol that inhibits NF-kB, activates Nrf2 and modulates TLR4, reducing hepatic and systemic inflammation.",
+    "mechanism_detailed": "Blocks NF-kB nuclear translocation, activates Nrf2/ARE pathway increasing endogenous antioxidants, inhibits STAT3 and JAK, reduces hepatic fibrogenesis via HSC inhibition. Meriva form (phosphatidylcholine phytosome) increases bioavailability 29x.",
+    "pathway_genes": ["NFKB1", "NFE2L2", "TNF", "IL6", "STAT3", "COX2"],
+    "snp_interactions": [],
+    "food_sources_mg_per_100g": {"curcuma_fresca": 3000, "curcuma_seca_polvo": 3140},
+    "dose_range": {
+      "low": 500,
+      "therapeutic": 1000,
+      "high": 2000,
+      "max_safe": 8000,
+      "unit": "mg/day",
+      "timing": "with fatty meal, divided into 2 doses"
+    },
+    "forms_bioavailability": {
+      "preferred": "Meriva (phosphatidylcholine phytosome) or Theracurmin",
+      "poor": "pure curcumin without piperine or lipid vehicle",
+      "note": "standard curcumin has bioavailability <1%; Meriva 29x, Theracurmin 27x"
+    },
+    "contraindications": ["biliary obstruction", "active gallstones", "anticoagulants at high doses", "pregnancy at supratherapeutic doses"],
+    "synergies": ["epa_dha", "quercetin", "silymarin"],
+    "antagonisms": [],
+    "evidence_level": "B",
+    "evidence_notes": "Multiple RCTs in NAFLD, arthritis and metabolic syndrome; heterogeneity by galenic form.",
+    "key_references": [
+      "Panahi 2017, Drug Res",
+      "Hewlings 2017, Foods",
+      "Rahmani 2016, Phytother Res",
+      "Belcaro 2010, Altern Med Rev (Meriva)"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable", "i8": "favorable"}
+  },
+  {
+    "modulator_id": "resveratrol",
+    "display_name_es": "Resveratrol (trans)",
+    "display_name_en": "Resveratrol (trans)",
+    "molecular_class": "stilbene polyphenol",
+    "target_nodes": ["systemic_inflammation", "endothelial_inflammation", "fatty_liver", "hepatic_IR", "atherosclerosis"],
+    "target_flexibility_components": ["insulin_sensitivity", "inflammation_control", "fatty_acid_oxidation"],
+    "mechanism_brief": "Stilbene that activates SIRT1 and AMPK, mimicking caloric restriction effects on mitochondrial metabolism.",
+    "mechanism_detailed": "Allosteric activator of SIRT1, deacetylates PGC-1alpha promoting mitochondrial biogenesis. Indirectly activates AMPK, improves hepatic insulin sensitivity and endothelial function via increased eNOS.",
+    "pathway_genes": ["SIRT1", "PPARGC1A", "PRKAA1", "NOS3", "FOXO3"],
+    "snp_interactions": [],
+    "food_sources_mg_per_100g": {"uva_roja_piel": 1.5, "vino_tinto": 0.3, "cacahuate": 0.15, "arandano": 0.03},
+    "dose_range": {
+      "low": 100,
+      "therapeutic": 250,
+      "high": 500,
+      "max_safe": 1000,
+      "unit": "mg/day",
+      "timing": "with fatty meal, preferably morning"
+    },
+    "forms_bioavailability": {
+      "preferred": "micronized or liposomal trans-resveratrol",
+      "poor": "cis-resveratrol (little SIRT1 activity)",
+      "note": "oral bioavailability ~1%; rapidly metabolized to glucuronides"
+    },
+    "contraindications": ["anticoagulants", "hormonal therapy (weak phytoestrogenic activity)", "CYP3A4/2C9 inhibitors"],
+    "synergies": ["quercetin", "epa_dha", "coq10_ubiquinol"],
+    "antagonisms": [],
+    "evidence_level": "B",
+    "evidence_notes": "Heterogeneous RCTs; positive signal in insulin sensitivity and endothelial function, weaker in mortality.",
+    "key_references": [
+      "Timmers 2011, Cell Metab",
+      "Liu 2015, Am J Clin Nutr",
+      "Berman 2017, Nutr Metab (Lond)"
+    ],
+    "bv4_imprint_alignment": {"i8": "favorable"}
+  },
+  {
+    "modulator_id": "sulforaphane",
+    "display_name_es": "Sulforafano",
+    "display_name_en": "Sulforaphane",
+    "molecular_class": "isothiocyanate",
+    "target_nodes": ["systemic_inflammation", "hepatic_inflammation", "fatty_liver", "endothelial_inflammation", "glucose_toxicity"],
+    "target_flexibility_components": ["inflammation_control", "insulin_sensitivity"],
+    "mechanism_brief": "Isothiocyanate derived from glucoraphanin that activates Nrf2, the master regulator of the endogenous antioxidant response.",
+    "mechanism_detailed": "Covalently modifies KEAP1 releasing Nrf2, which translocates to the nucleus and activates ~200 cytoprotective genes (GSH synthase, NQO1, HO-1, glutathione-S-transferases). Reduces hepatic glucose production in T2DM (Axelsson 2017 Science Transl Med).",
+    "pathway_genes": ["NFE2L2", "KEAP1", "NQO1", "HMOX1", "GCLC", "GSTM1"],
+    "snp_interactions": [
+      {"snp": "GSTM1-null", "gene": "GSTM1", "effect": "homozygous deletion increases sulforaphane retention and efficacy"}
+    ],
+    "food_sources_mg_per_100g": {"brotes_brocoli_3dias": 30, "brocoli_maduro": 1.4, "col_rizada": 1.2, "rucula": 0.8},
+    "dose_range": {
+      "low": 10,
+      "therapeutic": 30,
+      "high": 90,
+      "max_safe": 200,
+      "unit": "mg/day",
+      "timing": "fasting or with light meal; avoid prolonged cooking of broccoli"
+    },
+    "forms_bioavailability": {
+      "preferred": "fresh broccoli sprouts (3-4 days) or sulforaphane stabilized with active myrosinase",
+      "poor": "glucoraphanin alone without myrosinase (low conversion)",
+      "note": "adding ground mustard to cooked broccoli restores conversion to sulforaphane"
+    },
+    "contraindications": ["untreated hypothyroidism (sustained high doses)", "pregnancy at high doses", "intestinal obstruction"],
+    "synergies": ["curcumin", "resveratrol"],
+    "antagonisms": [],
+    "evidence_level": "B",
+    "evidence_notes": "Small RCT in T2DM with reduction in hepatic glucose; robust mechanistic evidence.",
+    "key_references": [
+      "Axelsson 2017, Sci Transl Med",
+      "Fahey 2017, Mol Nutr Food Res",
+      "Houghton 2019, Oxid Med Cell Longev"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable", "i8": "favorable"}
+  },
+  {
+    "modulator_id": "vitamin_d3",
+    "display_name_es": "Vitamina D3 (colecalciferol)",
+    "display_name_en": "Vitamin D3 (cholecalciferol)",
+    "molecular_class": "secosteroid hormone",
+    "target_nodes": ["systemic_inflammation", "systemic_IR", "adipose_inflammation", "beta_cell_failure"],
+    "target_flexibility_components": ["inflammation_control", "insulin_sensitivity", "insulin_production", "predictive_agency"],
+    "mechanism_brief": "Secosteroid prohormone that after 25- and 1-alpha-hydroxylation activates VDR, modulating >1000 immune and metabolic genes.",
+    "mechanism_detailed": "1,25(OH)2D3 binds VDR/RXR regulating transcription of immune differentiation genes (regulatory T cells), calcium homeostasis, and insulin sensitivity. Deficiency (<30 ng/mL) is associated with insulin resistance, beta-cell dysfunction and inflammatory Th17 excess.",
+    "pathway_genes": ["VDR", "CYP2R1", "CYP27B1", "GC", "CYP24A1"],
+    "snp_interactions": [
+      {"snp": "rs2282679", "gene": "GC", "effect": "modulates vitamin D transport; carriers require higher doses"},
+      {"snp": "rs10741657", "gene": "CYP2R1", "effect": "reduces hepatic 25-hydroxylation"}
+    ],
+    "food_sources_mg_per_100g": {},
+    "dose_range": {
+      "low": 1000,
+      "therapeutic": 4000,
+      "high": 5000,
+      "max_safe": 10000,
+      "unit": "IU/day",
+      "timing": "with fatty meal; adjust by 25(OH)D target 40-60 ng/mL"
+    },
+    "forms_bioavailability": {
+      "preferred": "D3 (cholecalciferol) in MCT or olive oil",
+      "poor": "D2 (ergocalciferol) — raises 25(OH)D less",
+      "note": "co-administer with K2-MK7 (90-180 mcg) to direct calcium to bone and not plaque"
+    },
+    "contraindications": ["hypercalcemia", "active sarcoidosis", "primary hyperparathyroidism", "calcium oxalate kidney stones without supervision"],
+    "synergies": ["magnesium_glycinate", "epa_dha"],
+    "antagonisms": [],
+    "evidence_level": "A",
+    "evidence_notes": "Consensus in deficiency; mixed RCTs for CV prevention but robust in all-cause mortality (Bjelakovic 2014 Cochrane).",
+    "key_references": [
+      "Holick 2007, N Engl J Med",
+      "Pittas 2019, N Engl J Med (D2d trial)",
+      "Bjelakovic 2014, Cochrane Database Syst Rev"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable", "i8": "favorable", "i11": "favorable"}
+  },
+  {
+    "modulator_id": "magnesium_glycinate",
+    "display_name_es": "Magnesio bisglicinato",
+    "display_name_en": "Magnesium bisglycinate",
+    "molecular_class": "mineral (chelated)",
+    "target_nodes": ["systemic_IR", "high_glucose", "endothelial_inflammation", "hypertension_structural"],
+    "target_flexibility_components": ["insulin_sensitivity", "autonomic_flexibility", "predictive_agency"],
+    "mechanism_brief": "Cofactor of >300 enzymes; its chronic deficit underlies insulin resistance, hypertension and neuromuscular hyperexcitability.",
+    "mechanism_detailed": "ATP cofactor (Mg-ATP is the active form), required for insulin receptor tyrosine kinase, calcium channels and Na/K pump. Bisglycinate avoids the laxative effect of oxide/citrate and provides glycine (GABAergic substrate) favoring autonomic flexibility.",
+    "pathway_genes": ["TRPM6", "TRPM7", "SLC41A1", "CNNM2"],
+    "snp_interactions": [
+      {"snp": "rs11144134", "gene": "TRPM6", "effect": "variants reduce renal Mg reabsorption"}
+    ],
+    "food_sources_mg_per_100g": {"semilla_calabaza": 535, "almendra": 270, "espinaca_cocida": 87, "cacao_puro": 499, "frijol_negro": 70},
+    "dose_range": {
+      "low": 200,
+      "therapeutic": 400,
+      "high": 600,
+      "max_safe": 800,
+      "unit": "mg/day",
+      "timing": "evening (favors sleep) or divided"
+    },
+    "forms_bioavailability": {
+      "preferred": "bisglycinate, threonate (brain), malate (fatigue)",
+      "poor": "magnesium oxide (bioavailability <4%)",
+      "note": "assess erythrocyte Mg, not serum (poorly sensitive)"
+    },
+    "contraindications": ["renal insufficiency GFR <30 mL/min", "AV block", "myasthenia gravis"],
+    "synergies": ["vitamin_d3", "taurine", "glycine"],
+    "antagonisms": [],
+    "evidence_level": "B",
+    "evidence_notes": "Consistent meta-analyses in HbA1c, blood pressure and sleep quality.",
+    "key_references": [
+      "Veronese 2016, Eur J Clin Nutr",
+      "Simental-Mendía 2016, Pharmacol Res",
+      "Zhang 2016, Hypertension"
+    ],
+    "bv4_imprint_alignment": {"i3": "favorable", "i4": "favorable", "i8": "favorable"}
+  },
+  {
+    "modulator_id": "zinc_picolinate",
+    "display_name_es": "Zinc picolinato",
+    "display_name_en": "Zinc picolinate",
+    "molecular_class": "mineral (chelated)",
+    "target_nodes": ["systemic_inflammation", "beta_cell_failure", "gut_inflammation", "high_glucose"],
+    "target_flexibility_components": ["insulin_production", "inflammation_control", "insulin_sensitivity"],
+    "mechanism_brief": "Trace element structural to >300 enzymes; critical cofactor for insulin synthesis, storage and secretion.",
+    "mechanism_detailed": "Component of hexameric insulin crystals in beta-cell granules (ZnT8 transporter). Cofactor of cytoplasmic superoxide dismutase, metallothioneins and thymulin. Deficiency impairs Th1 immunity and intestinal barrier healing.",
+    "pathway_genes": ["SLC30A8", "MT1A", "MT2A", "SOD1"],
+    "snp_interactions": [
+      {"snp": "rs13266634", "gene": "SLC30A8", "effect": "risk allele reduces efficiency of ZnT8 transporter in beta cell"}
+    ],
+    "food_sources_mg_per_100g": {"ostra": 78, "carne_res": 6.3, "semilla_calabaza": 7.6, "lenteja": 3.3},
+    "dose_range": {
+      "low": 15,
+      "therapeutic": 25,
+      "high": 40,
+      "max_safe": 40,
+      "unit": "mg/day",
+      "timing": "with meal; separate 2h from coffee, calcium and iron"
+    },
+    "forms_bioavailability": {
+      "preferred": "picolinate, bisglycinate, citrate",
+      "poor": "sulfate and oxide",
+      "note": "sustained doses >40 mg/day require 1-2 mg copper to avoid cupric deficiency"
+    },
+    "contraindications": ["sustained use without copper (sideroblastic anemia)", "interaction with quinolones and tetracyclines", "active peptic ulcer"],
+    "synergies": ["vitamin_d3", "selenium_selenomethionine"],
+    "antagonisms": ["chromium_picolinate"],
+    "evidence_level": "B",
+    "evidence_notes": "Meta-analyses in glycemia and beta-cell function; strong evidence in immunity.",
+    "key_references": [
+      "Jayawardena 2012, Diabetol Metab Syndr",
+      "Capdor 2013, J Trace Elem Med Biol",
+      "Ranasinghe 2015, Nutr Metab (Lond)"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable", "i8": "favorable"}
+  },
+  {
+    "modulator_id": "chromium_picolinate",
+    "display_name_es": "Cromo picolinato",
+    "display_name_en": "Chromium picolinate",
+    "molecular_class": "trace mineral",
+    "target_nodes": ["high_glucose", "systemic_IR", "muscle_metabolic_inflexibility"],
+    "target_flexibility_components": ["insulin_sensitivity", "satiety"],
+    "mechanism_brief": "Trace element that potentiates insulin receptor signaling via chromodulin, improving muscle glucose uptake.",
+    "mechanism_detailed": "Binds apochromodulin forming holochromodulin, which activates insulin receptor tyrosine kinase and increases GLUT4 translocation in muscle. Modest evidence in carbohydrate cravings in atypical depression.",
+    "pathway_genes": ["INSR", "IRS1", "SLC2A4"],
+    "snp_interactions": [],
+    "food_sources_mg_per_100g": {"brocoli": 0.011, "uva": 0.0075, "levadura_cerveza": 0.017},
+    "dose_range": {
+      "low": 200,
+      "therapeutic": 400,
+      "high": 600,
+      "max_safe": 1000,
+      "unit": "mcg/day",
+      "timing": "with carbohydrate-rich meal"
+    },
+    "forms_bioavailability": {
+      "preferred": "picolinate or GTF (glucose tolerance factor)",
+      "poor": "chromium chloride",
+      "note": "picolinate crosses the cell membrane better"
+    },
+    "contraindications": ["kidney disease", "type 1 diabetes without supervision (hypoglycemia)", "bipolar disorder (isolated cases)"],
+    "synergies": ["berberine", "alpha_lipoic_acid"],
+    "antagonisms": ["zinc_picolinate"],
+    "evidence_level": "C",
+    "evidence_notes": "Heterogeneous meta-analyses; modest effect on HbA1c, larger on cravings.",
+    "key_references": [
+      "Suksomboon 2014, J Clin Pharm Ther",
+      "Anton 2008, Diabetes Technol Ther"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable"}
+  },
+  {
+    "modulator_id": "selenium_selenomethionine",
+    "display_name_es": "Selenio (selenometionina)",
+    "display_name_en": "Selenium (selenomethionine)",
+    "molecular_class": "trace mineral (selenoamino acid)",
+    "target_nodes": ["systemic_inflammation", "hepatic_inflammation", "fatty_liver"],
+    "target_flexibility_components": ["inflammation_control"],
+    "mechanism_brief": "Component of selenoproteins (glutathione peroxidases, thioredoxin reductases) essential for antioxidant defense and T4 to T3 conversion.",
+    "mechanism_detailed": "Incorporated as selenocysteine into 25 human selenoproteins. GPx1-4 neutralize peroxides, TrxR regenerates thioredoxin, DIO1-3 regulate thyroid hormones. Narrow therapeutic range: both deficit and excess are harmful (U-shaped curve).",
+    "pathway_genes": ["GPX1", "GPX4", "SELENOP", "TXNRD1", "DIO2"],
+    "snp_interactions": [
+      {"snp": "rs713041", "gene": "GPX4", "effect": "modulates antioxidant efficiency; variable dietary response"}
+    ],
+    "food_sources_mg_per_100g": {"nuez_brasil": 1.917, "atun": 0.09, "sardina": 0.052, "huevo": 0.031},
+    "dose_range": {
+      "low": 55,
+      "therapeutic": 100,
+      "high": 200,
+      "max_safe": 400,
+      "unit": "mcg/day",
+      "timing": "with meal, preferably morning"
+    },
+    "forms_bioavailability": {
+      "preferred": "selenomethionine or selenium yeast",
+      "poor": "inorganic selenite/selenate at high doses (toxicity)",
+      "note": "2-3 Brazil nuts provide therapeutic dose; avoid supplementation if diet already includes them"
+    },
+    "contraindications": ["chronic overdose (selenosis: hair loss, brittle nails)", "increased T2DM risk with already high selenium in soil"],
+    "synergies": ["zinc_picolinate", "vitamin_d3"],
+    "antagonisms": [],
+    "evidence_level": "B",
+    "evidence_notes": "Consensus in deficiency and autoimmune thyroiditis; mixed evidence in cancer (SELECT null).",
+    "key_references": [
+      "Rayman 2012, Lancet",
+      "Winther 2020, Nat Rev Endocrinol",
+      "Stranges 2007, Ann Intern Med"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable"}
+  },
+  {
+    "modulator_id": "coq10_ubiquinol",
+    "display_name_es": "Coenzima Q10 (ubiquinol)",
+    "display_name_en": "Coenzyme Q10 (ubiquinol)",
+    "molecular_class": "benzoquinone (mitochondrial)",
+    "target_nodes": ["muscle_metabolic_inflexibility", "endothelial_inflammation", "hypertension_structural", "hepatic_IR"],
+    "target_flexibility_components": ["fatty_acid_oxidation", "inflammation_control"],
+    "mechanism_brief": "Electron carrier between complexes I/II and III of the respiratory chain; endogenous lipophilic antioxidant that decreases with age and statins.",
+    "mechanism_detailed": "Ubiquinol (reduced form) donates electrons to cytochrome c oxidase, stabilizes mitochondrial membranes, regenerates oxidized alpha-tocopherol. Statins block its synthesis by inhibiting HMG-CoA reductase (common pathway with cholesterol).",
+    "pathway_genes": ["COQ2", "COQ4", "COQ6", "NDUFS1"],
+    "snp_interactions": [],
+    "food_sources_mg_per_100g": {"corazon_res": 11.3, "higado": 4, "sardina": 6.4, "espinaca": 1},
+    "dose_range": {
+      "low": 100,
+      "therapeutic": 200,
+      "high": 400,
+      "max_safe": 1200,
+      "unit": "mg/day",
+      "timing": "with fatty meal, preferably morning"
+    },
+    "forms_bioavailability": {
+      "preferred": "ubiquinol (reduced form) in oil, especially >50 years old",
+      "poor": "crystalline ubiquinone without lipid vehicle",
+      "note": "ubiquinol 3-8x more bioavailable than ubiquinone in older adults"
+    },
+    "contraindications": ["anticoagulants (antagonizes warfarin due to structural similarity with K2)", "chemotherapy (consult oncology)"],
+    "synergies": ["epa_dha", "alpha_lipoic_acid", "l_carnitine"],
+    "antagonisms": [],
+    "evidence_level": "B",
+    "evidence_notes": "Q-SYMBIO RCT positive in heart failure; favorable meta-analysis in statin myalgia.",
+    "key_references": [
+      "Mortensen 2014, JACC Heart Fail (Q-SYMBIO)",
+      "Qu 2018, Eur J Med Res",
+      "Banach 2015, Mayo Clin Proc"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable", "i11": "favorable"}
+  },
+  {
+    "modulator_id": "alpha_lipoic_acid",
+    "display_name_es": "Ácido alfa-lipoico",
+    "display_name_en": "Alpha-lipoic acid",
+    "molecular_class": "organosulfur cofactor",
+    "target_nodes": ["systemic_IR", "muscle_metabolic_inflexibility", "high_glucose", "microvascular_damage"],
+    "target_flexibility_components": ["insulin_sensitivity", "fatty_acid_oxidation", "inflammation_control"],
+    "mechanism_brief": "Pyruvate dehydrogenase cofactor and universal amphipathic antioxidant; improves insulin sensitivity and diabetic neuropathy.",
+    "mechanism_detailed": "Regenerates glutathione, vitamin C and E; chelates heavy metals; activates muscle AMPK and increases GLUT4 translocation. R-form (natural) is more active than S. Solid evidence in diabetic neuropathy (ALADIN, SYDNEY studies).",
+    "pathway_genes": ["PRKAA1", "SLC2A4", "NFE2L2"],
+    "snp_interactions": [],
+    "food_sources_mg_per_100g": {"higado": 0.9, "espinaca": 0.3, "brocoli": 0.1},
+    "dose_range": {
+      "low": 300,
+      "therapeutic": 600,
+      "high": 1200,
+      "max_safe": 1800,
+      "unit": "mg/day",
+      "timing": "fasting 30 min before breakfast"
+    },
+    "forms_bioavailability": {
+      "preferred": "stabilized R-ALA (Na-RALA) or racemic ALA with light meal",
+      "poor": "isolated S-ALA",
+      "note": "R-form has shorter half-life but greater biological activity"
+    },
+    "contraindications": ["thiamine deficiency (encephalopathy risk)", "hypoglycemic agents without adjustment", "pregnancy at high doses"],
+    "synergies": ["coq10_ubiquinol", "berberine", "n_acetyl_cysteine"],
+    "antagonisms": [],
+    "evidence_level": "B",
+    "evidence_notes": "Positive meta-analysis in symptomatic diabetic neuropathy and HOMA-IR.",
+    "key_references": [
+      "Ziegler 2011, Diabetes Care (SYDNEY 2)",
+      "Akbari 2018, Metabolism",
+      "Rochette 2015, Can J Physiol Pharmacol"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable", "i8": "favorable"}
+  },
+  {
+    "modulator_id": "n_acetyl_cysteine",
+    "display_name_es": "N-acetilcisteína (NAC)",
+    "display_name_en": "N-acetylcysteine",
+    "molecular_class": "thiol amino acid derivative",
+    "target_nodes": ["hepatic_inflammation", "fatty_liver", "systemic_inflammation", "endothelial_inflammation"],
+    "target_flexibility_components": ["inflammation_control", "predictive_agency"],
+    "mechanism_brief": "Glutathione precursor and direct thiol donor; canonical hepatoprotector and modulator of prefrontal glutamate.",
+    "mechanism_detailed": "Provides cysteine, rate-limiting substrate for GSH synthesis. Reduces disulfides, modulates mGluR3 receptor rebalancing extracellular glutamate (effect on rumination and compulsive behaviors). Gold standard in acetaminophen poisoning.",
+    "pathway_genes": ["GCLC", "GCLM", "GSS", "NFE2L2"],
+    "snp_interactions": [],
+    "food_sources_mg_per_100g": {},
+    "dose_range": {
+      "low": 600,
+      "therapeutic": 1200,
+      "high": 2400,
+      "max_safe": 3000,
+      "unit": "mg/day",
+      "timing": "fasting, divided into 2 doses"
+    },
+    "forms_bioavailability": {
+      "preferred": "pure NAC in enteric capsule or effervescent NAC",
+      "poor": "free cysteine (unstable, rapid oxidation)",
+      "note": "oral bioavailability 6-10%; sufficient for systemic effect"
+    },
+    "contraindications": ["asthma (rare inhaled bronchospasm)", "active peptic ulcer", "nitroglycerin (potentiates vasodilation)"],
+    "synergies": ["alpha_lipoic_acid", "silymarin", "glycine"],
+    "antagonisms": [],
+    "evidence_level": "B",
+    "evidence_notes": "Evidence A for paracetamol poisoning; B for NAFLD and OCD/trichotillomania.",
+    "key_references": [
+      "Khoshbaten 2010, Hepat Mon",
+      "Berk 2013, CNS Drugs",
+      "Dean 2011, J Psychiatry Neurosci"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable", "i5": "favorable"}
+  },
+  {
+    "modulator_id": "l_carnitine",
+    "display_name_es": "L-carnitina",
+    "display_name_en": "L-carnitine",
+    "molecular_class": "amino acid derivative (quaternary ammonium)",
+    "target_nodes": ["muscle_metabolic_inflexibility", "fatty_liver", "ectopic_lipid_overload", "dyslipidemia"],
+    "target_flexibility_components": ["fatty_acid_oxidation", "insulin_sensitivity"],
+    "mechanism_brief": "Obligate transporter of long-chain fatty acids into the mitochondrial matrix via the CPT1/CPT2 system.",
+    "mechanism_detailed": "Carnitine palmitoyltransferase I (CPT1) conjugates acyl-CoA with carnitine forming acyl-carnitine, which crosses the mitochondrial membrane via CACT. CPT2 regenerates intramitochondrial acyl-CoA for beta-oxidation. Deficiency causes myopathy and hepatic dysfunction. Microbiota converts carnitine to TMAO (CV relevance in rapid metabolizers).",
+    "pathway_genes": ["CPT1A", "CPT2", "SLC22A5", "CROT"],
+    "snp_interactions": [],
+    "food_sources_mg_per_100g": {"cordero": 190, "res": 95, "cerdo": 27, "pollo": 3.9},
+    "dose_range": {
+      "low": 500,
+      "therapeutic": 2000,
+      "high": 3000,
+      "max_safe": 4000,
+      "unit": "mg/day",
+      "timing": "with carbohydrate (facilitates insulin-mediated uptake); morning/midday"
+    },
+    "forms_bioavailability": {
+      "preferred": "L-carnitine tartrate (sport) or acetyl-L-carnitine (CNS)",
+      "poor": "D-carnitine (antagonist, never use)",
+      "note": "oral bioavailability 15-20%; propionyl-L-carnitine preferred in claudication"
+    },
+    "contraindications": ["untreated hypothyroidism", "seizures (ALCAR in some cases)", "history of elevated TMAO + established CV disease"],
+    "synergies": ["coq10_ubiquinol", "alpha_lipoic_acid"],
+    "antagonisms": [],
+    "evidence_level": "B",
+    "evidence_notes": "Positive meta-analysis in angina and fatigue; TMAO signal requires individualization.",
+    "key_references": [
+      "DiNicolantonio 2013, Mayo Clin Proc",
+      "Koeth 2013, Nat Med",
+      "Pooyandjoo 2016, Obes Rev"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable"}
+  },
+  {
+    "modulator_id": "taurine",
+    "display_name_es": "Taurina",
+    "display_name_en": "Taurine",
+    "molecular_class": "amino sulfonic acid",
+    "target_nodes": ["endothelial_inflammation", "hypertension_structural", "hepatic_IR", "fatty_liver"],
+    "target_flexibility_components": ["autonomic_flexibility", "insulin_sensitivity", "inflammation_control"],
+    "mechanism_brief": "Non-proteinogenic sulfonated amino acid with osmoregulatory functions, biliary conjugation and GABAergic modulation.",
+    "mechanism_detailed": "Conjugates bile acids (taurocholate, taurochenodeoxycholate) increasing fat solubilization. Positive modulator of GABA-A and glycine receptors, stabilizes excitable membranes. Improves mitochondrial function and insulin sensitivity in animal and human models.",
+    "pathway_genes": ["CDO1", "CSAD", "TAUT", "BAAT"],
+    "snp_interactions": [],
+    "food_sources_mg_per_100g": {"vieira": 827, "pulpo": 388, "atun": 279, "pechuga_pollo": 18},
+    "dose_range": {
+      "low": 500,
+      "therapeutic": 2000,
+      "high": 3000,
+      "max_safe": 6000,
+      "unit": "mg/day",
+      "timing": "evening or pre-workout; fasting"
+    },
+    "forms_bioavailability": {
+      "preferred": "free taurine in powder or capsule",
+      "poor": "—",
+      "note": "highly bioavailable; rapid renal excretion justifies divided doses"
+    },
+    "contraindications": ["advanced kidney disease", "theoretical interaction with lithium"],
+    "synergies": ["magnesium_glycinate", "glycine"],
+    "antagonisms": [],
+    "evidence_level": "B",
+    "evidence_notes": "RCTs in hypertension and prediabetes; recent longevity trial (Singh 2023 Science).",
+    "key_references": [
+      "Singh 2023, Science",
+      "Sun 2016, Hypertension",
+      "Maleki 2020, Clin Nutr ESPEN"
+    ],
+    "bv4_imprint_alignment": {"i3": "favorable", "i4": "favorable"}
+  },
+  {
+    "modulator_id": "glycine",
+    "display_name_es": "Glicina",
+    "display_name_en": "Glycine",
+    "molecular_class": "non-essential amino acid",
+    "target_nodes": ["systemic_inflammation", "hepatic_inflammation", "fatty_liver", "glucose_toxicity"],
+    "target_flexibility_components": ["autonomic_flexibility", "inflammation_control", "predictive_agency"],
+    "mechanism_brief": "Inhibitory amino acid in CNS (glycinergic receptor and NMDA co-agonist), precursor of glutathione and collagen; improves sleep quality.",
+    "mechanism_detailed": "Agonist of glycinergic receptor in brainstem (mild hypothermia inducing deep sleep), obligate co-agonist at NMDA site. Provides the alpha-carbon for GSH synthesis and is 33% of collagen. Combined with NAC restores GSH in aging (GlyNAC).",
+    "pathway_genes": ["GLDC", "GCAT", "SHMT1", "GLRA1"],
+    "snp_interactions": [],
+    "food_sources_mg_per_100g": {"gelatina": 19000, "piel_pollo": 3300, "cerdo": 1750, "caldo_hueso": 2600},
+    "dose_range": {
+      "low": 3000,
+      "therapeutic": 10000,
+      "high": 15000,
+      "max_safe": 30000,
+      "unit": "mg/day",
+      "timing": "30-60 min before bed for sleep; divide into doses with meals for GSH"
+    },
+    "forms_bioavailability": {
+      "preferred": "pure glycine powder (pleasant sweet taste)",
+      "poor": "—",
+      "note": "very safe; doses up to 90 g/day investigated in schizophrenia"
+    },
+    "contraindications": ["clozapine (antagonizes therapeutic effect)", "advanced kidney disease"],
+    "synergies": ["n_acetyl_cysteine", "magnesium_glycinate", "taurine"],
+    "antagonisms": [],
+    "evidence_level": "B",
+    "evidence_notes": "GlyNAC RCT in aging (Kumar 2021); solid evidence in sleep and insulin sensitivity.",
+    "key_references": [
+      "Kumar 2021, Clin Transl Med (GlyNAC)",
+      "Yamadera 2007, Sleep Biol Rhythms",
+      "Inagawa 2006, Sleep Biol Rhythms"
+    ],
+    "bv4_imprint_alignment": {"i3": "favorable", "i5": "favorable"}
+  },
+  {
+    "modulator_id": "betaine_tmg",
+    "display_name_es": "Betaína (trimetilglicina, TMG)",
+    "display_name_en": "Betaine (trimethylglycine, TMG)",
+    "molecular_class": "methyl donor",
+    "target_nodes": ["fatty_liver", "hepatic_inflammation", "dyslipidemia", "endothelial_inflammation"],
+    "target_flexibility_components": ["lipid_distribution", "inflammation_control"],
+    "mechanism_brief": "Methyl donor that remethylates homocysteine to methionine via hepatic BHMT; cellular osmolyte and lipotropic metabolite.",
+    "mechanism_detailed": "Substrate of betaine-homocysteine methyltransferase (BHMT), parallel to the 5-MTHF/B12 pathway. Reduces plasma homocysteine and provides methyl groups for phosphatidylcholine (PEMT), critical for VLDL and hepatic triglyceride export. Choline/betaine deficiency is a causal driver of NAFLD.",
+    "pathway_genes": ["BHMT", "PEMT", "MTR", "CBS"],
+    "snp_interactions": [
+      {"snp": "rs1801133", "gene": "MTHFR", "effect": "TT reduces 5-MTHF availability; betaine provides alternative remethylation pathway"},
+      {"snp": "rs7946", "gene": "PEMT", "effect": "risk alleles increase choline/betaine requirement to avoid NAFLD"}
+    ],
+    "food_sources_mg_per_100g": {"remolacha": 128, "quinoa": 630, "espinaca": 600, "trigo_integral": 73},
+    "dose_range": {
+      "low": 1000,
+      "therapeutic": 3000,
+      "high": 6000,
+      "max_safe": 20000,
+      "unit": "mg/day",
+      "timing": "with meal, divided"
+    },
+    "forms_bioavailability": {
+      "preferred": "pure anhydrous betaine",
+      "poor": "betaine HCl at high doses (collateral gastric acidity)",
+      "note": "doses >6 g/day may raise LDL in some individuals; monitor"
+    },
+    "contraindications": ["renal insufficiency", "monitor LDL at high doses"],
+    "synergies": ["methyl_b12", "methylfolate_5mthf", "pyridoxal_5_phosphate"],
+    "antagonisms": [],
+    "evidence_level": "B",
+    "evidence_notes": "FDA-approved for homocystinuria; consistent evidence in homocysteine and NAFLD.",
+    "key_references": [
+      "Craig 2004, Am J Clin Nutr",
+      "Abdelmalek 2009, Hepatology",
+      "Olthof 2005, J Nutr"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable", "i8": "favorable"}
+  },
+  {
+    "modulator_id": "methyl_b12",
+    "display_name_es": "Metilcobalamina (B12 activa)",
+    "display_name_en": "Methylcobalamin (active B12)",
+    "molecular_class": "cobalamin",
+    "target_nodes": ["endothelial_inflammation", "microvascular_damage", "systemic_inflammation"],
+    "target_flexibility_components": ["predictive_agency", "autonomic_flexibility"],
+    "mechanism_brief": "Active form of B12, cofactor of methionine synthase and methylmalonyl-CoA mutase; critical for methylation and myelination.",
+    "mechanism_detailed": "Cofactor of MTR (remethylates homocysteine to methionine) and MUT (conversion of methylmalonyl-CoA to succinyl-CoA). Deficiency raises homocysteine and MMA, causes neuropathy and megaloblastic anemia. Metformin, PPIs and veganism are common causes of deficiency.",
+    "pathway_genes": ["MTR", "MTRR", "MMUT", "TCN2", "FUT2"],
+    "snp_interactions": [
+      {"snp": "rs1801394", "gene": "MTRR", "effect": "A66G reduces regeneration of active cobalamin; requires sustained intake"},
+      {"snp": "rs602662", "gene": "FUT2", "effect": "non-secretor modifies intestinal B12 absorption"}
+    ],
+    "food_sources_mg_per_100g": {"higado_res": 0.083, "almeja": 0.099, "sardina": 0.0089, "huevo": 0.0011},
+    "dose_range": {
+      "low": 500,
+      "therapeutic": 1000,
+      "high": 5000,
+      "max_safe": 5000,
+      "unit": "mcg/day",
+      "timing": "sublingual fasting"
+    },
+    "forms_bioavailability": {
+      "preferred": "methylcobalamin or hydroxocobalamin (sublingual or IM in deficiency)",
+      "poor": "cyanocobalamin (requires demethylation) — not optimal in smokers",
+      "note": "in confirmed deficiency, initiate IM hydroxocobalamin weekly × 4-8 weeks"
+    },
+    "contraindications": ["Leber disease (hydroxocobalamin contraindicated)", "untreated polycythemia vera"],
+    "synergies": ["methylfolate_5mthf", "pyridoxal_5_phosphate", "betaine_tmg"],
+    "antagonisms": [],
+    "evidence_level": "A",
+    "evidence_notes": "Solid clinical consensus for deficiency; robust meta-analyses in homocysteine.",
+    "key_references": [
+      "Green 2017, Lancet",
+      "Stabler 2013, N Engl J Med",
+      "Smith 2018, Annu Rev Nutr"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable", "i11": "favorable"}
+  },
+  {
+    "modulator_id": "methylfolate_5mthf",
+    "display_name_es": "Metilfolato (L-5-MTHF)",
+    "display_name_en": "L-methylfolate (5-MTHF)",
+    "molecular_class": "folate (active)",
+    "target_nodes": ["endothelial_inflammation", "microvascular_damage", "systemic_inflammation"],
+    "target_flexibility_components": ["predictive_agency", "inflammation_control"],
+    "mechanism_brief": "Active form of folate that crosses the blood-brain barrier; donates the methyl for homocysteine remethylation and monoamine synthesis.",
+    "mechanism_detailed": "Direct substrate of methionine synthase (together with B12). Avoids the bottleneck of MTHFR (polymorphic enzyme) that converts 5,10-methylene-THF into 5-MTHF. In C677T TT carriers (activity reduced ~70%), 5-MTHF avoids accumulation of unmetabolized folic acid (UMFA).",
+    "pathway_genes": ["MTHFR", "MTR", "DHFR", "SLC19A1"],
+    "snp_interactions": [
+      {"snp": "rs1801133", "gene": "MTHFR", "effect": "C677T (TT reduces 70% activity; CT ~35%); 5-MTHF bypasses the enzyme"},
+      {"snp": "rs1801131", "gene": "MTHFR", "effect": "A1298C minor but additive effect"}
+    ],
+    "food_sources_mg_per_100g": {"higado_res": 0.29, "lenteja_cocida": 0.181, "espinaca_cruda": 0.194, "esparrago": 0.149},
+    "dose_range": {
+      "low": 400,
+      "therapeutic": 800,
+      "high": 5000,
+      "max_safe": 15000,
+      "unit": "mcg/day",
+      "timing": "morning with meal"
+    },
+    "forms_bioavailability": {
+      "preferred": "L-5-MTHF (Quatrefolic, Metafolin) — active isomer",
+      "poor": "synthetic folic acid in MTHFR carriers (UMFA accumulation)",
+      "note": "in pregnancy with MTHFR variant, 5-MTHF preferable to folic acid"
+    },
+    "contraindications": ["active cancer without oncologic supervision", "bipolar disorder (risk of switch)", "untreated B12 deficiency (masks anemia but not neuropathy)"],
+    "synergies": ["methyl_b12", "pyridoxal_5_phosphate", "betaine_tmg"],
+    "antagonisms": [],
+    "evidence_level": "A",
+    "evidence_notes": "Solid evidence in hyperhomocysteinemia, neural tube defects and depression with MTHFR variant.",
+    "key_references": [
+      "Pietrzik 2010, Clin Pharmacokinet",
+      "Papakostas 2012, Am J Psychiatry",
+      "Greenberg 2011, Rev Obstet Gynecol"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable", "i11": "favorable"}
+  },
+  {
+    "modulator_id": "pyridoxal_5_phosphate",
+    "display_name_es": "Piridoxal-5-fosfato (P5P, B6 activa)",
+    "display_name_en": "Pyridoxal-5-phosphate (P5P, active B6)",
+    "molecular_class": "vitamin B6 (active coenzyme)",
+    "target_nodes": ["systemic_inflammation", "endothelial_inflammation", "microvascular_damage"],
+    "target_flexibility_components": ["predictive_agency", "autonomic_flexibility", "inflammation_control"],
+    "mechanism_brief": "Active coenzyme form of B6, cofactor of >140 enzymes including transaminases, decarboxylases and cystathionine beta-synthase.",
+    "mechanism_detailed": "Cofactor of CBS (transsulfuration of homocysteine to cystathionine), GAD (GABA synthesis), AADC (dopamine/serotonin), ALAS (heme). Hepatically activated form that avoids bottleneck in individuals with pyridoxal kinase polymorphisms. Chronic excess of non-phosphorylated pyridoxine causes sensory neuropathy.",
+    "pathway_genes": ["CBS", "PNPO", "PDXK", "GAD1"],
+    "snp_interactions": [],
+    "food_sources_mg_per_100g": {"higado_res": 1.08, "salmon": 0.94, "atun": 0.46, "garbanzo": 0.535, "platano": 0.367},
+    "dose_range": {
+      "low": 10,
+      "therapeutic": 25,
+      "high": 50,
+      "max_safe": 100,
+      "unit": "mg/day",
+      "timing": "morning with meal"
+    },
+    "forms_bioavailability": {
+      "preferred": "P5P (pyridoxal-5-phosphate) — direct active form",
+      "poor": "pyridoxine HCl at sustained high doses (neuropathic risk)",
+      "note": "long-term safety limit: 50-100 mg/day; avoid sustained massive doses"
+    },
+    "contraindications": ["L-dopa (P5P potentiates peripheral decarboxylation — separate or avoid in Parkinson's without carbidopa)", "doses >200 mg/day chronic (sensory neuropathy)"],
+    "synergies": ["methyl_b12", "methylfolate_5mthf", "magnesium_glycinate"],
+    "antagonisms": [],
+    "evidence_level": "B",
+    "evidence_notes": "Consistent evidence in homocysteine, premenstrual syndrome and peripheral neuropathy.",
+    "key_references": [
+      "Ueland 2015, Mol Aspects Med",
+      "Wyatt 1999, BMJ",
+      "Spinneker 2007, Nutr Hosp"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable"}
+  },
+  {
+    "modulator_id": "silymarin",
+    "display_name_es": "Silimarina (Silybum marianum)",
+    "display_name_en": "Silymarin (milk thistle)",
+    "molecular_class": "flavonolignan complex",
+    "target_nodes": ["hepatic_inflammation", "fatty_liver", "fibrosis_hepatic", "hepatic_IR"],
+    "target_flexibility_components": ["inflammation_control", "insulin_sensitivity"],
+    "mechanism_brief": "Flavonolignan complex (silibinin main) that stabilizes hepatocyte membrane, inhibits TGF-beta and regenerates hepatic glutathione.",
+    "mechanism_detailed": "Silibinin stabilizes hepatocyte membrane blocking toxin entry (amanitin), activates ribosomal polymerase I stimulating regeneration, inhibits hepatic stellate cell activation (antifibrotic via TGF-beta), and co-administered with berberine improves bioavailability (inhibits P-gp).",
+    "pathway_genes": ["NFE2L2", "TGFB1", "NFKB1", "ABCB1"],
+    "snp_interactions": [],
+    "food_sources_mg_per_100g": {},
+    "dose_range": {
+      "low": 200,
+      "therapeutic": 420,
+      "high": 700,
+      "max_safe": 1400,
+      "unit": "mg/day",
+      "timing": "with main meals, 3 doses"
+    },
+    "forms_bioavailability": {
+      "preferred": "silibinin phytosome (Siliphos) or silymarin-phosphatidylcholine complex",
+      "poor": "standard silymarin fasting (very low bioavailability)",
+      "note": "phytosome increases absorption ~10x"
+    },
+    "contraindications": ["Asteraceae/Compositae allergy", "pregnancy (limited data)", "mild interaction with CYP3A4/2C9"],
+    "synergies": ["berberine", "n_acetyl_cysteine", "curcumin"],
+    "antagonisms": [],
+    "evidence_level": "B",
+    "evidence_notes": "Meta-analyses with positive signal in NAFLD liver enzymes; strong evidence in Amanita poisoning.",
+    "key_references": [
+      "Zhong 2017, Medicine (Baltimore)",
+      "Loguercio 2012, Free Radic Biol Med",
+      "Saller 2001, Drugs"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable"}
+  },
+  {
+    "modulator_id": "psyllium",
+    "display_name_es": "Psyllium (cáscara de ispágula)",
+    "display_name_en": "Psyllium husk",
+    "molecular_class": "soluble viscous fiber (arabinoxylan)",
+    "target_nodes": ["LDL_elevated", "dyslipidemia", "high_glucose", "gut_inflammation", "systemic_IR"],
+    "target_flexibility_components": ["satiety", "insulin_sensitivity", "lipid_distribution"],
+    "mechanism_brief": "Viscous soluble fiber with high gelling capacity that sequesters bile acids and slows glycemic absorption.",
+    "mechanism_detailed": "Forms viscous gel in small intestine, traps bile acids (increasing excretion and forcing the liver to synthesize more at the expense of hepatic cholesterol), reduces postprandial glycemic peak, increases satiety through gastric distension. Reduces LDL ~7% at doses of 10 g/day (FDA-approved claim).",
+    "pathway_genes": ["LDLR", "CYP7A1", "NPC1L1"],
+    "snp_interactions": [],
+    "food_sources_mg_per_100g": {},
+    "dose_range": {
+      "low": 5000,
+      "therapeutic": 10000,
+      "high": 20000,
+      "max_safe": 30000,
+      "unit": "mg/day",
+      "timing": "15-30 min before main meals, with 300 mL water"
+    },
+    "forms_bioavailability": {
+      "preferred": "whole organic husk powder",
+      "poor": "preparations with irritant sugar/sweeteners",
+      "note": "start with 3-5 g/day and titrate up to avoid bloating; separate 2h from medication"
+    },
+    "contraindications": ["intestinal obstruction", "esophageal stricture", "dysphagia", "fecal impaction"],
+    "synergies": ["beta_glucans_oat", "inulin_fos"],
+    "antagonisms": [],
+    "evidence_level": "A",
+    "evidence_notes": "FDA health claim for cholesterol reduction; robust meta-analyses in LDL and glycemia.",
+    "key_references": [
+      "Jovanovski 2018, Am J Clin Nutr",
+      "Anderson 2000, Am J Clin Nutr",
+      "Gibb 2015, Am J Clin Nutr"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable", "i8": "favorable"}
+  },
+  {
+    "modulator_id": "inulin_fos",
+    "display_name_es": "Inulina / FOS (fructooligosacáridos)",
+    "display_name_en": "Inulin / FOS",
+    "molecular_class": "prebiotic fructan fiber",
+    "target_nodes": ["gut_inflammation", "systemic_inflammation", "systemic_IR", "adipose_inflammation"],
+    "target_flexibility_components": ["insulin_sensitivity", "inflammation_control", "satiety"],
+    "mechanism_brief": "Prebiotic fructan fermented by bifidobacteria and Faecalibacterium producing butyrate and other short-chain fatty acids.",
+    "mechanism_detailed": "Non-digestible in small intestine, fermented in colon by beneficial genera (Bifidobacterium, Faecalibacterium prausnitzii, Akkermansia indirectly). Butyrate feeds colonocytes, reinforces tight junctions (occludin, ZO-1) reducing circulating LPS and metabolic endotoxemia. Stimulates GLP-1 and PYY improving satiety.",
+    "pathway_genes": ["FFAR2", "FFAR3", "GCG", "CLDN1"],
+    "snp_interactions": [],
+    "food_sources_mg_per_100g": {"achicoria_raiz": 41600, "alcachofa_jerusalen": 18000, "ajo": 15000, "puerro": 6500, "cebolla": 4000},
+    "dose_range": {
+      "low": 3000,
+      "therapeutic": 8000,
+      "high": 15000,
+      "max_safe": 20000,
+      "unit": "mg/day",
+      "timing": "divided into 2 doses with meals; gradual introduction"
+    },
+    "forms_bioavailability": {
+      "preferred": "chicory inulin with mixed DP (degree of polymerization)",
+      "poor": "pure FOS at high initial doses (severe bloating)",
+      "note": "titrate from 2 g/day for microbiota adaptation; avoid in SIBO/fermenter IBS"
+    },
+    "contraindications": ["active SIBO", "IBS with FODMAP-sensitive fermentation", "intestinal obstruction"],
+    "synergies": ["psyllium", "beta_glucans_oat"],
+    "antagonisms": [],
+    "evidence_level": "B",
+    "evidence_notes": "Positive meta-analysis in systemic inflammation and glycemia; heterogeneity by individual microbial substrate.",
+    "key_references": [
+      "Cani 2007, Diabetologia",
+      "Dewulf 2013, Gut",
+      "Vandeputte 2017, Gut"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable", "i8": "favorable"}
+  },
+  {
+    "modulator_id": "beta_glucans_oat",
+    "display_name_es": "Beta-glucanos de avena",
+    "display_name_en": "Oat beta-glucans",
+    "molecular_class": "soluble fiber (1,3/1,4-beta-D-glucan)",
+    "target_nodes": ["LDL_elevated", "high_cholesterol", "dyslipidemia", "high_glucose", "atherosclerosis"],
+    "target_flexibility_components": ["lipid_distribution", "insulin_sensitivity", "satiety"],
+    "mechanism_brief": "Viscous soluble fiber that sequesters bile acids and reduces LDL; FDA and EFSA claim approved at 3 g/day.",
+    "mechanism_detailed": "Forms viscous gel that traps bile acids (increased fecal excretion), inducing the liver to synthesize new bile acids from hepatic cholesterol, reducing circulating LDL. Slows gastric emptying and glucose absorption. Partially fermented to butyrate in colon.",
+    "pathway_genes": ["LDLR", "CYP7A1", "HMGCR"],
+    "snp_interactions": [],
+    "food_sources_mg_per_100g": {"avena_entera": 4000, "salvado_avena": 7000, "cebada": 4000},
+    "dose_range": {
+      "low": 3000,
+      "therapeutic": 5000,
+      "high": 8000,
+      "max_safe": 15000,
+      "unit": "mg/day",
+      "timing": "with meals; preferably breakfast"
+    },
+    "forms_bioavailability": {
+      "preferred": "whole oat bran or standardized concentrate >70% beta-glucan",
+      "poor": "highly processed instant oats (reduced viscosity)",
+      "note": "3 g/day is the validated threshold for LDL claim; high molecular weight preserves viscosity"
+    },
+    "contraindications": ["uncontrolled celiac disease (cross-contamination — use certified gluten-free oats)", "intestinal obstruction"],
+    "synergies": ["psyllium", "inulin_fos"],
+    "antagonisms": [],
+    "evidence_level": "A",
+    "evidence_notes": "FDA health claim and EFSA approved; robust meta-analysis (Whitehead 2014 Am J Clin Nutr) with LDL reduction ~0.25 mmol/L.",
+    "key_references": [
+      "Whitehead 2014, Am J Clin Nutr",
+      "Ho 2016, Br J Nutr",
+      "Othman 2011, Nutr Rev"
+    ],
+    "bv4_imprint_alignment": {"i4": "favorable", "i8": "favorable"}
+  }
+]

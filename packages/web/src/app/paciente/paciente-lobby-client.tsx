@@ -163,6 +163,29 @@ export default function PacienteLobbyClient({
           </div>
         ),
       )}
+      <Link
+        href={locale === "es" ? "/paciente/inferentia?lang=es" : "/paciente/inferentia"}
+        className="group col-span-1 md:col-span-3 mt-2 border-2 border-ink bg-paper-raised px-6 py-5 hover:bg-paper transition-colors"
+      >
+        <div className="flex items-baseline justify-between gap-3">
+          <p className="eyebrow eyebrow-accent">
+            {locale === "es" ? "Tu lectura del Orchestrator" : "Your Orchestrator reading"}
+          </p>
+          <span className="tabular text-[9.5px] tracking-[0.16em] uppercase text-accent">
+            {locale === "es" ? "nuevo" : "new"}
+          </span>
+        </div>
+        <p className="mt-2 editorial text-[18px] text-ink leading-tight">
+          {locale === "es"
+            ? "El análisis completo que tu clínico corrió hoy →"
+            : "The full analysis your clinician ran today →"}
+        </p>
+        <p className="mt-2 text-[11.5px] text-ink-mute leading-snug max-w-[64ch]">
+          {locale === "es"
+            ? "Mapa corporal, narrativa personal, moléculas específicas y secuenciación. Escrito para ti, no para un expediente."
+            : "Body map, personal narrative, specific molecules and sequencing. Written for you, not a chart."}
+        </p>
+      </Link>
     </section>
   );
 }

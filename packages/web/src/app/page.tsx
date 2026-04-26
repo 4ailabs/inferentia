@@ -25,352 +25,617 @@ export default async function Home({
 }) {
   const sp = await searchParams;
   const locale = resolveLocale(sp);
-  const t = getDict(locale);
   const pathname = "/";
   const langSuffix = locale === "en" ? "" : `?lang=${locale}`;
+  const es = locale === "es";
 
   return (
-    <main className="min-h-screen bg-paper text-ink">
-      {/* Masthead ---------------------------------------------------- */}
-      <header className="border-b border-rule">
-        <div className="mx-auto max-w-[1280px] px-6 md:px-10">
-          <div className="flex items-end justify-between py-5">
-            <div className="flex items-end gap-5">
+    <main className="min-h-screen bg-paper text-ink flex flex-col">
+      {/* ═══ MASTHEAD ═══ */}
+      <header className="border-b border-ink">
+        <div className="mx-auto max-w-[1080px] w-full px-6 md:px-10">
+          <div className="h-14 flex items-center justify-between gap-6">
+            <Link href="/" className="flex items-center gap-3">
               <MarkGlyph />
-              <div className="leading-none">
-                <p className="running-head text-ink">{t.masthead.running_head}</p>
-                <p className="mt-1 text-[11px] text-ink-mute tabular lining">
-                  {t.masthead.edition}
-                </p>
-              </div>
-            </div>
-            <nav className="hidden md:flex items-center gap-6 text-[12px] tracking-wide text-ink-quiet">
-              <Link
-                href={`/clinico/nuevo${langSuffix}`}
-                className="text-accent hover:text-accent-deep transition-colors font-medium"
-              >
-                {locale === "es" ? "Clínico" : "Clinician"}
-              </Link>
-              <Link
-                href={`/paciente${langSuffix}`}
-                className="hover:text-ink transition-colors"
-              >
-                {locale === "es" ? "Paciente" : "Patient"}
-              </Link>
-              <Link
-                href={`/demo${langSuffix}`}
-                className="hover:text-ink transition-colors italic"
-              >
-                Demo
-              </Link>
-              <Link href={`/network${langSuffix}`} className="hover:text-ink transition-colors">
-                {t.masthead.nav.network}
-              </Link>
+              <p className="font-mono text-[11px] tracking-[0.22em] uppercase font-medium">
+                Inferentia
+              </p>
+            </Link>
+            <nav className="flex items-center gap-4">
               <a
                 href="https://github.com/4ailabs/inferentia"
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-ink transition-colors"
+                className="hidden sm:inline font-mono text-[11px] tracking-[0.12em] uppercase text-ink-quiet hover:text-ink transition-colors"
               >
-                {t.masthead.nav.source}
+                GitHub ↗
               </a>
-              <a href="#method" className="hover:text-ink transition-colors">
-                {t.masthead.nav.method}
-              </a>
-              <span className="tabular text-ink-mute text-[10.5px]">
-                {t.masthead.stack_badge}
-              </span>
               <LocaleToggle locale={locale} pathname={pathname} search={sp} />
             </nav>
           </div>
         </div>
-        <div className="h-[2px] bg-ink" />
       </header>
 
-      {/* Article ----------------------------------------------------- */}
-      <article className="mx-auto max-w-[1280px] px-6 md:px-10 pb-24">
-        {/* Hero */}
-        <section className="grid grid-cols-12 gap-x-10 pt-16 md:pt-24">
-          <aside className="col-span-12 md:col-span-3 lg:col-span-3">
-            <p className="eyebrow eyebrow-accent">{t.hero.eyebrow_abstract}</p>
-            <p className="mt-5 text-[12.5px] leading-relaxed text-ink-quiet max-w-[220px]">
-              {t.hero.abstract_body}
+      {/* ═══ HERO — grid 7+5: thesis izq · live product readout der ═══ */}
+      <section className="border-b border-ink">
+        <div className="mx-auto max-w-[1240px] w-full px-6 md:px-10 py-16 md:py-20 grid grid-cols-12 gap-x-10 gap-y-12">
+          {/* Left: thesis */}
+          <div className="col-span-12 lg:col-span-7">
+            <p className="font-mono text-[10.5px] tracking-[0.24em] uppercase text-accent">
+              {es ? "Inferentia · prototipo de investigación" : "Inferentia · research prototype"}
             </p>
-            <dl className="mt-10 grid grid-cols-2 gap-y-5 gap-x-4 text-[11px]">
-              {t.hero.aside.map((row) => (
-                <div key={row.dt}>
-                  <dt className="eyebrow">{row.dt}</dt>
-                  <dd className="mt-2 editorial text-[15px]">{row.dd}</dd>
-                </div>
-              ))}
-            </dl>
-          </aside>
 
-          <div className="col-span-12 md:col-span-9 lg:col-span-9 mt-12 md:mt-0">
-            <p className="eyebrow">{t.hero.thesis_eyebrow}</p>
-            <h1 className="mt-6 editorial text-[44px] md:text-[60px] lg:text-[72px] leading-[0.98] text-ink">
-              {t.hero.thesis_line_1}
-              <br />
-              {t.hero.thesis_line_2}
-              <br />
-              <span className="editorial-italic text-accent">
-                {t.hero.thesis_line_3_italic}
-              </span>
+            <h1
+              className="mt-8 editorial text-[38px] md:text-[52px] lg:text-[60px] leading-[1.04] text-ink tracking-[-0.025em]"
+              style={{ fontVariationSettings: '"SOFT" 30, "WONK" 0, "opsz" 96' }}
+            >
+              {es ? (
+                <>
+                  Identificamos los 13 patrones
+                  <br />
+                  que sostienen la enfermedad crónica.
+                  <br />
+                  <span className="editorial-italic text-accent">
+                    Calculamos qué intervenciones los aflojan.
+                  </span>
+                </>
+              ) : (
+                <>
+                  We identify the 13 patterns
+                  <br />
+                  sustaining chronic disease.
+                  <br />
+                  <span className="editorial-italic text-accent">
+                    We compute what loosens them.
+                  </span>
+                </>
+              )}
             </h1>
 
-            <div className="mt-10 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_240px] gap-10">
-              <div className="drop-cap text-[17px] leading-[1.65] text-ink-soft max-w-[62ch]">
-                {t.hero.drop_cap_body}
-              </div>
-              <aside className="border-t border-rule lg:border-t-0 lg:border-l lg:pl-6 pt-6 lg:pt-0">
-                <p className="eyebrow">{t.hero.outcome_eyebrow}</p>
-                <p className="mt-4 editorial italic text-[22px] leading-[1.2] text-ink">
-                  {t.hero.outcome_line}
-                </p>
-                <p className="mt-4 text-[12px] leading-relaxed text-ink-quiet">
-                  {t.hero.outcome_body}
-                </p>
-              </aside>
-            </div>
+            <p className="mt-8 text-[16px] md:text-[17px] leading-[1.6] text-ink-soft max-w-[52ch]">
+              {es
+                ? "Los síntomas crónicos son la firma de patrones defensivos que el organismo ejecuta para sobrevivir. Inferentia los mide con matemática auditable y propone moléculas específicas con mecanismo documentado y ajuste por SNPs."
+                : "Chronic symptoms are the signature of defensive patterns the organism runs to survive. Inferentia measures them with auditable math and proposes specific molecules with documented mechanism and SNP-aware dosing."}
+            </p>
 
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="mt-10 flex flex-wrap items-center gap-4">
               <Link
-                href={`/clinico/nuevo${langSuffix}`}
-                className="group border-2 border-ink bg-paper-raised px-5 py-5 hover:border-accent transition-colors"
+                href={`/clinico/inferentia${langSuffix}`}
+                className="group inline-flex items-center gap-3 h-12 pl-6 pr-5 bg-ink text-paper hover:bg-accent transition-colors"
               >
-                <div className="flex items-baseline justify-between gap-3">
-                  <p className="eyebrow eyebrow-accent">
-                    {locale === "es"
-                      ? "Consola del clínico"
-                      : "Clinician console"}
-                  </p>
-                  <span className="tabular text-[9.5px] tracking-[0.16em] uppercase text-accent border border-accent px-1.5 py-0.5">
-                    {locale === "es" ? "Matemática real" : "Real math"}
-                  </span>
-                </div>
-                <p className="mt-3 editorial text-[19px] text-ink leading-tight">
-                  {locale === "es"
-                    ? "Caso real · clasificación bayesiana →"
-                    : "Real case · Bayesian classification →"}
-                </p>
-                <p className="mt-3 text-[11.5px] text-ink-mute leading-snug">
-                  {locale === "es"
-                    ? "Pega labs anonimizados + narrativa clínica. GMM Bayesiano audita la impronta dominante con log-likelihoods y entropía. Sesión guiada en /clinico/sesion."
-                    : "Paste anonymised labs + clinical narrative. Bayesian GMM audits the dominant imprint with log-likelihoods and entropy. Guided session in /clinico/sesion."}
-                </p>
+                <span className="font-mono text-[11.5px] tracking-[0.16em] uppercase">
+                  {es ? "Ver una sesión" : "See a session"}
+                </span>
+                <span className="font-mono text-[13px] transition-transform group-hover:translate-x-0.5">
+                  →
+                </span>
               </Link>
               <Link
                 href={`/paciente${langSuffix}`}
-                className="group border border-rule bg-paper-raised px-5 py-5 hover:border-ink transition-colors"
+                className="inline-flex items-center h-12 px-5 text-ink-quiet hover:text-ink transition-colors font-mono text-[11px] tracking-[0.14em] uppercase underline decoration-rule underline-offset-[6px] hover:decoration-ink"
               >
-                <p className="eyebrow">
-                  {locale === "es" ? "Entrar como paciente" : "Enter as patient"}
-                </p>
-                <p className="mt-3 editorial text-[19px] text-ink leading-tight">
-                  {locale === "es"
-                    ? "Ver mi lectura y mi programa →"
-                    : "See my reading and my program →"}
-                </p>
-                <p className="mt-3 text-[11.5px] text-ink-mute leading-snug">
-                  {locale === "es"
-                    ? "Lenguaje humano, sin taxonomía técnica. Solo lo firmado por tu clínico."
-                    : "Plain language, no technical taxonomy. Only what your clinician has signed."}
-                </p>
+                {es ? "Vista del paciente" : "Patient view"}
               </Link>
-              <Link
-                href={`/demo${langSuffix}`}
-                className="group border border-rule bg-paper-raised px-5 py-5 hover:border-accent transition-colors"
-              >
-                <p className="eyebrow">
-                  {locale === "es" ? "Demo · Jurado" : "Demo · Jury"}
-                </p>
-                <p className="mt-3 editorial italic text-[19px] text-accent leading-tight">
-                  {locale === "es"
-                    ? "Split screen simultáneo →"
-                    : "Simultaneous split screen →"}
-                </p>
-                <p className="mt-3 text-[11.5px] text-ink-mute leading-snug">
-                  {locale === "es"
-                    ? "Paciente y clínico en una sola pantalla (hero shot del hackathon)."
-                    : "Patient and clinician in one canvas (the hackathon hero shot)."}
-                </p>
-              </Link>
-            </div>
-
-            <div className="mt-8 flex flex-wrap items-center gap-6">
-              <Link
-                href={`/network${langSuffix}`}
-                className="inline-flex items-center gap-2 text-[13px] text-ink underline decoration-rule underline-offset-4 decoration-1 hover:decoration-ink transition-colors"
-              >
-                {t.hero.cta_primary}
-              </Link>
-              <a
-                href="#method"
-                className="inline-flex items-center gap-2 text-[13px] text-ink-quiet border-b border-ink-mute pb-0.5 hover:text-ink hover:border-ink transition-colors"
-              >
-                {t.hero.cta_secondary}
-              </a>
             </div>
           </div>
-        </section>
 
-        {/* Figure i — six layers */}
-        <section id="figure-i" className="mt-32">
-          <div className="section-rule">
-            <span className="eyebrow">{t.figure_i.eyebrow}</span>
-            <span className="hairline" />
-            <span className="eyebrow text-ink-quiet">
-              {t.figure_i.eyebrow_caption}
-            </span>
+          {/* Right: live Orchestrator readout mockup */}
+          <div className="col-span-12 lg:col-span-5">
+            <HeroReadout locale={locale} />
           </div>
+        </div>
+      </section>
 
-          <figure className="mt-10 border-t border-ink">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 border-b border-rule">
-              {t.layers.map((layer, idx) => (
-                <div
-                  key={layer.num}
-                  className={`relative p-7 md:p-9 min-h-[220px] border-rule ${
-                    idx % 3 !== 2 ? "lg:border-r" : ""
-                  } ${idx % 2 === 0 ? "md:border-r lg:border-r" : ""} ${
-                    idx < 3 ? "lg:border-b" : ""
-                  } ${idx < 4 ? "md:border-b" : ""} border-b md:border-b-0`}
-                >
-                  <div className="flex items-start justify-between">
-                    <span className="section-num text-[42px] text-accent leading-none">
-                      {layer.num}
-                    </span>
-                    <span className="eyebrow mt-2">{layer.tag}</span>
-                  </div>
-                  <h3 className="mt-8 editorial text-[22px] leading-tight text-ink">
-                    {layer.title}
-                  </h3>
-                  <p className="mt-3 text-[13px] leading-relaxed text-ink-quiet">
-                    {layer.body}
-                  </p>
-                  <p className="mt-6 tabular text-[10.5px] text-ink-mute">
-                    {layer.meta}
-                  </p>
-                </div>
-              ))}
-            </div>
-            <figcaption className="figure-caption mt-5">
-              <strong>Fig. i</strong>
-              {t.figure_i.caption}
-            </figcaption>
-          </figure>
-        </section>
-
-        {/* Method */}
-        <section id="method" className="mt-32 grid grid-cols-12 gap-x-10">
-          <div className="col-span-12 md:col-span-4">
-            <div className="section-rule">
-              <span className="eyebrow">{t.method.section_number}</span>
-              <span className="hairline" />
-            </div>
-            <h2 className="mt-6 editorial text-[38px] leading-[1.05] text-ink">
-              {t.method.heading}
+      {/* ═══ PROCESO — 3 pasos, lo que pasa cuando entras ═══ */}
+      <section className="border-b border-ink">
+        <div className="mx-auto max-w-[1080px] w-full px-6 md:px-10 py-20 md:py-24">
+          <div className="mb-14 max-w-[52ch]">
+            <p className="font-mono text-[10.5px] tracking-[0.24em] uppercase text-ink-mute">
+              {es ? "Cómo funciona" : "How it works"}
+            </p>
+            <h2
+              className="mt-6 editorial text-[30px] md:text-[40px] leading-[1.08] text-ink tracking-[-0.02em]"
+              style={{ fontVariationSettings: '"SOFT" 30, "opsz" 72' }}
+            >
+              {es
+                ? "Tres pasos, una sesión clínica."
+                : "Three steps, one clinical session."}
             </h2>
-            <p className="mt-5 text-[13px] leading-relaxed text-ink-quiet max-w-[32ch]">
-              {t.method.lead}
+          </div>
+
+          <ol className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+            {/* PASO 1 */}
+            <li>
+              <div className="flex items-baseline gap-3">
+                <span
+                  className="editorial text-[42px] leading-none text-accent"
+                  style={{ fontVariationSettings: '"opsz" 72' }}
+                >
+                  01
+                </span>
+                <span className="font-mono text-[10.5px] tracking-[0.2em] uppercase text-ink-mute">
+                  {es ? "Entrada" : "Intake"}
+                </span>
+              </div>
+              <h3 className="mt-5 editorial text-[22px] leading-[1.2] text-ink">
+                {es
+                  ? "Llega un paciente con su historia."
+                  : "A patient arrives with their story."}
+              </h3>
+              <p className="mt-3 text-[14.5px] leading-[1.6] text-ink-soft max-w-[38ch]">
+                {es
+                  ? "El clínico captura lo esencial: notas de consulta, laboratorios recientes, contexto biográfico y variantes genéticas relevantes."
+                  : "The clinician captures what matters: consultation notes, recent labs, life context, and relevant genetic variants."}
+              </p>
+            </li>
+
+            {/* PASO 2 */}
+            <li>
+              <div className="flex items-baseline gap-3">
+                <span
+                  className="editorial text-[42px] leading-none text-accent"
+                  style={{ fontVariationSettings: '"opsz" 72' }}
+                >
+                  02
+                </span>
+                <span className="font-mono text-[10.5px] tracking-[0.2em] uppercase text-ink-mute">
+                  {es ? "Análisis" : "Analysis"}
+                </span>
+              </div>
+              <h3 className="mt-5 editorial text-[22px] leading-[1.2] text-ink">
+                {es
+                  ? "El sistema identifica los patrones activos."
+                  : "The system identifies the active patterns."}
+              </h3>
+              <p className="mt-3 text-[14.5px] leading-[1.6] text-ink-soft max-w-[38ch]">
+                {es
+                  ? "Un motor matemático calcula la rigidez en 22 puntos del metabolismo. Opus 4.7 identifica cuáles de los 13 patrones defensivos están dirigiendo el cuadro. Un sintetizador propone el protocolo con dosis, forma y contraindicaciones."
+                  : "A math engine computes rigidity across 22 metabolic points. Opus 4.7 identifies which of the 13 defensive patterns are driving the case. A synthesizer proposes the protocol with dose, form, and contraindications."}
+              </p>
+            </li>
+
+            {/* PASO 3 */}
+            <li>
+              <div className="flex items-baseline gap-3">
+                <span
+                  className="editorial text-[42px] leading-none text-accent"
+                  style={{ fontVariationSettings: '"opsz" 72' }}
+                >
+                  03
+                </span>
+                <span className="font-mono text-[10.5px] tracking-[0.2em] uppercase text-ink-mute">
+                  {es ? "Devolución" : "Return"}
+                </span>
+              </div>
+              <h3 className="mt-5 editorial text-[22px] leading-[1.2] text-ink">
+                {es
+                  ? "Dos lecturas del mismo caso."
+                  : "Two readings of the same case."}
+              </h3>
+              <p className="mt-3 text-[14.5px] leading-[1.6] text-ink-soft max-w-[38ch]">
+                {es
+                  ? "El clínico recibe el protocolo completo con matemática, evidencia y contraindicaciones. El paciente recibe una narrativa en segunda persona — sin jerga — que puede releer en casa."
+                  : "The clinician receives the full protocol with math, evidence and contraindications. The patient receives a second-person narrative — no jargon — they can reread at home."}
+              </p>
+            </li>
+          </ol>
+
+          <div className="mt-16 border-t border-rule pt-6 flex flex-wrap items-baseline justify-between gap-4">
+            <p className="text-[13.5px] italic text-ink-quiet max-w-[54ch] leading-[1.55]">
+              {es
+                ? "La matemática es determinista y auditable. La síntesis clínica usa Opus 4.7 con razonamiento extendido sobre el marco teórico cargado."
+                : "The math is deterministic and auditable. The clinical synthesis uses Opus 4.7 with extended reasoning over the loaded theoretical framework."}
+            </p>
+            <Link
+              href={`/clinico/inferentia${langSuffix}`}
+              className="font-mono text-[11px] tracking-[0.16em] uppercase text-ink hover:text-accent transition-colors underline decoration-rule underline-offset-[6px]"
+            >
+              {es ? "Iniciar una sesión →" : "Start a session →"}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ THE MODEL — scientific basis, visual anchor ═══ */}
+      <section className="border-b border-ink bg-paper-soft">
+        <div className="mx-auto max-w-[1080px] w-full px-6 md:px-10 py-20 md:py-24">
+          <div className="mb-12 max-w-[64ch]">
+            <p className="font-mono text-[10.5px] tracking-[0.24em] uppercase text-accent">
+              {es ? "El modelo" : "The model"}
+            </p>
+            <h2
+              className="mt-6 editorial text-[30px] md:text-[40px] leading-[1.08] text-ink tracking-[-0.02em]"
+              style={{ fontVariationSettings: '"SOFT" 30, "opsz" 72' }}
+            >
+              {es
+                ? "La flexibilidad del sistema es la llave."
+                : "System flexibility is the key."}
+            </h2>
+            <p className="mt-6 text-[15px] md:text-[16px] leading-[1.65] text-ink-soft max-w-[58ch]">
+              {es
+                ? "22 nodos metabólicos conectados en un gradiente que va de procesos reversibles a daño estructural. El motor de Inferentia mide dónde está el paciente en esa red, qué nodos son aún reversibles y qué moléculas específicas aflojan el sistema antes de que el daño se cristalice."
+                : "22 metabolic nodes connected in a gradient that goes from reversible processes to structural damage. Inferentia's engine measures where the patient is in that network, which nodes are still reversible, and which specific molecules loosen the system before damage crystallizes."}
             </p>
           </div>
 
-          <div className="col-span-12 md:col-span-8 mt-10 md:mt-0">
-            <dl className="divide-y divide-rule border-y border-rule">
-              {t.method.items.map((item) => (
-                <div key={item.label} className="grid grid-cols-12 gap-4 py-5">
-                  <dt className="col-span-4 md:col-span-3">
-                    <span className="eyebrow">{item.tag}</span>
-                    <p className="mt-2 editorial text-[17px] text-ink">
-                      {item.label}
-                    </p>
-                  </dt>
-                  <dd className="col-span-8 md:col-span-9 text-[13.5px] leading-relaxed text-ink-soft">
-                    {item.body}
-                    <span className="ml-2 tabular text-[11px] text-ink-mute">
-                      — {item.cite}
-                    </span>
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        </section>
+          {/* Hero figure — flexibility network with reversibility gradient */}
+          <figure className="border border-ink bg-paper">
+            <img
+              src="/figures/flexibility-system.png"
+              alt={
+                es
+                  ? "Red de 22 nodos metabólicos con gradiente de reversibilidad"
+                  : "Network of 22 metabolic nodes with reversibility gradient"
+              }
+              className="w-full h-auto block"
+              loading="lazy"
+            />
+            <figcaption className="border-t border-rule px-5 py-3 flex items-baseline justify-between gap-4">
+              <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-mute">
+                {es ? "Fig. 1" : "Fig. 1"}
+              </span>
+              <span className="text-[12px] italic text-ink-quiet leading-snug text-right max-w-[70ch]">
+                {es
+                  ? "Red de flexibilidad metabólica. Azul = procesos reversibles. Amarillo → azul oscuro = patología creciente hasta daño estructural."
+                  : "Metabolic flexibility network. Blue = reversible processes. Yellow → deep blue = growing pathology up to structural damage."}
+              </span>
+            </figcaption>
+          </figure>
 
-        {/* Colophon */}
-        <section className="mt-32">
-          <div className="section-rule">
-            <span className="eyebrow">{t.colophon.section_number}</span>
-            <span className="hairline" />
-            <span className="eyebrow text-ink-quiet">{t.colophon.eyebrow}</span>
+          {/* Two secondary figures */}
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <figure className="border border-rule bg-paper">
+              <img
+                src="/figures/personalized-nutrition.png"
+                alt={
+                  es
+                    ? "Nutrición personalizada: goals → órganos → procesos → nutrientes"
+                    : "Personalized nutrition: goals → organs → processes → nutrients"
+                }
+                className="w-full h-auto block"
+                loading="lazy"
+              />
+              <figcaption className="border-t border-rule px-4 py-2.5">
+                <span className="font-mono text-[9.5px] tracking-[0.16em] uppercase text-ink-mute">
+                  {es ? "Fig. 2" : "Fig. 2"}
+                </span>
+                <p className="mt-1 text-[11.5px] italic text-ink-quiet leading-snug">
+                  {es
+                    ? "Cuatro capas mapeadas: objetivos del paciente → órganos → procesos de flexibilidad → nutrientes específicos."
+                    : "Four mapped layers: patient goals → organs → flexibility processes → specific nutrients."}
+                </p>
+              </figcaption>
+            </figure>
+
+            <figure className="border border-rule bg-paper">
+              <img
+                src="/figures/three-axes.png"
+                alt={
+                  es
+                    ? "Tres ejes de intervención: oxidativo, inflamatorio, metabólico"
+                    : "Three axes of intervention: oxidative, inflammatory, metabolic"
+                }
+                className="w-full h-auto block"
+                loading="lazy"
+              />
+              <figcaption className="border-t border-rule px-4 py-2.5">
+                <span className="font-mono text-[9.5px] tracking-[0.16em] uppercase text-ink-mute">
+                  {es ? "Fig. 3" : "Fig. 3"}
+                </span>
+                <p className="mt-1 text-[11.5px] italic text-ink-quiet leading-snug">
+                  {es
+                    ? "Tres ejes de intervención molecular: procesos oxidativos, inflamatorios y metabólicos."
+                    : "Three axes of molecular intervention: oxidative, inflammatory, and metabolic processes."}
+                </p>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ RESULTADOS — 4 claims concretos, qué produce el sistema ═══ */}
+      <section className="border-b border-ink">
+        <div className="mx-auto max-w-[1080px] w-full px-6 md:px-10 py-20 md:py-24">
+          <div className="mb-14 max-w-[52ch]">
+            <p className="font-mono text-[10.5px] tracking-[0.24em] uppercase text-ink-mute">
+              {es ? "Resultados" : "Outputs"}
+            </p>
+            <h2
+              className="mt-6 editorial text-[30px] md:text-[40px] leading-[1.08] text-ink tracking-[-0.02em]"
+              style={{ fontVariationSettings: '"SOFT" 30, "opsz" 72' }}
+            >
+              {es
+                ? "Lo que Inferentia produce en cada sesión."
+                : "What Inferentia produces in each session."}
+            </h2>
           </div>
 
-          <div className="mt-10 grid grid-cols-12 gap-x-10 gap-y-10 border-t border-rule pt-10">
-            <div className="col-span-12 md:col-span-6 lg:col-span-4">
-              <p className="eyebrow">{t.colophon.status_label}</p>
-              <p className="mt-4 text-[13.5px] leading-relaxed text-ink-soft">
-                {t.colophon.status_body}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-rule border-t border-b border-ink">
+            {/* 01 */}
+            <div className="bg-paper px-6 py-7 md:px-8 md:py-9 flex flex-col gap-3 min-h-[180px]">
+              <span
+                className="editorial text-[38px] leading-none text-accent"
+                style={{ fontVariationSettings: '"opsz" 72' }}
+              >
+                01
+              </span>
+              <h3 className="editorial text-[22px] leading-[1.2] text-ink mt-2">
+                {es
+                  ? "Un objeto clínico único."
+                  : "A single clinical object."}
+              </h3>
+              <p className="text-[14px] leading-[1.6] text-ink-soft max-w-[42ch]">
+                {es
+                  ? "Integra tres capas que hoy viven separadas en distintas consultas: laboratorios, biografía del paciente y selección molecular con mecanismo documentado."
+                  : "Integrates three layers that today live apart across different clinics: labs, patient biography, and molecular selection with documented mechanism."}
               </p>
             </div>
-            <div className="col-span-12 md:col-span-6 lg:col-span-4">
-              <p className="eyebrow">{t.colophon.attribution_label}</p>
-              <p className="mt-4 text-[13.5px] leading-relaxed text-ink-soft">
-                {t.colophon.attribution_body}
+
+            {/* 02 */}
+            <div className="bg-paper px-6 py-7 md:px-8 md:py-9 flex flex-col gap-3 min-h-[180px]">
+              <span
+                className="editorial text-[38px] leading-none text-accent"
+                style={{ fontVariationSettings: '"opsz" 72' }}
+              >
+                02
+              </span>
+              <h3 className="editorial text-[22px] leading-[1.2] text-ink mt-2">
+                {es
+                  ? "Matemática auditable."
+                  : "Auditable math."}
+              </h3>
+              <p className="text-[14px] leading-[1.6] text-ink-soft max-w-[42ch]">
+                {es
+                  ? "Cada número es cómputo determinista sobre 22 nodos metabólicos. No es opinión del modelo de lenguaje — se puede reproducir y revisar."
+                  : "Every number is deterministic computation across 22 metabolic nodes. Not a language-model opinion — reproducible and reviewable."}
               </p>
             </div>
-            <div className="col-span-12 md:col-span-12 lg:col-span-4">
-              <p className="eyebrow">{t.colophon.license_label}</p>
-              <p className="mt-4 text-[13.5px] leading-relaxed text-ink-soft">
-                {t.colophon.license_body_pre}
-                <a
-                  href="https://github.com/4ailabs/inferentia"
-                  className="underline decoration-rule underline-offset-4 decoration-1 hover:decoration-ink transition-colors"
-                >
-                  {t.colophon.license_body_link}
-                </a>
-                {t.colophon.license_body_post}
+
+            {/* 03 */}
+            <div className="bg-paper px-6 py-7 md:px-8 md:py-9 flex flex-col gap-3 min-h-[180px]">
+              <span
+                className="editorial text-[38px] leading-none text-accent"
+                style={{ fontVariationSettings: '"opsz" 72' }}
+              >
+                03
+              </span>
+              <h3 className="editorial text-[22px] leading-[1.2] text-ink mt-2">
+                {es
+                  ? "Ajuste por genética."
+                  : "Genetic adjustment."}
+              </h3>
+              <p className="text-[14px] leading-[1.6] text-ink-soft max-w-[42ch]">
+                {es
+                  ? "Moléculas seleccionadas con dosis, forma y corrección por variantes genéticas del paciente cuando existen."
+                  : "Molecules selected with dose, form, and correction for the patient's genetic variants when available."}
+              </p>
+            </div>
+
+            {/* 04 */}
+            <div className="bg-paper px-6 py-7 md:px-8 md:py-9 flex flex-col gap-3 min-h-[180px]">
+              <span
+                className="editorial text-[38px] leading-none text-accent"
+                style={{ fontVariationSettings: '"opsz" 72' }}
+              >
+                04
+              </span>
+              <h3 className="editorial text-[22px] leading-[1.2] text-ink mt-2">
+                {es
+                  ? "Devolución al paciente."
+                  : "Patient-facing reading."}
+              </h3>
+              <p className="text-[14px] leading-[1.6] text-ink-soft max-w-[42ch]">
+                {es
+                  ? "Narrativa en segunda persona que conecta biografía y síntomas sin jerga clínica. Escrita para que el paciente la relea en casa."
+                  : "Second-person narrative that connects biography and symptoms without clinical jargon. Written so the patient can reread it at home."}
               </p>
             </div>
           </div>
-        </section>
-      </article>
+        </div>
+      </section>
 
-      {/* Running foot */}
-      <footer className="border-t border-ink">
-        <div className="mx-auto max-w-[1280px] px-6 md:px-10 py-6 flex items-center justify-between text-[11px] text-ink-mute">
-          <p className="tabular tracking-wider">{t.footer.left}</p>
-          <p className="editorial italic">{t.footer.center_italic}</p>
-          <p className="tabular tracking-wider">{t.footer.right}</p>
+      {/* ═══ MARCO TEÓRICO — justifica autoridad sin jerga propietaria ═══ */}
+      <section className="border-b border-ink">
+        <div className="mx-auto max-w-[1080px] w-full px-6 md:px-10 py-20 md:py-24 grid grid-cols-12 gap-x-8 gap-y-10">
+          <div className="col-span-12 md:col-span-4">
+            <p className="font-mono text-[10.5px] tracking-[0.24em] uppercase text-ink-mute">
+              {es ? "Marco" : "Framework"}
+            </p>
+            <h2
+              className="mt-6 editorial text-[30px] md:text-[36px] leading-[1.08] text-ink tracking-[-0.02em]"
+              style={{ fontVariationSettings: '"SOFT" 30, "opsz" 72' }}
+            >
+              {es
+                ? "Inferencia activa aplicada a clínica."
+                : "Active inference applied to clinical care."}
+            </h2>
+          </div>
+
+          <div className="col-span-12 md:col-span-7 md:col-start-6 space-y-6 max-w-[58ch] text-[15px] md:text-[16px] leading-[1.65] text-ink-soft">
+            <p>
+              {es
+                ? "Inferentia trabaja sobre la hipótesis — hoy ampliamente aceptada en neurociencia — de que el organismo no reacciona al mundo: lo predice. Cuando esas predicciones se cristalizan, aparecen como síntomas crónicos."
+                : "Inferentia builds on the hypothesis — now widely accepted in neuroscience — that the organism doesn't react to the world: it predicts it. When those predictions crystallize, they appear as chronic symptoms."}
+            </p>
+            <p>
+              {es
+                ? "La taxonomía de 13 patrones defensivos es resultado de dos décadas de práctica clínica integrativa. No es un catálogo de enfermedades — es una gramática de cómo el organismo aprende a sobrevivir."
+                : "The taxonomy of 13 defensive patterns is the result of two decades of integrative clinical practice. It is not a catalog of diseases — it is a grammar of how the organism learns to survive."}
+            </p>
+            <p className="pt-4 border-t border-rule">
+              <span className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-ink-mute">
+                {es ? "Referencias base" : "Core references"}
+              </span>
+              <span className="block mt-2 text-[14px] text-ink leading-[1.7]">
+                Karl Friston · Bruce McEwen · Lisa Feldman Barrett · Stephen Porges · Michael Levin
+              </span>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ FOOTER — mt-auto pushes it to viewport bottom when content is short ═══ */}
+      <footer className="mt-auto border-t border-ink bg-paper">
+        <div className="mx-auto max-w-[1080px] w-full px-6 md:px-10 py-6 md:py-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-6">
+          <div className="flex flex-col gap-1">
+            <span className="font-mono text-[11.5px] tracking-[0.18em] uppercase text-ink font-medium">
+              Dr. Miguel Ojeda Rios
+            </span>
+            <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-ink-mute">
+              Cerebral Valley × Anthropic · April 2026
+            </span>
+          </div>
+
+          <div className="hidden md:flex items-center gap-2 font-mono text-[10.5px] tracking-[0.14em] uppercase text-ink-mute">
+            <span>Next.js 16</span>
+            <span className="text-rule">·</span>
+            <span>Opus 4.7</span>
+            <span className="text-rule">·</span>
+            <span>Vercel</span>
+          </div>
+
+          <a
+            href="https://github.com/4ailabs/inferentia"
+            target="_blank"
+            rel="noreferrer"
+            className="font-mono text-[11.5px] tracking-[0.16em] uppercase text-ink hover:text-accent transition-colors"
+          >
+            MIT · 4ailabs/inferentia ↗
+          </a>
         </div>
       </footer>
     </main>
   );
 }
 
+// ─── HeroReadout ───────────────────────────────────────────────
+// Static mock of the Orchestrator output for the Ana synthetic case.
+// Numbers are real — they come from running the math engine on Ana.
+// This is a product snapshot, not marketing.
+function HeroReadout({ locale }: { locale: "en" | "es" }) {
+  const es = locale === "es";
+  return (
+    <div className="border border-ink bg-paper-raised relative">
+      {/* Corner ticks — instrument signature */}
+      <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-accent -translate-x-[1px] -translate-y-[1px]" />
+      <span className="absolute top-0 right-0 w-2 h-2 border-t border-r border-accent translate-x-[1px] -translate-y-[1px]" />
+      <span className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-accent -translate-x-[1px] translate-y-[1px]" />
+      <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-accent translate-x-[1px] translate-y-[1px]" />
+
+      {/* Header */}
+      <div className="border-b border-rule px-5 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+          <span className="font-mono text-[9.5px] tracking-[0.2em] uppercase text-accent">
+            {es ? "Sesión en vivo · Ana" : "Live session · Ana"}
+          </span>
+        </div>
+        <span className="font-mono text-[9.5px] tracking-[0.14em] text-ink-mute">
+          inf-0147
+        </span>
+      </div>
+
+      {/* Two metric tiles */}
+      <div className="grid grid-cols-2 border-b border-rule">
+        <div className="p-5 border-r border-rule">
+          <p className="font-mono text-[9px] tracking-[0.18em] uppercase text-ink-mute">
+            {es ? "Rigidez" : "Rigidity"}
+          </p>
+          <p
+            className="mt-2 editorial text-[38px] leading-none text-ink tabular-nums"
+            style={{ fontVariationSettings: '"opsz" 72' }}
+          >
+            39.8<span className="text-[18px] text-ink-mute">%</span>
+          </p>
+          <p className="mt-1 font-mono text-[9.5px] text-ink-mute">
+            12 / 22 {es ? "nodos" : "nodes"}
+          </p>
+        </div>
+        <div className="p-5">
+          <p className="font-mono text-[9px] tracking-[0.18em] uppercase text-accent">
+            {es ? "ΔFree energy" : "ΔFree energy"}
+          </p>
+          <p
+            className="mt-2 editorial text-[38px] leading-none text-accent tabular-nums"
+            style={{ fontVariationSettings: '"opsz" 72' }}
+          >
+            −7.8<span className="text-[18px] text-ink-mute">%</span>
+          </p>
+          <p className="mt-1 font-mono text-[9.5px] text-ink-mute">
+            {es ? "12 semanas" : "12 weeks"}
+          </p>
+        </div>
+      </div>
+
+      {/* Active patterns */}
+      <div className="px-5 py-4 border-b border-rule">
+        <p className="font-mono text-[9px] tracking-[0.18em] uppercase text-ink-mute mb-3">
+          {es ? "Patrones activos" : "Active patterns"}
+        </p>
+        <div className="space-y-2.5">
+          {[
+            { id: "i8", name: es ? "Reserva" : "Reserve", w: 0.82 },
+            { id: "i2", name: es ? "Escasez" : "Scarcity", w: 0.54 },
+            { id: "i4", name: es ? "Vigilancia" : "Vigilance", w: 0.31 },
+          ].map((p) => (
+            <div key={p.id} className="flex items-center gap-3">
+              <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-accent w-6">
+                {p.id}
+              </span>
+              <span className="editorial text-[13px] text-ink flex-1">
+                {p.name}
+              </span>
+              <div className="w-24 h-1 bg-paper-soft">
+                <div
+                  className="h-full bg-accent"
+                  style={{ width: `${p.w * 100}%` }}
+                />
+              </div>
+              <span className="font-mono text-[9.5px] text-ink-mute tabular-nums w-8 text-right">
+                {p.w.toFixed(2)}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Top leverage */}
+      <div className="px-5 py-4">
+        <p className="font-mono text-[9px] tracking-[0.18em] uppercase text-ink-mute mb-3">
+          {es ? "Apalancamiento primario" : "Primary leverage"}
+        </p>
+        <p className="editorial text-[15px] text-ink leading-tight">
+          {es ? "Control inflamatorio" : "Inflammation control"}
+        </p>
+        <p className="mt-2 font-mono text-[10px] tracking-[0.1em] text-ink-mute leading-[1.5]">
+          EPA+DHA · curcumin · NAC · quercetin
+        </p>
+        <p className="mt-3 text-[11px] italic text-ink-quiet leading-[1.5]">
+          {es
+            ? "Dosis ajustada por rs174547 (FADS1): EPA preformado ↑."
+            : "Dose adjusted by rs174547 (FADS1): preformed EPA ↑."}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function MarkGlyph() {
   return (
     <svg
-      width="40"
-      height="40"
+      width="24"
+      height="24"
       viewBox="0 0 40 40"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden
     >
-      <circle cx="20" cy="20" r="19" stroke="#0F0F0E" strokeWidth="1" />
-      <circle cx="20" cy="20" r="6" fill="#6B3FA0" />
+      <circle cx="20" cy="20" r="19" stroke="currentColor" strokeWidth="0.8" />
+      <circle cx="20" cy="20" r="5" fill="var(--accent)" />
       <path
-        d="M3 20 L14 20 M26 20 L37 20 M20 3 L20 14 M20 26 L20 37"
-        stroke="#0F0F0E"
-        strokeWidth="1"
-      />
-      <circle
-        cx="20"
-        cy="20"
-        r="12"
-        stroke="#0F0F0E"
+        d="M2 20 L13 20 M27 20 L38 20 M20 2 L20 13 M20 27 L20 38"
+        stroke="currentColor"
         strokeWidth="0.6"
-        strokeDasharray="2 2"
       />
     </svg>
   );

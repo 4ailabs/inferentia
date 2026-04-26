@@ -93,6 +93,9 @@ function logLikSensationGivenImprint(
   k: ImprintId,
 ): number {
   const sensation = SENSATIONS[s];
+  // Si el id no existe en la tabla canónica, tratamos como sensación ausente:
+  // prior plano pero no cero (evita NaN downstream si el input es ruidoso).
+  if (!sensation) return Math.log(0.04);
   if (sensation.imprints_primary.includes(k)) return Math.log(0.65);
   if (sensation.imprints_secondary.includes(k)) return Math.log(0.22);
   return Math.log(0.04);
@@ -211,7 +214,17 @@ export function computeImprintPosteriorFromSensations(
   }
 
   const sensationPosterior = (input.sensation_posterior ?? [])
-    .filter((e) => e.posterior > 0)
+    .filter((e) => {
+      if (e.posterior <= 0) return false;
+      if (!SENSATIONS[e.id]) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[imprint-bayes] Ignoring unknown sensation id: "${e.id}". Expected canonical s1..s20 keys.`,
+        );
+        return false;
+      }
+      return true;
+    })
     .sort((a, b) => b.posterior - a.posterior);
 
   const marks = input.narrative_marks ?? {};

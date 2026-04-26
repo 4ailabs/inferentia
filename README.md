@@ -28,23 +28,59 @@ Inferentia is a clinical tool that identifies active predictive instructions acr
 ## Architecture (two-level, clinician-validated)
 
 ```
-Patient view     ←→  Unified backend engine  ←→     Clinician view
-(narrative        Opus 4.7 orchestrator         (technical posteriors,
-accessible        + Active Inference (pymdp)    SNPs, metabolic
-predictions,      + Bayesian inference          signature, clinical
-agency panel)     (NumPyro)                     note, editable plan)
-                  + Multimodal fusion
+  Clinician                              Patient
+/clinico/inferentia                  /paciente/inferentia
+        │                                   │
+        │    (localStorage handshake)       │
+        │  ┌────────────────────────────┐   │
+        └──▶  Same JSON, two audiences  ◀───┘
+             └────────────┬──────────────┘
+                          │
+                  /api/orchestrator
+                          │
+          ┌───────────────┼───────────────┐
+          ▼               ▼               ▼
+  Metabolic           Nutrigenomic      Orchestrator
+  Mathematician       Advisor           (Opus 4.7
+  (4 math modules,    (25-modulator     extended thinking,
+  22 nodes,           knowledge base,   BV4 Treatise
+  8 flexibility       SNP-aware         cached)
+  components,         selection)
+  leverage,
+  free energy)
 ```
 
-All clinical prescriptions require clinician validation before reaching the patient. The patient sees their own predictive map and agency metrics; the clinician sees the full technical stack and validates.
+All clinical content requires clinician validation before reaching the patient. The patient view renders only the salutogenic narrative, humanized plan, and confidence — no raw JSON, no technical jargon.
 
-## Five MVP outputs
+## What actually shipped (2026-04-23)
 
-1. **Predictive Map** — hero visualization of active predictive priors.
-2. **Expected Metabolic Signature** — inferred biomarkers with discordance vs. labs.
-3. **Prioritized Nutrigenomic SNPs** — Bayesian posterior over relevant SNPs (clinician view only).
-4. **Salutogenic Nutritional Program** — clinician-validated, agency-oriented.
-5. **Agency Panel** — pre/post delta on primary outcome (not biomarker — agency).
+- **4 deterministic math modules in TypeScript** — `system-state.ts` (22 metabolic nodes with rigidity 0..1 + reversibility class), `flexibility-index.ts` (8-component PFF vector), `leverage-finder.ts` (imprint-aware intervention ranking), `free-energy-estimator.ts` (counterfactual prediction of load released).
+- **25-modulator curated knowledge base** (`modulators-db.json`) with real references (REDUCE-IT 2019 NEJM, Calder 2017, Yin 2008 Metabolism, etc.), SNP interactions (FADS1 rs174547, MTHFR rs1801133, etc.), dose ranges in canonical units, contraindications, and BV4 imprint alignment annotations. No generic adaptogens.
+- **4 Opus 4.7 agents** with extended thinking (adaptive + effort): Clinical Reasoner (`/api/reasoner`), Metabolic Mathematician (`/api/math-agent`), Nutrigenomic Advisor (`/api/nutrigenomic-agent`), and Orchestrator (`/api/orchestrator`) that synthesizes the other three.
+- **Two-level UI** — `/clinico/inferentia` (technical, 4 panels streaming SSE) and `/paciente/inferentia` (humanized, body map + narrative + plan). Handshake via `localStorage`.
+- **Demo fallback** — if `DEMO_MODE=1` or the Opus call fails, the orchestrator serves a pre-recorded snapshot of the Ana case so the demo never breaks.
+
+## MVP outputs
+
+1. **Predictive Map** — body map silhouette with BV4 imprint zones illuminated.
+2. **Counterfactual Prediction** — % of system load releasable in 12 weeks if primary leverage is worked, with ceiling disclosure.
+3. **Molecular Protocol** — modulators with dose, timing, form, SNP adjustment, and evidence level per item.
+4. **Salutogenic Narrative for Patient** — second-person, jargon-free explanation authored by Opus.
+5. **Monitoring + Sequencing** — biomarkers to repeat at 8-12 weeks, phased rollout (weeks 1-4 / 5-8 / 9-12).
+
+## How to run
+
+```bash
+git clone https://github.com/4ailabs/inferentia
+cd inferentia/packages/web
+pnpm install
+cp .env.example .env.local
+# Edit .env.local and add your ANTHROPIC_API_KEY
+# (or set DEMO_MODE=1 to use the pre-recorded snapshot)
+pnpm dev
+```
+
+Then open `http://localhost:3000/clinico/inferentia?lang=es`, click "Ana · 34F i8" to load the demo case, and press "Iniciar orquestación". The pipeline takes ~40-60 seconds end-to-end with real Opus; <5 seconds in demo mode.
 
 ## Theoretical framework
 

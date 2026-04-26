@@ -77,6 +77,18 @@ export type CascadePrediction = {
 export function predictCascade(
   sensationPosterior: Array<{ id: SensationId; posterior: number }>,
 ): CascadePrediction {
+  // Filtrar IDs inválidos: si el LLM pasa un id que no está en la tabla
+  // canónica (ej. "abandonment" en vez de "s1_abandono"), lo descartamos
+  // en vez de crashear. Dejamos trace en consola del servidor.
+  const validEntries = sensationPosterior.filter((e) => {
+    if (SENSATIONS[e.id]) return true;
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[cascade-predictor] Ignoring unknown sensation id: "${e.id}". Expected canonical s1..s20 keys.`,
+    );
+    return false;
+  });
+
   // Collect all lab keys referenced by any sensation's cascade.
   const allKeys = new Set<LabKey>();
   for (const s of Object.values(SENSATIONS)) {
@@ -88,7 +100,7 @@ export function predictCascade(
     // Mean: Σ P(s|obs) · μ_s,y
     let mu = 0;
     const components: ExpectedMarker["components"] = [];
-    for (const entry of sensationPosterior) {
+    for (const entry of validEntries) {
       const cascade = SENSATIONS[entry.id].cascade as CascadeSignature;
       const dz = cascade[key];
       if (typeof dz !== "number") continue;
@@ -107,7 +119,7 @@ export function predictCascade(
 
     // Variance: Σ P(s|obs) · [σ² + (μ_s,y - μ)²]
     let variance = 0;
-    for (const entry of sensationPosterior) {
+    for (const entry of validEntries) {
       const cascade = SENSATIONS[entry.id].cascade as CascadeSignature;
       const dz = cascade[key] ?? 0;
       const w = entry.posterior;
