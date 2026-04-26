@@ -376,16 +376,21 @@ export default async function Home({
             <figure className="border border-rule bg-paper">
               <div className="px-6 py-6">
                 <svg viewBox="0 0 380 200" xmlns="http://www.w3.org/2000/svg" className="w-full" aria-label="Leverage ranking">
-                  <text x="0" y="18" fontSize="9" fill="#888" letterSpacing="2" fontFamily="monospace">LEVERAGE RANKING · {es ? "ANA · i8" : "ANA · i8"}</text>
-                  {[
-                    {label:"inflammation_control", score:0.87, molecules:"curcumin · EPA · quercetin"},
-                    {label:"insulin_sensitivity",  score:0.74, molecules:"berberine · ALA · Mg"},
-                    {label:"autonomic_flexibility", score:0.61, molecules:"glycine · taurine · D3"},
-                    {label:"predictive_agency",    score:0.55, molecules:"prior work · NAC"},
-                  ].map((item, i) => (
+                  <text x="0" y="18" fontSize="9" fill="#888" letterSpacing="2" fontFamily="monospace">{es ? "APALANCAMIENTO · ANA · i8" : "LEVERAGE RANKING · ANA · i8"}</text>
+                  {(es ? [
+                    {label:"control inflamatorio", score:0.87, molecules:"curcumin · EPA · quercetin"},
+                    {label:"sensibilidad insulina",  score:0.74, molecules:"berberina · ALA · Mg"},
+                    {label:"flexibilidad autonómica", score:0.61, molecules:"glicina · taurina · D3"},
+                    {label:"agencia predictiva",    score:0.55, molecules:"trabajo del prior · NAC"},
+                  ] : [
+                    {label:"inflammation control", score:0.87, molecules:"curcumin · EPA · quercetin"},
+                    {label:"insulin sensitivity",  score:0.74, molecules:"berberine · ALA · Mg"},
+                    {label:"autonomic flexibility", score:0.61, molecules:"glycine · taurine · D3"},
+                    {label:"predictive agency",    score:0.55, molecules:"prior work · NAC"},
+                  ]).map((item, i) => (
                     <g key={item.label} transform={`translate(0,${36 + i * 42})`}>
                       <text x="0" y="12" fontSize="10" fill="#1a1a18" fontFamily="monospace" fontWeight="600">
-                        {i+1}. {item.label.replace(/_/g," ")}
+                        {i+1}. {item.label}
                       </text>
                       <rect x="0" y="18" width={item.score * 340} height="10" fill={i===0?"#1a1a18":"#ccc"}/>
                       <text x={item.score * 340 + 6} y="27" fontSize="9" fill="#888" fontFamily="monospace">{item.score.toFixed(2)}</text>
