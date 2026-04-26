@@ -279,8 +279,8 @@ export default async function Home({
 
                 {/* ══ NIVEL 1 — Clasificación impronta ══ */}
                 <rect x="180" y="20" width="500" height="96" rx="0" fill="none" stroke="#1a1a18" strokeWidth="1.5"/>
-                <text x="200" y="42" fontSize="9" fill="#888" letterSpacing="2" fontFamily="monospace">NIVEL 1 · CLASIFICACIÓN</text>
-                <text x="200" y="62" fontSize="13" fill="#1a1a18" fontFamily="monospace" fontWeight="600">P(impronta | fenotipo)</text>
+                <text x="200" y="42" fontSize="9" fill="#888" letterSpacing="2" fontFamily="monospace">{es ? "NIVEL 1 · CLASIFICACIÓN" : "LEVEL 1 · CLASSIFICATION"}</text>
+                <text x="200" y="62" fontSize="13" fill="#1a1a18" fontFamily="monospace" fontWeight="600">P(imprint | phenotype)</text>
                 {/* 13 imprint pills */}
                 {["i1","i2","i3","i4","i5","i6","i7","i8","i9","i10","i11","i12","i13"].map((imp, i) => {
                   const col = i % 7;
@@ -307,11 +307,11 @@ export default async function Home({
 
                 {/* ══ NIVEL 2 — Firma multimodal ══ */}
                 <rect x="80" y="162" width="700" height="190" rx="0" fill="none" stroke="#1a1a18" strokeWidth="1.5"/>
-                <text x="100" y="184" fontSize="9" fill="#888" letterSpacing="2" fontFamily="monospace">NIVEL 2 · FIRMA MULTIMODAL</text>
-                <text x="100" y="204" fontSize="13" fill="#1a1a18" fontFamily="monospace" fontWeight="600">F ∈ ℝ⁸  ·  22 nodos  ·  PFF</text>
+                <text x="100" y="184" fontSize="9" fill="#888" letterSpacing="2" fontFamily="monospace">{es ? "NIVEL 2 · FIRMA MULTIMODAL" : "LEVEL 2 · MULTIMODAL SIGNATURE"}</text>
+                <text x="100" y="204" fontSize="13" fill="#1a1a18" fontFamily="monospace" fontWeight="600">F ∈ ℝ⁸  ·  22 {es ? "nodos" : "nodes"}  ·  PFF</text>
 
                 {/* 8 dimension cells */}
-                {[
+                {(es ? [
                   {label: "Autonómico", sub:"HRV · SDNN · RMSSD"},
                   {label: "HPA", sub:"cortisol · CAR · ritmo"},
                   {label: "Inflamatorio", sub:"IL-6 · TNF-α · PCR"},
@@ -320,12 +320,21 @@ export default async function Home({
                   {label: "Composición", sub:"visceral · magra"},
                   {label: "Microbiota", sub:"enterotipos · SCFAs"},
                   {label: "Agencia", sub:"predictive agency"},
-                ].map((dim, i) => {
+                ] : [
+                  {label: "Autonomic", sub:"HRV · SDNN · RMSSD"},
+                  {label: "HPA", sub:"cortisol · CAR · rhythm"},
+                  {label: "Inflammatory", sub:"IL-6 · TNF-α · CRP"},
+                  {label: "Metabolic", sub:"HbA1c · HOMA-IR"},
+                  {label: "Lipid", sub:"TG · HDL · LDL"},
+                  {label: "Composition", sub:"visceral · lean"},
+                  {label: "Microbiome", sub:"enterotypes · SCFAs"},
+                  {label: "Agency", sub:"predictive agency"},
+                ]).map((dim, i) => {
                   const col = i % 4;
                   const row = Math.floor(i / 4);
                   const x = 100 + col * 170;
                   const y = 216 + row * 66;
-                  const isAgency = dim.label === "Agencia";
+                  const isAgency = dim.label === "Agencia" || dim.label === "Agency";
                   return (
                     <g key={dim.label}>
                       <rect x={x} y={y} width="158" height="54" rx="0"
@@ -341,12 +350,12 @@ export default async function Home({
                 {/* ── bidirectional arrow L2↔L3 ── */}
                 <line x1="430" y1="352" x2="430" y2="396" stroke="#1a1a18" strokeWidth="1.5"
                   markerEnd="url(#arr)" markerStart="url(#arr-up)"/>
-                <text x="438" y="378" fontSize="8" fill="#888" fontFamily="monospace">enriquecimiento</text>
+                <text x="438" y="378" fontSize="8" fill="#888" fontFamily="monospace">{es ? "enriquecimiento" : "enrichment"}</text>
 
                 {/* ══ NIVEL 3 — Genética ══ */}
                 <rect x="180" y="396" width="500" height="72" rx="0" fill="none" stroke="#1a1a18" strokeWidth="1.5"/>
-                <text x="200" y="418" fontSize="9" fill="#888" letterSpacing="2" fontFamily="monospace">NIVEL 3 · ENRIQUECIMIENTO GENÉTICO</text>
-                <text x="200" y="438" fontSize="13" fill="#1a1a18" fontFamily="monospace" fontWeight="600">SNPs nutrigenéticos</text>
+                <text x="200" y="418" fontSize="9" fill="#888" letterSpacing="2" fontFamily="monospace">{es ? "NIVEL 3 · ENRIQUECIMIENTO GENÉTICO" : "LEVEL 3 · GENETIC ENRICHMENT"}</text>
+                <text x="200" y="438" fontSize="13" fill="#1a1a18" fontFamily="monospace" fontWeight="600">{es ? "SNPs nutrigenéticos" : "Nutrigenomic SNPs"}</text>
                 {["rs174547","rs1801133","rs4680","rs9939609","rs1799945","rs662"].map((snp, i) => (
                   <g key={snp}>
                     <text x={200 + i * 108} y={458} fontSize="9" fill="#888" fontFamily="monospace">{snp}</text>
