@@ -358,7 +358,7 @@ export default async function Home({
                 <text x="200" y="438" fontSize="13" fill="#1a1a18" fontFamily="monospace" fontWeight="600">{es ? "SNPs nutrigenéticos" : "Nutrigenomic SNPs"}</text>
                 {["rs174547","rs1801133","rs4680","rs9939609","rs1799945","rs662"].map((snp, i) => (
                   <g key={snp}>
-                    <text x={200 + i * 108} y={458} fontSize="9" fill="#888" fontFamily="monospace">{snp}</text>
+                    <text x={200 + i * 90} y={458} fontSize="9" fill="#888" fontFamily="monospace">{snp}</text>
                   </g>
                 ))}
 
