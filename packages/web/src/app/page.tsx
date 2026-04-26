@@ -71,22 +71,22 @@ export default async function Home({
             >
               {es ? (
                 <>
-                  La enfermedad crónica es la firma
+                  Los síntomas crónicos son errores de predicción.
                   <br />
-                  de priors predictivos rígidos.
+                  Inferentia va al prior que los genera.
                   <br />
                   <span className="editorial-italic text-accent">
-                    Restauramos la agencia para actualizarlos.
+                    Calculamos cómo actualizarlo.
                   </span>
                 </>
               ) : (
                 <>
-                  Chronic disease is the signature
+                  Chronic symptoms are prediction errors.
                   <br />
-                  of rigid predictive priors.
+                  Inferentia targets the prior that generates them.
                   <br />
                   <span className="editorial-italic text-accent">
-                    We restore agency to update them.
+                    We compute how to update it.
                   </span>
                 </>
               )}
