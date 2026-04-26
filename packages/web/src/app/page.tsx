@@ -258,74 +258,177 @@ export default async function Home({
             </p>
           </div>
 
-          {/* Hero figure — flexibility network with reversibility gradient */}
+          {/* Hero figure — Factor graph jerárquico SVG inline */}
           <figure className="border border-ink bg-paper">
-            <img
-              src="/figures/flexibility-system.png"
-              alt={
-                es
-                  ? "Red de 22 nodos metabólicos con gradiente de reversibilidad"
-                  : "Network of 22 metabolic nodes with reversibility gradient"
-              }
-              className="w-full h-auto block"
-              loading="lazy"
-            />
+            <div className="w-full overflow-x-auto px-6 py-8">
+              <svg
+                viewBox="0 0 860 480"
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-full max-w-[860px] mx-auto font-mono"
+                aria-label={es ? "Factor graph jerárquico de 3 niveles" : "3-level hierarchical factor graph"}
+              >
+                {/* ── defs ── */}
+                <defs>
+                  <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="currentColor" className="text-ink" style={{fill:"#1a1a18"}}/>
+                  </marker>
+                  <marker id="arr-up" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto-start-reverse">
+                    <path d="M0,0 L8,4 L0,8 Z" fill="#1a1a18"/>
+                  </marker>
+                </defs>
+
+                {/* ══ NIVEL 1 — Clasificación impronta ══ */}
+                <rect x="180" y="20" width="500" height="96" rx="0" fill="none" stroke="#1a1a18" strokeWidth="1.5"/>
+                <text x="200" y="42" fontSize="9" fill="#888" letterSpacing="2" fontFamily="monospace">NIVEL 1 · CLASIFICACIÓN</text>
+                <text x="200" y="62" fontSize="13" fill="#1a1a18" fontFamily="monospace" fontWeight="600">P(impronta | fenotipo)</text>
+                {/* 13 imprint pills */}
+                {["i1","i2","i3","i4","i5","i6","i7","i8","i9","i10","i11","i12","i13"].map((imp, i) => {
+                  const col = i % 7;
+                  const row = Math.floor(i / 7);
+                  const x = 200 + col * 67;
+                  const y = 74 + row * 22;
+                  const isI8 = imp === "i8";
+                  return (
+                    <g key={imp}>
+                      <rect x={x} y={y} width="58" height="16" rx="0"
+                        fill={isI8 ? "#1a1a18" : "none"}
+                        stroke={isI8 ? "#1a1a18" : "#ccc"}
+                        strokeWidth="1"/>
+                      <text x={x + 29} y={y + 11} fontSize="9" fill={isI8 ? "#f5f0e8" : "#888"}
+                        textAnchor="middle" fontFamily="monospace">{imp}</text>
+                    </g>
+                  );
+                })}
+
+                {/* ── bidirectional arrow L1↔L2 ── */}
+                <line x1="430" y1="116" x2="430" y2="162" stroke="#1a1a18" strokeWidth="1.5"
+                  markerEnd="url(#arr)" markerStart="url(#arr-up)"/>
+                <text x="438" y="143" fontSize="8" fill="#888" fontFamily="monospace">belief propagation</text>
+
+                {/* ══ NIVEL 2 — Firma multimodal ══ */}
+                <rect x="80" y="162" width="700" height="190" rx="0" fill="none" stroke="#1a1a18" strokeWidth="1.5"/>
+                <text x="100" y="184" fontSize="9" fill="#888" letterSpacing="2" fontFamily="monospace">NIVEL 2 · FIRMA MULTIMODAL</text>
+                <text x="100" y="204" fontSize="13" fill="#1a1a18" fontFamily="monospace" fontWeight="600">F ∈ ℝ⁸  ·  22 nodos  ·  PFF</text>
+
+                {/* 8 dimension cells */}
+                {[
+                  {label: "Autonómico", sub:"HRV · SDNN · RMSSD"},
+                  {label: "HPA", sub:"cortisol · CAR · ritmo"},
+                  {label: "Inflamatorio", sub:"IL-6 · TNF-α · PCR"},
+                  {label: "Metabólico", sub:"HbA1c · HOMA-IR"},
+                  {label: "Lipídico", sub:"TG · HDL · LDL"},
+                  {label: "Composición", sub:"visceral · magra"},
+                  {label: "Microbiota", sub:"enterotipos · SCFAs"},
+                  {label: "Agencia", sub:"predictive agency"},
+                ].map((dim, i) => {
+                  const col = i % 4;
+                  const row = Math.floor(i / 4);
+                  const x = 100 + col * 170;
+                  const y = 216 + row * 66;
+                  const isAgency = dim.label === "Agencia";
+                  return (
+                    <g key={dim.label}>
+                      <rect x={x} y={y} width="158" height="54" rx="0"
+                        fill={isAgency ? "#f0ece2" : "none"}
+                        stroke={isAgency ? "#1a1a18" : "#ccc"}
+                        strokeWidth={isAgency ? "1.5" : "1"}/>
+                      <text x={x+8} y={y+18} fontSize="11" fill="#1a1a18" fontFamily="monospace" fontWeight="600">{dim.label}</text>
+                      <text x={x+8} y={y+34} fontSize="9" fill="#888" fontFamily="monospace">{dim.sub}</text>
+                    </g>
+                  );
+                })}
+
+                {/* ── bidirectional arrow L2↔L3 ── */}
+                <line x1="430" y1="352" x2="430" y2="396" stroke="#1a1a18" strokeWidth="1.5"
+                  markerEnd="url(#arr)" markerStart="url(#arr-up)"/>
+                <text x="438" y="378" fontSize="8" fill="#888" fontFamily="monospace">enriquecimiento</text>
+
+                {/* ══ NIVEL 3 — Genética ══ */}
+                <rect x="180" y="396" width="500" height="72" rx="0" fill="none" stroke="#1a1a18" strokeWidth="1.5"/>
+                <text x="200" y="418" fontSize="9" fill="#888" letterSpacing="2" fontFamily="monospace">NIVEL 3 · ENRIQUECIMIENTO GENÉTICO</text>
+                <text x="200" y="438" fontSize="13" fill="#1a1a18" fontFamily="monospace" fontWeight="600">SNPs nutrigenéticos</text>
+                {["rs174547","rs1801133","rs4680","rs9939609","rs1799945","rs662"].map((snp, i) => (
+                  <g key={snp}>
+                    <text x={200 + i * 108} y={458} fontSize="9" fill="#888" fontFamily="monospace">{snp}</text>
+                  </g>
+                ))}
+
+                {/* ── factor graph cross-connections (SNP → imprint hint lines) ── */}
+                <line x1="220" y1="396" x2="265" y2="116" stroke="#ccc" strokeWidth="0.8" strokeDasharray="3,3"/>
+                <line x1="328" y1="396" x2="530" y2="116" stroke="#ccc" strokeWidth="0.8" strokeDasharray="3,3"/>
+              </svg>
+            </div>
             <figcaption className="border-t border-rule px-5 py-3 flex items-baseline justify-between gap-4">
               <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-mute">
-                {es ? "Fig. 1" : "Fig. 1"}
+                Fig. 1
               </span>
               <span className="text-[12px] italic text-ink-quiet leading-snug text-right max-w-[70ch]">
                 {es
-                  ? "Red de flexibilidad metabólica. Azul = procesos reversibles. Amarillo → azul oscuro = patología creciente hasta daño estructural."
-                  : "Metabolic flexibility network. Blue = reversible processes. Yellow → deep blue = growing pathology up to structural damage."}
+                  ? "Factor graph jerárquico de 3 niveles con belief propagation bidireccional. i8 resaltada = caso demo Ana."
+                  : "3-level hierarchical factor graph with bidirectional belief propagation. i8 highlighted = demo case Ana."}
               </span>
             </figcaption>
           </figure>
 
-          {/* Two secondary figures */}
+          {/* Two secondary figures — SVG inline */}
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Fig 2 — Leverage ranking */}
             <figure className="border border-rule bg-paper">
-              <img
-                src="/figures/personalized-nutrition.png"
-                alt={
-                  es
-                    ? "Nutrición personalizada: goals → órganos → procesos → nutrientes"
-                    : "Personalized nutrition: goals → organs → processes → nutrients"
-                }
-                className="w-full h-auto block"
-                loading="lazy"
-              />
+              <div className="px-6 py-6">
+                <svg viewBox="0 0 380 200" xmlns="http://www.w3.org/2000/svg" className="w-full" aria-label="Leverage ranking">
+                  <text x="0" y="18" fontSize="9" fill="#888" letterSpacing="2" fontFamily="monospace">LEVERAGE RANKING · {es ? "ANA · i8" : "ANA · i8"}</text>
+                  {[
+                    {label:"inflammation_control", score:0.87, molecules:"curcumin · EPA · quercetin"},
+                    {label:"insulin_sensitivity",  score:0.74, molecules:"berberine · ALA · Mg"},
+                    {label:"autonomic_flexibility", score:0.61, molecules:"glycine · taurine · D3"},
+                    {label:"predictive_agency",    score:0.55, molecules:"prior work · NAC"},
+                  ].map((item, i) => (
+                    <g key={item.label} transform={`translate(0,${36 + i * 42})`}>
+                      <text x="0" y="12" fontSize="10" fill="#1a1a18" fontFamily="monospace" fontWeight="600">
+                        {i+1}. {item.label.replace(/_/g," ")}
+                      </text>
+                      <rect x="0" y="18" width={item.score * 340} height="10" fill={i===0?"#1a1a18":"#ccc"}/>
+                      <text x={item.score * 340 + 6} y="27" fontSize="9" fill="#888" fontFamily="monospace">{item.score.toFixed(2)}</text>
+                      <text x="0" y="38" fontSize="8" fill="#aaa" fontFamily="monospace">{item.molecules}</text>
+                    </g>
+                  ))}
+                </svg>
+              </div>
               <figcaption className="border-t border-rule px-4 py-2.5">
-                <span className="font-mono text-[9.5px] tracking-[0.16em] uppercase text-ink-mute">
-                  {es ? "Fig. 2" : "Fig. 2"}
-                </span>
+                <span className="font-mono text-[9.5px] tracking-[0.16em] uppercase text-ink-mute">Fig. 2</span>
                 <p className="mt-1 text-[11.5px] italic text-ink-quiet leading-snug">
                   {es
-                    ? "Cuatro capas mapeadas: objetivos del paciente → órganos → procesos de flexibilidad → nutrientes específicos."
-                    : "Four mapped layers: patient goals → organs → flexibility processes → specific nutrients."}
+                    ? "Ranking de apalancamiento: gain × tractability × alignment / cost. Moléculas seleccionadas por mecanismo sobre nodos rígidos."
+                    : "Leverage ranking: gain × tractability × alignment / cost. Molecules selected by mechanism on rigid nodes."}
                 </p>
               </figcaption>
             </figure>
 
+            {/* Fig 3 — ΔFree energy counterfactual */}
             <figure className="border border-rule bg-paper">
-              <img
-                src="/figures/three-axes.png"
-                alt={
-                  es
-                    ? "Tres ejes de intervención: oxidativo, inflamatorio, metabólico"
-                    : "Three axes of intervention: oxidative, inflammatory, metabolic"
-                }
-                className="w-full h-auto block"
-                loading="lazy"
-              />
+              <div className="px-6 py-6">
+                <svg viewBox="0 0 380 200" xmlns="http://www.w3.org/2000/svg" className="w-full" aria-label="Free energy counterfactual">
+                  <text x="0" y="18" fontSize="9" fill="#888" letterSpacing="2" fontFamily="monospace">{es ? "PREDICCIÓN CONTRAFACTUAL · ΔF" : "COUNTERFACTUAL · ΔF"}</text>
+                  {/* Baseline bar */}
+                  <text x="0" y="50" fontSize="9" fill="#888" fontFamily="monospace">{es ? "Carga actual" : "Current burden"}</text>
+                  <rect x="0" y="56" width="300" height="18" fill="#e8e4da"/>
+                  <text x="306" y="70" fontSize="11" fill="#1a1a18" fontFamily="monospace" fontWeight="600">68%</text>
+                  {/* After bar */}
+                  <text x="0" y="96" fontSize="9" fill="#1a1a18" fontFamily="monospace">{es ? "Proyección 12 sem" : "Projection 12 wk"}</text>
+                  <rect x="0" y="102" width="196" height="18" fill="#1a1a18"/>
+                  <text x="202" y="116" fontSize="11" fill="#1a1a18" fontFamily="monospace" fontWeight="600">−31%</text>
+                  {/* Delta label */}
+                  <text x="0" y="145" fontSize="22" fill="#1a1a18" fontFamily="monospace" fontWeight="700">ΔF = −31%</text>
+                  <text x="0" y="165" fontSize="9" fill="#888" fontFamily="monospace">{es ? "free energy liberada · horizonte 12 semanas" : "free energy released · 12-week horizon"}</text>
+                  <text x="0" y="183" fontSize="9" fill="#aaa" fontFamily="monospace">{es ? "Asume adherencia completa al apalancamiento primario" : "Assumes full adherence to primary leverage"}</text>
+                </svg>
+              </div>
               <figcaption className="border-t border-rule px-4 py-2.5">
-                <span className="font-mono text-[9.5px] tracking-[0.16em] uppercase text-ink-mute">
-                  {es ? "Fig. 3" : "Fig. 3"}
-                </span>
+                <span className="font-mono text-[9.5px] tracking-[0.16em] uppercase text-ink-mute">Fig. 3</span>
                 <p className="mt-1 text-[11.5px] italic text-ink-quiet leading-snug">
                   {es
-                    ? "Tres ejes de intervención molecular: procesos oxidativos, inflamatorios y metabólicos."
-                    : "Three axes of molecular intervention: oxidative, inflammatory, and metabolic processes."}
+                    ? "Predicción contrafactual del motor (do-calculus). Si el apalancamiento primario se trabaja durante 12 semanas, el sistema libera 31% de carga alostática."
+                    : "Engine counterfactual prediction (do-calculus). If primary leverage is worked for 12 weeks, the system releases 31% of allostatic load."}
                 </p>
               </figcaption>
             </figure>
